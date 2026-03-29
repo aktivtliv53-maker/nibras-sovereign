@@ -54,7 +54,6 @@ def safe_load_json(filename):
     return None, None
 
 letters_raw, path_l = safe_load_json("sovereign_letters_v1.json")
-# الربط بملف الجذور القرآنية الصافية الذي أرسلته يا محمد
 roots_data, path_x = safe_load_json("quran_roots_complete.json")
 
 # =========================================================
@@ -77,7 +76,6 @@ if isinstance(letters_raw, list):
         char = item.get("letter")
         if char: letters_idx[normalize_arabic(char)] = item
 
-# بناء فهرس الجذور من ملفك الجديد مباشرة
 quranic_root_index = {}
 if roots_data and "roots" in roots_data:
     for r in roots_data["roots"]:
@@ -90,7 +88,7 @@ if roots_data and "roots" in roots_data:
         }
 
 # =========================================================
-# 5) تجريد صرفي ذكي
+# 5) تجريد صرفي ذكي (النسخة السيادية المحسنة)
 # =========================================================
 PREFIXES = ["وال", "فال", "بال", "كال", "لل", "ال", "و", "ف", "ب", "ك", "ل", "س"]
 SUFFIXES = ["هما", "كما", "كم", "كن", "هم", "هن", "نا", "ها", "ه", "ات", "ان", "ون", "ين", "يه", "ية", "ي", "ة", "ا"]
@@ -98,17 +96,33 @@ SUFFIXES = ["هما", "كما", "كم", "كن", "هم", "هن", "نا", "ها", 
 def generate_root_candidates(word):
     word = normalize_arabic(word)
     if not word: return []
-    candidates = {word}
-    for p in PREFIXES:
-        if word.startswith(p) and len(word)-len(p)>=2: candidates.add(word[len(p):])
-    for s in SUFFIXES:
-        for c in list(candidates):
-            if c.endswith(s) and len(c)-len(s)>=2: candidates.add(c[:-len(s)])
     
-    # احتمالات الثلاثي
-    tri_forms = {c[:3] for c in candidates if len(c) >= 3}
-    candidates.update(tri_forms)
-    return sorted(set(candidates), key=lambda x: (-len(x), x))
+    candidates = {word}
+    
+    # تجريد السوابق واللواحق بشكل متقاطع
+    temp_forms = {word}
+    for p in PREFIXES:
+        if word.startswith(p) and len(word) - len(p) >= 2:
+            temp_forms.add(word[len(p):])
+            
+    for form in list(temp_forms):
+        for s in SUFFIXES:
+            if form.endswith(s) and len(form) - len(s) >= 2:
+                temp_forms.add(form[:-len(s)])
+    
+    candidates.update(temp_forms)
+    
+    # إضافة احتمالات الجذور الثلاثية والرباعية من قلب الكلمات المجردة
+    final_candidates = set()
+    for c in candidates:
+        final_candidates.add(c)
+        if len(c) >= 3:
+            final_candidates.add(c[:3]) # الثلاثي الأول
+            final_candidates.add(c[-3:]) # الثلاثي الأخير
+        if len(c) >= 4:
+            final_candidates.add(c[:4]) # الرباعي الأول
+            
+    return sorted(set(final_candidates), key=lambda x: (-len(x), x))
 
 def match_quranic_root(word, root_index):
     for c in generate_root_candidates(word):
@@ -126,7 +140,6 @@ def analyze_path(text, l_idx, root_index):
         "count": 0, "matched_roots": [], "orbit_counter": Counter()
     }
     
-    # أ) الحروف
     clean_text = norm.replace(" ", "")
     dir_counter = Counter()
     for char in clean_text:
@@ -138,7 +151,6 @@ def analyze_path(text, l_idx, root_index):
             dir_counter[meta.get("direction", "unknown")] += 1
     if dir_counter: res["direction"] = dir_counter.most_common(1)[0][0]
 
-    # ب) الجذور
     for word in norm.split():
         m_root, entry = match_quranic_root(word, root_index)
         if m_root:
@@ -159,7 +171,7 @@ def analyze_path(text, l_idx, root_index):
     return res
 
 # =========================================================
-# 7) الواجهة والعرض (نفس هيكلك تماماً)
+# 7) الواجهة والعرض
 # =========================================================
 st.title("🛰️ محراب نبراس السيادي القرآني v8.0 FINAL")
 
@@ -205,4 +217,5 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
         st.markdown(f"<div class='mentor-box'><h3>🧠 المستشار السيادي</h3><b>البصيرة:</b> {best['insight']}<br><b>المدار الغالب:</b> {best['orbit']}</div>", unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
+st.sidebar.write("Blekinge, Sweden | Nibras Mobile Final")
 st.sidebar.write("خِت فِت.")
