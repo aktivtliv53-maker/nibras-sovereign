@@ -10,7 +10,7 @@ import os
 import json
 
 # =========================================================
-# 1) استدعاء الطبقات الثماني (بروتوكول السيادة v20.3.3)
+# 1) استدعاء الطبقات (بروتوكول السيادة v20.3.4)
 # =========================================================
 try:
     from letter_engine import analyze_word_letters
@@ -18,15 +18,13 @@ try:
     from state_engine import detect_state
     from tone_engine import purify_text
     from orbit_letter_engine import build_path_orbit_letter_profile
-    # استدعاء ملف المسارات الأساسي إذا لزم الأمر مستقبلاً
-    # from core_paths import ... 
 except ImportError as e:
-    st.error(f"⚠️ نقص في الملفات الهيكلية: {e}. تأكد من رفع كافة الملفات الظاهرة في الصورة.")
+    st.error(f"⚠️ نقص في الملفات الهيكلية: {e}. راجع مستودع الملفات الثمانية.")
 
 # =========================================================
 # 2) التهيئة والقاموس الوجودي (The Sovereign Core)
 # =========================================================
-st.set_page_config(page_title="Nibras v20.3.3 Sovereign Fusion", page_icon="🎙️", layout="wide")
+st.set_page_config(page_title="Nibras v20.3.4 Sovereign Fusion", page_icon="🎙️", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -57,13 +55,13 @@ st.markdown("""
         border-right: 5px solid #4CAF50; line-height: 1.8; font-size: 1.1em;
     }
     .ultra-card { background: #0a0a0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a2a; border-top: 4px solid #4fc3f7; margin-bottom: 20px; }
-    .path-state-tag { color: #4fc3f7; font-size: 0.75em; font-weight: bold; background: #1a1a2a; padding: 2px 8px; border-radius: 5px; }
+    .path-state-tag { color: #4fc3f7; font-size: 0.75em; font-weight: bold; background: #1a1a2a; padding: 2px 8px; border-radius: 5px; text-transform: uppercase; }
     .fusion-sig { color: #4CAF50; font-family: monospace; font-size: 0.85em; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 3) محرك البيان الجماعي (The Eloquence Logic)
+# 3) محركات التحليل (Eloquence & Logic)
 # =========================================================
 def collect_global_semantics(all_res, res_map):
     paths_fields = []
@@ -86,21 +84,21 @@ def collective_eloquence(paths_fields, g_dist, dom_root, res_map):
     global_state = detect_state([dom_root])
     
     txt_paths = " | ".join([f"المسار {i+1}: {f}" for i, f in enumerate(paths_fields)])
-    
     field_stmt = f"رصد الحقول الدلالية: ({txt_paths}). المجال الموحد هو **{dom_global_field}**."
     root_stmt = f"المحور المركزي هو الجذر **'{dom_root}'** برنين {round(res_map.get(dom_root, 0), 1)}."
     arche_stmt = f"النمط الحاكم: **{u_arc}** | الحالة الوجودية: **{global_state}**."
 
-    final_text = f"""
-    {purify_text(field_stmt)}<br><br>
-    {purify_text(root_stmt)}<br><br>
-    {arche_stmt}<br><br>
-    <b>خلاصة السيادة:</b> تتقاطع المسارات في مدار '{dom_global_field}' لتشكيل وعي '{u_arc}'.
+    return f"""
+    <div class='eloquence-box'>
+        {purify_text(field_stmt)}<br><br>
+        {purify_text(root_stmt)}<br><br>
+        {arche_stmt}<br><br>
+        <b>خلاصة السيادة:</b> تتقاطع المسارات في مدار '{dom_global_field}' لتشكيل وعي '{u_arc}'.
+    </div>
     """
-    return final_text
 
 # =========================================================
-# 4) دوال معالجة البيانات (Core Utilities)
+# 4) دوال معالجة البيانات (Smart Extraction)
 # =========================================================
 def load_data(file_name):
     paths = [file_name, os.path.join("data", file_name)]
@@ -118,10 +116,28 @@ def normalize_arabic(text):
 
 def match_root(word, root_index):
     w = normalize_arabic(word)
-    for p in ["وال", "فال", "بال", "ال", "و", "ف", "ب", "ل"]:
-        if w.startswith(p) and len(w)-len(p)>=2: w = w[len(p):]; break
+
+    # إزالة لواحق الجمع والتأنيث (تحديث v20.3.4)
+    for suf in ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا"]:
+        if w.endswith(suf) and len(w) - len(suf) >= 3:
+            w = w[:-len(suf)]
+            break
+
+    # إزالة البادئات (تحديث v20.3.4)
+    for p in ["وال", "فال", "بال", "كال", "ال", "و", "ف", "ب", "ل"]:
+        if w.startswith(p) and len(w) - len(p) >= 3:
+            w = w[len(p):]
+            break
+
+    # مطابقة مباشرة
     if w in root_index: return w, root_index[w]
-    if len(w)>=3 and w[:3] in root_index: return w[:3], root_index[w[:3]]
+
+    # مطابقة أول 3 أحرف
+    if len(w) >= 3 and w[:3] in root_index: return w[:3], root_index[w[:3]]
+
+    # مطابقة أول 2 حرفين (للحالات الصعبة)
+    if len(w) >= 2 and w[:2] in root_index: return w[:2], root_index[w[:2]]
+
     return None, None
 
 # =========================================================
@@ -132,16 +148,16 @@ roots_data = load_data("quran_roots_complete.json")
 if roots_data:
     r_idx = {normalize_arabic(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
 
-    st.title("🎙️ محراب نبراس v20.3.3 - السيادة المطلقة")
+    st.title("🎙️ محراب نبراس v20.3.4 - رادار الاستخراج الذكي")
     
-    tab1, tab2, tab3 = st.tabs(["🔍 استنطاق المسارات", "🌌 اللوحة الكونية", "📝 البيان الوجودي الموحد"])
+    tab1, tab2, tab3 = st.tabs(["🔍 استنطاق المسارات", "🌌 اللوحة الكونية", "📝 البيان الموحد"])
 
     with tab1:
         c1, c2, c3 = st.columns(3)
         p1 = c1.text_area("📍 المسار 1", height=120, key="txt_p1")
         p2 = c2.text_area("📍 المسار 2", height=120, key="txt_p2")
         p3 = c3.text_area("📍 المسار 3", height=120, key="txt_p3")
-        run = st.button("🚀 تفعيل الاندماج والبيان", use_container_width=True)
+        run = st.button("🚀 تفعيل الاندماج المعزز", use_container_width=True)
 
     if run:
         all_res = []
@@ -154,7 +170,6 @@ if roots_data:
             else: all_res.append(None)
 
         if any(all_res):
-            # حساب الجاذبية والرنين (Core Calculations)
             nodes_g = {}
             for idx, s_list in enumerate(all_res):
                 if not s_list: continue
@@ -173,12 +188,10 @@ if roots_data:
                 for i, s_list in enumerate(all_res):
                     if s_list:
                         with cols[i]:
-                            # --- طبقة v20.3.3: الاندماج الحرفي المداري ---
                             words = [r["root"] for s in s_list for r in s["analysis"]["roots"]]
                             orbits = [r["orbit"] for s in s_list for r in s["analysis"]["roots"]]
                             root_energies = [r["weight"] for s in s_list for r in s["analysis"]["roots"]]
 
-                            # استدعاء محرك الدمج المعياري
                             fusion = build_path_orbit_letter_profile(words, orbits, root_energies)
                             path_state = detect_state(words)
 
@@ -195,21 +208,19 @@ if roots_data:
                                 st.divider()
                                 for item in fusion["profile"]:
                                     st.markdown(f"**{item['word']}**")
-                                    st.markdown(f"<span class='fusion-sig'>مدار: {item['orbit']} | طاقة مدمجة: {round(item['fused_energy'], 2)}</span>", unsafe_allow_html=True)
+                                    st.markdown(f"<span class='fusion-sig'>مدار: {item['orbit']} | طاقة: {round(item['fused_energy'], 2)}</span>", unsafe_allow_html=True)
 
             with tab3:
                 st.markdown("### 📜 البيان الوجودي الموحد")
-                final_eloquence = collective_eloquence(paths_fields, g_dist, dom_root, res_map)
-                st.markdown(f"<div class='eloquence-box'>{final_eloquence}</div>", unsafe_allow_html=True)
+                st.markdown(collective_eloquence(paths_fields, g_dist, dom_root, res_map), unsafe_allow_html=True)
                 
             with tab2:
-                # اللوحة الكونية v18 المستقلة
                 fig = go.Figure()
                 pos = {n: (random.random(), random.random()) for n in nodes_g}
                 for n, info in nodes_g.items():
                     q = Q_ARCHETYPES.get(n, "بناء")
                     fig.add_trace(go.Scatter(x=[pos[n][0]], y=[pos[n][1]], mode="markers+text", text=[f"<b>{n}</b>"], marker=dict(size=35+(info['count']*12), color=ARCHE_COLORS.get(q, "#4CAF50"))))
                 fig.update_layout(height=600, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
-                st.plotly_chart(fig, use_container_width=True, key="cosmic_v20_final")
+                st.plotly_chart(fig, use_container_width=True, key="cosmic_v20_4")
 
-st.sidebar.write("v20.3.3 Sovereign Full Architecture | خِت فِت.")
+st.sidebar.write("v20.3.4 Sovereign Full Architecture | خِت فِت.")
