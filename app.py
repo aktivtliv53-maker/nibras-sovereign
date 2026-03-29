@@ -5,27 +5,23 @@ import plotly.graph_objects as go
 from collections import Counter
 import re
 import random
+import numpy as np
+import os
+import json
 
 # =========================================================
-# 0) محرك التحميل والبيانات (Sovereign Data Core)
+# 1) إعدادات السيادة والقاموس الوجودي (Global Setup)
 # =========================================================
-try:
-    from core_paths import load_json
-except ImportError:
-    st.error("❌ ملف core_paths.py مفقود!"); st.stop()
+st.set_page_config(page_title="Nibras v17.5 Unified Sovereign", page_icon="🔱", layout="wide")
 
-# =========================================================
-# 1) القواميس السيادية الشاملة (v15 -> v17)
-# =========================================================
-st.set_page_config(page_title="Nibras v17.0 Unified", page_icon="🔱", layout="wide")
-
+# القواميس الموحدة (v15 -> v17.5)
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
     "صلح": "الإصلاح", "هدى": "الهداية", "ضل": "الضلال", "رحم": "الرحمة",
     "غفر": "الرحمة", "قتل": "الصراع", "قاتل": "الصراع", "نصر": "القوة",
     "ملك": "القوة", "نور": "النور", "ظلم": "الظلام", "عدل": "العدل",
     "عمل": "العمل", "قول": "البيان", "ذكر": "الذكر", "بشر": "البشارة",
-    "نذر": "التحذير", "يسر": "اليسر", "عسر": "الشدة", "خلف": "التمكين"
+    "نذر": "التحذير", "يسر": "اليسر", "عسر": "الشدة", "غني": "الغنى", "خلف": "التمكين"
 }
 
 Q_ARCHETYPES = {
@@ -54,24 +50,33 @@ HALO_COLORS = {
     "The Warrior": "rgba(255,82,82,0.3)", "The Guide": "rgba(76,175,80,0.3)",
     "The Sage": "rgba(187,134,252,0.3)", "The Nurturer": "rgba(255,171,64,0.3)",
     "The Rebel": "rgba(255,23,68,0.3)", "The Shadow": "rgba(33,33,33,0.3)",
-    "The Creator": "rgba(0,230,118,0.3)", "The Believer": "rgba(3,169,244,0.3)",
-    "The Destroyer": "rgba(255,23,68,0.3)"
+    "The Creator": "rgba(0,230,118,0.3)"
 }
 
 st.markdown("""
 <style>
-    [data-testid="stAppViewContainer"] { background-color: #050505; color: #e0e0e0; }
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-    .comparison-card { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #222; text-align: center; }
+    [data-testid="stAppViewContainer"] { background-color: #050508; color: #e0e0e0; }
+    .stTabs [data-baseweb="tab-list"] { background-color: #111; border-radius: 10px; padding: 5px; }
+    .comparison-card { background: #0f0f15; padding: 20px; border-radius: 15px; border: 1px solid #1a1a2a; text-align: center; margin-bottom: 10px; }
     .advisor-box { background: linear-gradient(145deg, #0a150a, #020202); padding:25px; border-radius:15px; border-left:5px solid #4CAF50; border:1px solid #1a331a; margin-top:20px; }
-    .intent-box { background: #0a0a0a; padding:25px; border-radius:15px; border-left:5px solid #FFD700; border:1px solid #222; margin-bottom:20px; }
+    .gravity-indicator { color: #4fc3f7; font-weight: bold; border: 1px solid #4fc3f7; padding: 5px 10px; border-radius: 5px; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 2) المحركات الموحدة (Unified Engines)
+# 2) محركات استرداد البيانات (Data Retrieval)
 # =========================================================
+def load_data(file_name):
+    paths_to_try = [file_name, os.path.join("data", file_name)]
+    for p in paths_to_try:
+        if os.path.exists(p):
+            with open(p, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    return None
 
+# =========================================================
+# 3) المحركات التحليلية (Analytical Engines)
+# =========================================================
 def normalize_arabic(text):
     if not text: return ""
     text = re.sub(r'[\u0617-\u061A\u064B-\u0652\u0670]', '', text)
@@ -79,134 +84,125 @@ def normalize_arabic(text):
     for k, v in replacements.items(): text = text.replace(k, v)
     return re.sub(r'\s+', ' ', re.sub(r'[^\u0621-\u064A\s]', ' ', text)).strip()
 
-def match_sovereign_root(word, root_index):
-    word_norm = normalize_arabic(word)
+def match_root(word, root_index):
+    w_norm = normalize_arabic(word)
     prefixes = ["وال", "فال", "بال", "ال", "و", "ف", "ب", "ل"]
     for p in prefixes:
-        if word_norm.startswith(p) and len(word_norm)-len(p)>=2: word_norm = word_norm[len(p):]; break
-    if word_norm in root_index: return word_norm, root_index[word_norm]
-    if len(word_norm)>=3 and word_norm[:3] in root_index: return word_norm[:3], root_index[word_norm[:3]]
+        if w_norm.startswith(p) and len(w_norm)-len(p)>=2: w_norm = w_norm[len(p):]; break
+    if w_norm in root_index: return w_norm, root_index[w_norm]
+    if len(w_norm)>=3 and w_norm[:3] in root_index: return w_norm[:3], root_index[w_norm[:3]]
     return None, None
 
-def analyze_path_v17_unified(text, l_idx, r_idx):
+def analyze_v17_5(text, l_idx, r_idx):
     norm = normalize_arabic(text)
-    res = {"mass": 0.0, "speed": 0.0, "energy": 0.0, "orbit": "بناء", "matched_roots": [], "orbit_counter": Counter()}
-    # طبقة الحروف (v15)
+    res = {"mass": 0.0, "speed": 0.0, "energy": 0.0, "orbit": "بناء", "roots": [], "counter": Counter()}
+    # هندسة الحروف
     for char in norm.replace(" ", ""):
-        m = l_idx.get(char)
-        if m: res["mass"] += float(m.get("mass", 0)); res["speed"] += float(m.get("speed", 0))
-    # طبقة الجذور (v16)
+        m = l_idx.get(char, {"mass":0, "speed":0})
+        res["mass"] += float(m["mass"]); res["speed"] += float(m["speed"])
+    # هندسة الجذور
     for word in norm.split():
-        m_root, entry = match_sovereign_root(word, r_idx)
-        if m_root:
-            res["energy"] += entry["weight"]
-            res["orbit_counter"][entry["orbit"]] += entry["weight"]
-            res["matched_roots"].append({"word": word, "root": m_root, "orbit": entry["orbit"], "weight": entry["weight"]})
-    if res["orbit_counter"]: res["orbit"] = res["orbit_counter"].most_common(1)[0][0]
-    res["total"] = round(res["mass"] + res["speed"] + res["energy"], 2)
+        r, entry = match_root(word, r_idx)
+        if r:
+            res["energy"] += entry["weight"]; res["counter"][entry["orbit"]] += entry["weight"]
+            res["roots"].append({"root": r, "orbit": entry["orbit"], "weight": entry["weight"]})
+    if res["counter"]: res["orbit"] = res["counter"].most_common(1)[0][0]
+    res["total"] = round(res["mass"] + res["speed"] + res["energy"], 1)
     return res
 
-def build_global_semantic_graph(all_s_results):
-    nodes_g, intra_edges, cross_edges = {}, Counter(), Counter()
-    for p_idx, s_list in enumerate(all_s_results):
-        if not s_list: continue
-        for s_res in s_list:
-            roots_in_s = [r["root"] for r in s_res["analysis"]["matched_roots"]]
-            for r_info in s_res["analysis"]["matched_roots"]:
-                r = r_info["root"]
-                if r not in nodes_g:
-                    nodes_g[r] = {"orbit": r_info["orbit"], "energy": r_info["weight"], "paths": {p_idx+1}, "count": 1}
-                else:
-                    nodes_g[r]["paths"].add(p_idx+1); nodes_g[r]["count"] += 1
-            for i in range(len(roots_in_s)):
-                for j in range(i+1, len(roots_in_s)):
-                    intra_edges[tuple(sorted([roots_in_s[i], roots_in_s[j]]))] += 2
-    # العلاقات العابرة (v16.5)
-    r_list = list(nodes_g.keys())
-    for i in range(len(r_list)):
-        for j in range(i+1, len(r_list)):
-            if nodes_g[r_list[i]]["orbit"] == nodes_g[r_list[j]]["orbit"]:
-                cross_edges[tuple(sorted([r_list[i], r_list[j]]))] += 1.5
-    return nodes_g, intra_edges, cross_edges
-
 # =========================================================
-# 3) المحراب والواجهة السيادية
+# 4) واجهة التطبيق والتحكم (UI & Logic)
 # =========================================================
-try:
-    l_idx = {normalize_arabic(i["letter"]): i for i in load_json("sovereign_letters_v1.json") if i.get("letter")}
-    r_idx = {normalize_arabic(r["root"]): {"root": normalize_arabic(r["root"]), "weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in load_json("quran_roots_complete.json").get("roots", [])}
-except: st.error("❌ فشل تحميل القواعد السيادية."); st.stop()
+letters_data = load_data("sovereign_letters_v1.json")
+roots_data = load_data("quran_roots_complete.json")
 
-st.title("🛰️ محراب نبراس v17.0 Unified Sovereign")
+if not letters_data or not roots_data:
+    st.error("⚠️ ملفات البيانات مفقودة (JSON). تأكد من وجودها في GitHub."); st.stop()
 
-tabs = st.tabs(["🔍 المحراب الرباعي والتحليل", "🌌 اللوحة الكونية والأنماط الوجودية"])
+l_idx = {normalize_arabic(i["letter"]): i for i in letters_data if "letter" in i}
+r_idx = {normalize_arabic(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
 
-with tabs[0]:
-    cols_in = st.columns(3)
-    inputs = [cols_in[i].text_area(f"📍 المسار {i+1}", key=f"unified_in_{i}", height=120) for i in range(3)]
-    run_btn = st.button("🚀 استنطاق الوجود الشامل", use_container_width=True)
+st.title("🛰️ محراب نبراس v17.5 Unified Sovereign")
 
-if run_btn:
-    all_s_results = []
-    for t in inputs:
-        if t.strip():
-            sentences = [s.strip() for s in re.sub(r"[\.!\?؛،]", ".", t).split(".") if s.strip()]
-            all_s_results.append([{"sentence": s, "analysis": analyze_path_v17_unified(s, l_idx, r_idx)} for s in sentences])
-        else: all_s_results.append(None)
+tab1, tab2 = st.tabs(["🔍 المحراب والتحليل", "🌌 الجاذبية والأنماط"])
 
-    if any(all_s_results):
-        nodes_g, intra_g, cross_g = build_global_semantic_graph(all_s_results)
-        # محرك الرنين (v16.5)
-        res_map = {r: round((len(info["paths"]) * info["energy"]) * 0.5, 2) for r, info in nodes_g.items()}
-        # محرك الأنماط (v17)
+with tab1:
+    col_in = st.columns(3)
+    p1 = col_in[0].text_area("📍 المسار 1", height=150)
+    p2 = col_in[1].text_area("📍 المسار 2", height=150)
+    p3 = col_in[2].text_area("📍 المسار 3", height=150)
+    run = st.button("🚀 استنطاق الوجود الموحد", use_container_width=True)
+
+if run:
+    raw_inputs = [p1, p2, p3]
+    all_results = []
+    for inp in raw_inputs:
+        if inp.strip():
+            sents = [s.strip() for s in re.split(r'[.!?؛،]', inp) if s.strip()]
+            all_results.append([{"sentence": s, "analysis": analyze_v17_5(s, l_idx, r_idx)} for s in sents])
+        else: all_results.append(None)
+
+    if any(all_results):
+        # بناء البيانات الكلية
+        nodes_g, intra_g, cross_g = {}, Counter(), Counter()
+        for idx, s_list in enumerate(all_results):
+            if not s_list: continue
+            for s in s_list:
+                r_list = [r["root"] for r in s["analysis"]["roots"]]
+                for r_info in s["analysis"]["roots"]:
+                    r = r_info["root"]
+                    if r not in nodes_g:
+                        nodes_g[r] = {"orbit": r_info["orbit"], "energy": r_info["weight"], "paths": {idx+1}, "count": 1}
+                    else:
+                        nodes_g[r]["paths"].add(idx+1); nodes_g[r]["count"] += 1
+                for i in range(len(r_list)):
+                    for j in range(i+1, len(r_list)):
+                        intra_g[tuple(sorted([r_list[i], r_list[j]]))] += 2
+
+        # حساب الرنين والجاذبية (v16.5 + v17.5)
+        res_map = {r: (len(info["paths"]) * info["energy"]) for r, info in nodes_g.items()}
+        gravity_wells = {r: {"force": (info["energy"] * res_map[r]) / info["count"], "radius": np.log1p(info["energy"]*res_map[r])*0.04} for r, info in nodes_g.items()}
         arche_map = {r: {"q": Q_ARCHETYPES.get(r, "بناء"), "u": UNIVERSAL_ARCHETYPES.get(Q_ARCHETYPES.get(r, "بناء"), "The Architect")} for r in nodes_g}
-        global_sem = {i+1: Counter([SEMANTIC_FIELDS.get(r["root"], "بناء") for s in s_list for r in s["analysis"]["matched_roots"]]).most_common(1)[0][0] if s_list else "صمت" for i, s_list in enumerate(all_s_results)}
 
-        with tabs[0]:
+        with tab1:
             st.divider()
             cols_res = st.columns(3)
-            for i, s_res in enumerate(all_s_results):
-                if s_res:
+            for i, s_list in enumerate(all_results):
+                if s_list:
                     with cols_res[i]:
-                        st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{round(sum(s['analysis']['total'] for s in s_res), 1)}</h1></div>", unsafe_allow_html=True)
-                        with st.expander(f"✨ المحراب الرباعي {i+1}", expanded=True):
-                            st.markdown(f"🧠 المجال: **{global_sem[i+1]}**")
-                            # طيف الطاقة (v16)
-                            df_e = pd.DataFrame([{"root": r["root"], "energy": r["weight"]} for s in s_res for r in s["analysis"]["matched_roots"]])
+                        total_score = sum(s["analysis"]["total"] for s in s_list)
+                        st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{round(total_score, 1)}</h1></div>", unsafe_allow_html=True)
+                        with st.expander("✨ تفاصيل المحراب", expanded=True):
+                            # طيف الطاقة
+                            df_e = pd.DataFrame([{"root": r["root"], "energy": r["weight"]} for s in s_list for r in s["analysis"]["roots"]])
                             if not df_e.empty:
-                                st.plotly_chart(px.bar_polar(df_e, r="energy", theta="root", template="plotly_dark", height=200).update_layout(showlegend=False, margin=dict(l=10,r=10,t=10,b=10)), use_container_width=True)
-                            # الانحراف (v16.5)
-                            st.markdown("#### ⏳ الانحراف")
-                            df_d = pd.DataFrame([{"index": idx+1, "orbit": s["analysis"]["orbit"]} for idx, s in enumerate(s_res)])
-                            st.plotly_chart(px.line(df_d, x="index", y="orbit", markers=True, height=200).update_layout(margin=dict(l=0,r=0,t=0,b=0)), use_container_width=True)
+                                st.plotly_chart(px.bar_polar(df_e, r="energy", theta="root", template="plotly_dark", height=200).update_layout(showlegend=False, margin=dict(l=0,r=0,t=0,b=0)), use_container_width=True)
+                            # الانحراف
+                            df_d = pd.DataFrame([{"index": idx+1, "orbit": s["analysis"]["orbit"]} for idx, s in enumerate(s_list)])
+                            st.plotly_chart(px.line(df_d, x="index", y="orbit", markers=True, height=180).update_layout(margin=dict(l=0,r=0,t=0,b=0)), use_container_width=True)
 
             # المستشار الموحد
-            finals = [f"{v['u']} of {v['q']}" for v in arche_map.values()]
-            dominant = Counter(finals).most_common(1)[0][0] if finals else "The Silent"
-            st.markdown(f"<div class='advisor-box'><h3>🧭 المستشار السيادي الموحد (v17)</h3><p><b>النمط الوجودي الحاكم:</b> {dominant}</p><p><b>الرنين الكلي للمجال:</b> {round(sum(res_map.values()), 1)}</p></div>", unsafe_allow_html=True)
+            dominant_well = max(gravity_wells.items(), key=lambda x: x[1]["force"])[0] if gravity_wells else "صمت"
+            st.markdown(f"<div class='advisor-box'><h3>🧭 المستشار v17.5</h3><p><b>بئر الجاذبية:</b> {dominant_well} | <b>النمط الحاكم:</b> {arche_map.get(dominant_well, {}).get('u', 'The Void')}</p></div>", unsafe_allow_html=True)
 
-        with tabs[1]:
-            st.markdown(f"<div class='intent-box'><h3>🔮 حقل الأنماط واللوحة الكونية</h3><p>النية الوجودية: <b>{dominant}</b></p></div>", unsafe_allow_html=True)
-            
+        with tab2:
             if nodes_g:
-                fig_g = go.Figure()
-                pos_g = {n: (random.random(), random.random()) for n in nodes_g}
-                # رسم العلاقات (v16.5)
-                for (a, b), w in {**intra_g, **cross_g}.items():
-                    fig_g.add_trace(go.Scatter(x=[pos_g[a][0], pos_g[b][0]], y=[pos_g[a][1], pos_g[b][1]], mode="lines", line=dict(width=w/2, color="#222"), hoverinfo="none"))
-                # رسم الأنماط والهالات (v17)
+                fig = go.Figure()
+                pos = {n: (random.random(), random.random()) for n in nodes_g}
+                # رسم الآبار والشبكة
+                for n, well in gravity_wells.items():
+                    for step in [1, 2]:
+                        fig.add_shape(type="circle", xref="x", yref="y", x0=pos[n][0]-well["radius"]*step, y0=pos[n][1]-well["radius"]*step, x1=pos[n][0]+well["radius"]*step, y1=pos[n][1]+well["radius"]*step, line=dict(color=f"rgba(79,195,247,{0.1/step})", width=1))
+                # العلاقات
+                for (a, b), w in intra_g.items():
+                    fig.add_trace(go.Scatter(x=[pos[a][0], pos[b][0]], y=[pos[a][1], pos[b][1]], mode="lines", line=dict(width=w/2, color="rgba(50,50,50,0.3)"), hoverinfo="none"))
+                # العقد
                 for n, info in nodes_g.items():
                     a_info = arche_map[n]
                     color = ARCHE_COLORS.get(a_info['q'], "#4CAF50")
-                    halo = HALO_COLORS.get(a_info['u'], "rgba(255,255,255,0.1)")
-                    r_val = res_map.get(n, 1)
-                    
-                    # الهالة (Universal Archetype + Resonance)
-                    fig_g.add_shape(type="circle", xref="x", yref="y", x0=pos_g[n][0]-(r_val*0.015), y0=pos_g[n][1]-(r_val*0.015), x1=pos_g[n][0]+(r_val*0.015), y1=pos_g[n][1]+(r_val*0.015), fillcolor=halo, line=dict(width=0))
-                    # العقدة (Q-Archetype + Count)
-                    fig_g.add_trace(go.Scatter(x=[pos_g[n][0]], y=[pos_g[n][1]], mode="markers+text", text=[f"{n}<br><span style='font-size:10px;'>{a_info['u']}</span>"], marker=dict(size=22+(info['count']*6), color=color, line=dict(width=2, color="#000")), textposition="top center"))
+                    fig.add_trace(go.Scatter(x=[pos[n][0]], y=[pos[n][1]], mode="markers+text", text=[f"<b>{n}</b><br>{a_info['u']}"], marker=dict(size=20+(info['count']*7), color=color, line=dict(width=2, color="#000")), textposition="top center"))
 
-                fig_g.update_layout(height=750, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(visible=False), yaxis=dict(visible=False), showlegend=False)
-                st.plotly_chart(fig_g, use_container_width=True)
+                fig.update_layout(height=800, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(visible=False), yaxis=dict(visible=False), showlegend=False)
+                st.plotly_chart(fig, use_container_width=True)
 
-st.sidebar.write("v17.0 Unified | خِت فِت.")
+st.sidebar.write("v17.5 Unified Sovereign | خِت فِت.")
