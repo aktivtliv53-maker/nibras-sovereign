@@ -7,18 +7,17 @@ import re
 import random
 
 # =========================================================
-# 0) محرك التحميل الأساسي (Data Loader)
+# 0) محرك التحميل والبيانات (Data Core)
 # =========================================================
 try:
     from core_paths import load_json
 except ImportError:
-    st.error("❌ ملف core_paths.py مفقود!")
-    st.stop()
+    st.error("❌ ملف core_paths.py مفقود!"); st.stop()
 
 # =========================================================
-# 1) إعدادات الواجهة والقاموس الدلالي
+# 1) الإعدادات المركزية والقاموس الدلالي
 # =========================================================
-st.set_page_config(page_title="Nibras v14.1 Absolute", page_icon="🏛️", layout="wide")
+st.set_page_config(page_title="Nibras v15.1 Final Sovereign", page_icon="🧭", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -33,17 +32,15 @@ st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background-color: #0a0a0a; color: #e0e0e0; }
     .comparison-card { background: #161616; padding: 15px; border-radius: 15px; border: 1px solid #262626; margin-bottom: 10px; text-align: center; }
-    .coherence-box { background:#001f24; padding:10px; border-radius:10px; border-left:4px solid #00afcc; margin-bottom:10px; font-size: 0.85em; }
-    .tension-alert { background:#420000; padding:10px; border-radius:10px; border-right:4px solid #ff4444; margin-top:5px; font-size: 0.8em; }
+    .advisor-box { background:#0a1a0a; padding:20px; border-radius:15px; border-left:5px solid #4CAF50; margin-top:20px; border-right:1px solid #1a331a; }
     h1, h2, h3, h4 { color: #4CAF50 !important; text-align: center; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 2) محركات التحليل - الترتيب السيادي المحكم (Final Order)
+# 2) المحركات المركزية (Engines - Final Sovereign Order)
 # =========================================================
 
-# [1] التطهير
 def normalize_arabic(text):
     if not text: return ""
     text = re.sub(r'[\u0617-\u061A\u064B-\u0652\u0670]', '', text)
@@ -51,39 +48,32 @@ def normalize_arabic(text):
     for k, v in replacements.items(): text = text.replace(k, v)
     return re.sub(r'\s+', ' ', re.sub(r'[^\u0621-\u064A\s]', ' ', text)).strip()
 
-# [2] الاشتقاق العميق
 def deep_morpho_extract(word):
     w = normalize_arabic(word)
+    # تصحيح سيادي: اللواحق العربية فقط (تم إزالة الأعجمية)
     w = re.sub(r"^(وال|فال|بال|ال|يست|يت|تست|نست|است|لل|ب|و|ف|ي|ت|ن|ا)", "", w)
     w = re.sub(r"(كم|هم|نا|ها|وا|ون|ين|ات|كما|هما|ه|ي|ت|تم)$", "", w)
     return w if len(w) <= 3 else w[:3]
 
-# [3] مطابقة الجذور
 def match_sovereign_root(word, root_index):
     word_norm = normalize_arabic(word)
     prefixes = ["وال", "فال", "بال", "ال", "و", "ف", "ب", "ل"]
     candidates = {word_norm}
     for p in prefixes:
-        if word_norm.startswith(p) and len(word_norm)-len(p)>=2:
-            candidates.add(word_norm[len(p):])
-    
+        if word_norm.startswith(p) and len(word_norm)-len(p)>=2: candidates.add(word_norm[len(p):])
     for c in list(candidates):
         if c in root_index: return c, root_index[c]
         if len(c)>=3 and c[:3] in root_index: return c[:3], root_index[c[:3]]
-    
     est = deep_morpho_extract(word_norm)
     if est in root_index: return est, root_index[est]
     return None, None
 
-# [4] المحرك الأساسي (الذي كان مفقوداً)
-def analyze_path(text, l_idx, r_idx):
+def analyze_path_v15_1(text, l_idx, r_idx):
     norm = normalize_arabic(text)
     res = {"mass": 0.0, "speed": 0.0, "energy": 0.0, "orbit": "غير_مرصود", "matched_roots": [], "orbit_counter": Counter()}
     for char in norm.replace(" ", ""):
         m = l_idx.get(char)
-        if m: 
-            res["mass"] += float(m.get("mass", 0))
-            res["speed"] += float(m.get("speed", 0))
+        if m: res["mass"] += float(m.get("mass", 0)); res["speed"] += float(m.get("speed", 0))
     for word in norm.split():
         m_root, entry = match_sovereign_root(word, r_idx)
         if m_root:
@@ -94,121 +84,128 @@ def analyze_path(text, l_idx, r_idx):
     res["total"] = round(res["mass"] + res["speed"] + res["energy"], 2)
     return res
 
-# [5] محرك التعزيز السيادي v14.1
-def analyze_path_v14_1(text, l_idx, r_idx):
-    # البدء بالنتائج الأساسية
-    res = analyze_path(text, l_idx, r_idx)
-    # هنا يمكن إضافة منطق v14 الإضافي لو لزم (حالياً مدمج في analyze_path القوي)
-    return res
-
 # =========================================================
-# 3) محركات العرض والانسجام (Nexus & Tension)
+# 3) محركات التحليل الدلالي (Semantic & Network Engines)
 # =========================================================
-def build_hybrid_network(s_results):
-    nodes = {}
-    real_edges = Counter()
-    for item in s_results:
-        roots_info = item["analysis"]["matched_roots"]
-        roots_list = [r["root"] for r in roots_info]
-        for r in roots_info:
-            if r["root"] not in nodes: 
-                nodes[r["root"]] = {"orbit": r["orbit"], "energy": r["weight"]}
-        for i in range(len(roots_list)):
-            for j in range(i + 1, len(roots_list)):
-                real_edges[tuple(sorted([roots_list[i], roots_list[j]]))] += 5
-    
-    node_list = list(nodes.keys())
-    hybrid_edges = real_edges.copy()
-    for i in range(len(node_list)):
-        for j in range(i + 1, len(node_list)):
-            pair = tuple(sorted([node_list[i], node_list[j]]))
-            if pair not in hybrid_edges:
-                weight = 1.5 if nodes[pair[0]]['orbit'] == nodes[pair[1]]['orbit'] else 0.5
-                hybrid_edges[pair] = weight
-    return nodes, hybrid_edges
 
-def analyze_semantics_v14(s_res):
+def build_global_semantic_graph(all_s_results):
+    """v15.0: بناء الشبكة الكونية من مصفوفة الجمل الكاملة"""
+    nodes_g = {}
+    intra_edges = Counter()
+    cross_edges = Counter()
+
+    for p_idx, s_list in enumerate(all_s_results):
+        if not s_list: continue
+        for s_res in s_list:
+            analysis = s_res["analysis"]
+            roots_in_sentence = [r["root"] for r in analysis["matched_roots"]]
+            for r_info in analysis["matched_roots"]:
+                r = r_info["root"]
+                if r not in nodes_g:
+                    nodes_g[r] = {"orbit": r_info["orbit"], "energy": r_info["weight"], "paths": {p_idx+1}, "count": 1}
+                else:
+                    nodes_g[r]["paths"].add(p_idx+1); nodes_g[r]["count"] += 1
+            # روابط داخلية للجملة (Intra-path)
+            for i in range(len(roots_in_sentence)):
+                for j in range(i + 1, len(roots_in_sentence)):
+                    intra_edges[tuple(sorted([roots_in_sentence[i], roots_in_sentence[j]]))] += 2
+
+    # روابط عابرة للمسارات (Cross-path) - تقارب مداري
+    roots_list = list(nodes_g.keys())
+    for i in range(len(roots_list)):
+        for j in range(i + 1, len(roots_list)):
+            r1, r2 = roots_list[i], roots_list[j]
+            if nodes_g[r1]["orbit"] == nodes_g[r2]["orbit"]:
+                cross_edges[tuple(sorted([r1, r2]))] += 1.5
+    return nodes_g, intra_edges, cross_edges
+
+def analyze_semantics_v14(s_res_list):
+    """تحليل الحقول المهيمنة لقائمة من نتائج الجمل داخل مسار واحد"""
     fields, detailed = [], []
-    for s in s_res:
+    for s in s_res_list:
         roots = s["analysis"]["matched_roots"]
         f = Counter([SEMANTIC_FIELDS.get(r["root"], "بناء") for r in roots]).most_common(1)[0][0] if roots else "صمت"
         fields.append(f); detailed.append({"sentence": s["sentence"], "field": f})
     return {"dominant_field": Counter(fields).most_common(1)[0][0] if fields else "غير مصنف", "detailed": detailed}
 
-def detect_tension(sem_detailed):
-    fields = [d['field'] for d in sem_detailed if d['field'] not in ['صمت', 'بناء']]
-    unique_f = set(fields)
-    tensions = {tuple(sorted(["الرحمة", "الصراع"])): "⚡ تدافع (الرحمة والقوة)",
-                tuple(sorted(["العمل", "الجزاء"])): "🤝 انسجام (تحقق الثمرة)"}
-    for f1 in unique_f:
-        for f2 in unique_f:
-            pair = tuple(sorted([f1, f2]))
-            if pair in tensions: return tensions[pair]
-    return "✅ تناغم دلالي"
+def semantic_advisor_v151(nodes, global_semantics):
+    """v15.1: المستشار الدلالي الشامل - التحليل والقرار"""
+    if not nodes: return {"core": "صمت", "flow": "سكون", "judgment": "نص ساكن", "advice": "أدخل نصاً للتفعيل."}
+    
+    # المحور المركزي هو الجذر الأكثر حضوراً في المسارات
+    core_root = max(nodes.items(), key=lambda x: x[1]["count"] + len(x[1]["paths"]) * 5)[0]
+    paths_present = sorted(list(set().union(*(n["paths"] for n in nodes.values()))))
+    flow = " → ".join([f"المسار {p}" for p in paths_present])
+    
+    unique_fields = list(set(v["dominant_field"] for v in global_semantics.values()))
+    judgment = "ارتقاء من " + " و ".join(unique_fields)
+    
+    advice = ""
+    if any(f in unique_fields for f in ["العمل", "الإصلاح"]): advice += "النص يحث على تفعيل الطاقة الكامنة في الإنجاز. "
+    if "الرحمة" in unique_fields: advice += "هناك تدفق من اللطف ييسر المسارات الحالية. "
+    if "التمكين" in unique_fields: advice += "المسار يتجه نحو ثبات العاقبة واستقرار الدور الوجودي. "
+    
+    return {"core": core_root, "flow": flow, "judgment": judgment, "advice": advice or "توازن دلالي مستقر."}
 
 # =========================================================
-# 4) تحميل البيانات وتدفق التطبيق
+# 4) واجهة التطبيق السيادية (Application UI)
 # =========================================================
 try:
-    letters_raw = load_json("sovereign_letters_v1.json")
-    roots_data = load_json("quran_roots_complete.json")
-    letters_idx = {normalize_arabic(i.get("letter", "")): i for i in letters_raw if i.get("letter")} if isinstance(letters_raw, list) else {}
-    quranic_root_index = {normalize_arabic(r["root"]): {"root": normalize_arabic(r["root"]), "weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "مدار مجهول")} for r in roots_data.get("roots", [])} if roots_data else {}
-except Exception as e:
-    st.error(f"⚠️ خطأ بيانات: {e}"); st.stop()
+    l_idx = {normalize_arabic(i["letter"]): i for i in load_json("sovereign_letters_v1.json") if i.get("letter")}
+    r_raw = load_json("quran_roots_complete.json").get("roots", [])
+    r_idx = {normalize_arabic(r["root"]): {"root": normalize_arabic(r["root"]), "weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in r_raw}
+except: st.error("❌ فشل تحميل القواعد السيادية."); st.stop()
 
-st.title("🛰️ محراب نبراس v14.1 Absolute Sovereign")
-c1, c2, c3 = st.columns(3)
-inputs = [c1.text_area("📍 المسار 1", key="v1"), c2.text_area("📍 المسار 2", key="v2"), c3.text_area("📍 المسار 3", key="v3")]
+st.title("🛰️ محراب نبراس v15.1 Sovereign Advisor")
+inputs = st.columns(3)
+texts = [inputs[i].text_area(f"📍 المسار {i+1}", key=f"v{i}") for i in range(3)]
 
-if st.button("🚀 إطلاق الرصد الإمبراطوري", use_container_width=True):
-    results = [analyze_path_v14_1(t, letters_idx, quranic_root_index) if t.strip() else None for t in inputs]
+if st.button("🚀 استنطاق المستشار السيادي", use_container_width=True):
+    all_s_results = []
+    # بناء مصفوفة الجمل (S-Results Matrix)
+    for t in texts:
+        if t.strip():
+            sentences = [s.strip() for s in re.sub(r"[\.!\?؛،]", ".", t).split(".") if s.strip()]
+            s_results = [{"sentence": s, "analysis": analyze_path_v15_1(s, l_idx, r_idx)} for s in sentences]
+            all_s_results.append(s_results)
+        else: all_s_results.append(None)
     
-    if any(results):
-        score_cols = st.columns(3)
-        for i, r in enumerate(results):
-            if r:
-                with score_cols[i]: 
-                    st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{r['total']}</h1><p>{r['orbit']}</p></div>", unsafe_allow_html=True)
-                with st.expander(f"✨ المحراب الرباعي v14.1", expanded=True):
-                    sentences = [s.strip() for s in re.sub(r"[\.!\?؛،]", ".", inputs[i]).split(".") if s.strip()]
-                    s_results = [{"sentence": s, "analysis": analyze_path_v14_1(s, letters_idx, quranic_root_index)} for s in sentences]
-                    
-                    col_net, col_heat, col_coh, col_sem = st.columns([1.2, 1, 1, 1.2])
-                    nodes, hybrid_edges = build_hybrid_network(s_results)
+    if any(all_s_results):
+        # [أ] عرض النتائج الإجمالية للمسارات
+        cols = st.columns(3)
+        for i, s_res in enumerate(all_s_results):
+            if s_res:
+                total_energy = sum(s["analysis"]["total"] for s in s_res)
+                main_orbit = Counter([s["analysis"]["orbit"] for s in s_res]).most_common(1)[0][0]
+                cols[i].markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{round(total_energy, 1)}</h1><p>{main_orbit}</p></div>", unsafe_allow_html=True)
+        
+        # [ب] تشغيل المحركات الكونية
+        nodes_g, intra_g, cross_g = build_global_semantic_graph(all_s_results)
+        # تغذية المستشار من الجمل
+        global_sem = {i+1: analyze_semantics_v14(s_list) for i, s_list in enumerate(all_s_results) if s_list}
+        adv = semantic_advisor_v151(nodes_g, global_sem)
+        
+        # [ج] عرض المستشار v15.1
+        st.markdown(f"""
+        <div class='advisor-box'>
+            <h3>🧭 المستشار الدلالي الشامل v15.1</h3>
+            <p><b>🔹 المحور المركزي:</b> {adv['core']}</p>
+            <p><b>🔹 اتجاه التدفق:</b> {adv['flow']}</p>
+            <p><b>🔹 الحكم الدلالي:</b> {adv['judgment']}</p>
+            <p><b>🔹 التوصية السيادية:</b> {adv['advice']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # [د] رسم الشبكة v15.0
+        st.markdown("### 🌌 شبكة المعنى الكونية (Global Semantic Graph)")
+        if nodes_g:
+            fig = go.Figure()
+            pos = {n: (random.uniform(0, 1), random.uniform(0, 1)) for n in nodes_g}
+            for (a, b), w in {**intra_g, **cross_g}.items():
+                fig.add_trace(go.Scatter(x=[pos[a][0], pos[b][0]], y=[pos[a][1], pos[b][1]], mode='lines', line=dict(width=w/2, color='#333'), hoverinfo='none'))
+            fig.add_trace(go.Scatter(x=[p[0] for p in pos.values()], y=[p[1] for p in pos.values()], mode='markers+text', text=list(pos.keys()), 
+                                     marker=dict(size=[15 + nodes_g[n]['count']*8 for n in pos], color='#4CAF50', line=dict(width=2, color='#000')), textposition="top center"))
+            fig.update_layout(showlegend=False, height=500, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(showgrid=False, zeroline=False, showticklabels=False), yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
+            st.plotly_chart(fig, use_container_width=True)
 
-                    with col_net:
-                        st.markdown("#### 🕸️ شبكة العلاقات")
-                        if nodes:
-                            pos = {root: (random.uniform(0, 1), random.uniform(0, 1)) for root in nodes}
-                            edge_x, edge_y = [], []
-                            for (a, b), w in hybrid_edges.items():
-                                x0, y0 = pos[a]; x1, y1 = pos[b]
-                                edge_x += [x0, x1, None]; edge_y += [y0, y1, None]
-                            fig = go.Figure()
-                            fig.add_trace(go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=1, color='#333'), hoverinfo='none'))
-                            fig.add_trace(go.Scatter(x=[pos[r][0] for r in nodes], y=[pos[r][1] for r in nodes], mode='markers+text', text=list(nodes.keys()),
-                                                     marker=dict(size=[25 + (v['energy']/8) for v in nodes.values()], color='#4CAF50'), textposition="top center"))
-                            fig.update_layout(showlegend=False, height=250, margin=dict(l=0,r=0,t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(showgrid=False, zeroline=False, showticklabels=False), yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
-                            st.plotly_chart(fig, use_container_width=True)
-
-                    with col_heat:
-                        st.markdown("#### 🌀 طيف الطاقة")
-                        if nodes:
-                            df_p = pd.DataFrame([{"root": k, "energy": v["energy"], "orbit": v["orbit"]} for k, v in nodes.items()])
-                            fig_p = px.bar_polar(df_p, r="energy", theta="root", color="orbit", template="plotly_dark")
-                            fig_p.update_layout(height=250, margin=dict(l=0,r=0,t=20,b=0), showlegend=False)
-                            st.plotly_chart(fig_p, use_container_width=True)
-
-                    with col_coh:
-                        st.markdown("#### ⏳ الانحراف")
-                        df_drift = pd.DataFrame([{"index": k+1, "orbit": s["analysis"]["orbit"]} for k, s in enumerate(s_results)])
-                        st.plotly_chart(px.line(df_drift, x="index", y="orbit", markers=True, height=250), use_container_width=True)
-
-                    with col_sem:
-                        st.markdown("#### 🧠 المعنى")
-                        sem = analyze_semantics_v14(s_results)
-                        st.markdown(f"<div class='coherence-box'><b>المجال المهيمن:</b> {sem['dominant_field']}</div>", unsafe_allow_html=True)
-                        st.markdown(f"<div class='tension-alert'>{detect_tension(sem['detailed'])}</div>", unsafe_allow_html=True)
-
-st.sidebar.write("v14.1 Absolute | خِت فِت.")
+st.sidebar.write("v15.1 Final | خِت فِت.")
