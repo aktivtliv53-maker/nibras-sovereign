@@ -4,11 +4,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from collections import Counter
 import re
-import os
 import random
 
 # =========================================================
-# 0) محرك المسارات السيادي (core_paths)
+# 0) محرك التحميل الأساسي
 # =========================================================
 try:
     from core_paths import load_json
@@ -17,9 +16,9 @@ except ImportError:
     st.stop()
 
 # =========================================================
-# 1) إعداد الواجهة v13.1 - المحراب الرباعي المستقر
+# 1) إعداد الواجهة v14.0 - قفزة العقل الهيكلي
 # =========================================================
-st.set_page_config(page_title="Nibras v13.1 Stable Sovereign", page_icon="🏛️", layout="wide")
+st.set_page_config(page_title="Nibras v14.0 Sovereign Leap", page_icon="🚀", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -27,20 +26,21 @@ SEMANTIC_FIELDS = {
     "غفر": "الرحمة", "قتل": "الصراع", "قاتل": "الصراع", "نصر": "القوة",
     "ملك": "القوة", "نور": "النور", "ظلم": "الظلام", "عدل": "العدل",
     "عمل": "العمل", "قول": "البيان", "ذكر": "الذكر", "بشر": "البشارة",
-    "نذر": "التحذير", "يسر": "اليسر", "عسر": "الشدة", "غني": "الغنى"
+    "نذر": "التحذير", "يسر": "اليسر", "عسر": "الشدة", "غني": "الغنى", "خلف": "التمكين"
 }
 
 st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background-color: #0a0a0a; color: #e0e0e0; }
     .comparison-card { background: #161616; padding: 15px; border-radius: 15px; border: 1px solid #262626; margin-bottom: 10px; text-align: center; }
-    .coherence-box { background:#001f24; padding:10px; border-radius:10px; border-left:4px solid #00afcc; margin-bottom:10px; font-size: 0.9em; }
-    h1, h2, h3, h4 { color: #4CAF50 !important; text-align: center; margin-bottom: 5px; }
+    .coherence-box { background:#001f24; padding:10px; border-radius:10px; border-left:4px solid #00afcc; margin-bottom:10px; font-size: 0.85em; }
+    .tension-alert { background:#420000; padding:10px; border-radius:10px; border-right:4px solid #ff4444; margin-top:5px; font-size: 0.8em; }
+    h1, h2, h3, h4 { color: #4CAF50 !important; text-align: center; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 2) محركات التحليل (تعديل 3: تحسين الاستخراج)
+# 2) محركات التحليل (الاشتقاق العميق v14.0)
 # =========================================================
 try:
     letters_raw = load_json("sovereign_letters_v1.json")
@@ -58,27 +58,35 @@ def normalize_arabic(text):
 letters_idx = {normalize_arabic(i.get("letter", "")): i for i in letters_raw if i.get("letter")} if isinstance(letters_raw, list) else {}
 quranic_root_index = {normalize_arabic(r["root"]): {"root": normalize_arabic(r["root"]), "weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "مدار مجهول")} for r in roots_data.get("roots", [])} if roots_data else {}
 
-def match_quranic_root(word, root_index):
-    word = normalize_arabic(word)
-    # تعديل 3: إزالة الضمائر الشائعة لزيادة دقة المطابقة
-    word = re.sub(r"(كم|هم|نا|ها|ه|ي|ات|ون|ين)$", "", word)
+def deep_morpho_extract(word):
+    w = normalize_arabic(word)
+    w = re.sub(r"^(وال|فال|بال|ال|يست|يت|تست|نست|است|لل|ب|و|ف|ي|ت|ن|ا)", "", w)
+    w = re.sub(r"(كم|هم|نا|ها|وا|ون|ين|ات|كما|هما|ه|ي|ت|تم)$", "", w)
+    return w if len(w) <= 3 else w[:3]
+
+def match_sovereign_root(word, root_index):
+    word_norm = normalize_arabic(word)
+    # البحث المباشر
     prefixes = ["وال", "فال", "بال", "ال", "و", "ف", "ب", "ل"]
-    candidates = {word}
-    for p in prefixes: 
-        if word.startswith(p) and len(word)-len(p)>=2: candidates.add(word[len(p):])
-    for c in list(candidates):
-        if c in root_index: return c, root_index[c]
-        if len(c)>=3 and c[:3] in root_index: return c[:3], root_index[c[:3]]
+    for p in [""] + prefixes:
+        candidate = word_norm[len(p):] if word_norm.startswith(p) else word_norm
+        if candidate in root_index: return candidate, root_index[candidate]
+        if len(candidate) >= 3 and candidate[:3] in root_index: return candidate[:3], root_index[candidate[:3]]
+    # الاشتقاق العميق v14
+    est = deep_morpho_extract(word_norm)
+    if est in root_index: return est, root_index[est]
     return None, None
 
-def analyze_path(text, l_idx, r_idx):
+def analyze_path_v14(text, l_idx, r_idx):
     norm = normalize_arabic(text)
     res = {"mass": 0.0, "speed": 0.0, "energy": 0.0, "orbit": "غير_مرصود", "matched_roots": [], "orbit_counter": Counter()}
+    # رصد طاقة الحروف
     for char in norm.replace(" ", ""):
-        m = l_idx.get(char); 
+        m = l_idx.get(char)
         if m: res["mass"] += float(m.get("mass", 0)); res["speed"] += float(m.get("speed", 0))
+    # رصد طاقة الجذور (v14 Engine)
     for word in norm.split():
-        m_root, entry = match_quranic_root(word, r_idx)
+        m_root, entry = match_sovereign_root(word, r_idx)
         if m_root:
             res["energy"] += entry["weight"]; res["orbit_counter"][entry["orbit"]] += entry["weight"]
             res["matched_roots"].append({"word": word, "root": m_root, "orbit": entry["orbit"], "weight": entry["weight"]})
@@ -87,117 +95,101 @@ def analyze_path(text, l_idx, r_idx):
     return res
 
 # =========================================================
-# 3) محركات العرض (تعديل 1 و 2: دعم النصوص القصيرة)
+# 3) محركات العرض والانسجام (Virtual Nexus & Tension)
 # =========================================================
-def build_root_network(sentence_results):
-    nodes, edges = {}, Counter()
-    for item in sentence_results:
-        roots_info = item["analysis"]["matched_roots"]
-        roots = [r["root"] for r in roots_info]
-        for r in roots_info:
-            if r["root"] not in nodes: nodes[r["root"]] = {"orbit": r["orbit"], "energy": r["weight"]}
-        for i in range(len(roots)):
-            for j in range(i + 1, len(roots)):
-                edges[tuple(sorted([roots[i], roots[j]]))] += 1
-    return nodes, edges
+def build_v14_nexus(nodes):
+    v_edges = Counter()
+    node_list = list(nodes.keys())
+    for i in range(len(node_list)):
+        for j in range(i + 1, len(node_list)):
+            r_a, r_b = node_list[i], node_list[j]
+            weight = 2 if nodes[r_a]['orbit'] == nodes[r_b]['orbit'] else 0.5
+            v_edges[tuple(sorted([r_a, r_b]))] = weight
+    return v_edges
 
-def render_root_network(nodes, edges, title):
-    if not nodes:
-        st.info(f"ℹ️ {title}: لا توجد جذور مرصودة."); return
-    
-    # تعديل 1: عرض الجذور حتى لو لم توجد علاقات (Edges)
-    if not edges:
-        st.markdown("#### 🕸️ شبكة الجذور (جذر منفرد)")
-        for r in nodes:
-            st.markdown(f"<div class='coherence-box'>📍 جذر مرصود: **{r}**</div>", unsafe_allow_html=True)
-        return
-
-    st.markdown(f"#### 🕸️ شبكة الجذور")
-    pos = {r: (random.uniform(0, 1), random.uniform(0, 1)) for r in nodes}
-    edge_x, edge_y = [], []
-    for (a, b) in edges:
-        x0, y0 = pos[a]; x1, y1 = pos[b]
-        edge_x += [x0, x1, None]; edge_y += [y0, y1, None]
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=1, color='#444'), hoverinfo='none'))
-    fig.add_trace(go.Scatter(x=[pos[r][0] for r in nodes], y=[pos[r][1] for r in nodes], mode='markers+text', text=list(nodes.keys()),
-                             marker=dict(size=[20+(nodes[r]['energy']/15) for r in nodes], color=[nodes[r]['energy'] for r in nodes], colorscale='Viridis'),
-                             textposition="top center"))
-    fig.update_layout(showlegend=False, height=300, margin=dict(l=0,r=0,t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                      xaxis=dict(showgrid=False, zeroline=False, showticklabels=False), yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
-    st.plotly_chart(fig, use_container_width=True)
-
-def analyze_coherence(sentence_results):
-    orbits = [s["analysis"]["orbit"] for s in sentence_results if s["analysis"]["orbit"] != "غير_مرصود"]
-    if not orbits: return {"ratio": 0, "dominant_orbit": "بناء أولي"}
-    dom = Counter(orbits).most_common(1)[0][0]
-    coherent = [s for s in sentence_results if s["analysis"]["orbit"] == dom]
-    return {"dominant_orbit": dom, "ratio": len(coherent)/len(sentence_results), "coherent": coherent}
-
-def analyze_semantics(sentence_results):
-    fields, detailed = [], []
-    for s in sentence_results:
-        roots = s["analysis"]["matched_roots"]
-        f = Counter([SEMANTIC_FIELDS.get(r["root"], "بناء") for r in roots]).most_common(1)[0][0] if roots else "صمت"
-        fields.append(f); detailed.append({"sentence": s["sentence"], "field": f})
-    return {"dominant_field": Counter(fields).most_common(1)[0][0] if fields else "غير مصنف", "detailed": detailed}
-
-def render_semantic_map(sem, title):
-    if not sem: return
-    st.markdown(f"#### 🧠 خريطة المعنى")
-    df = pd.DataFrame(sem["detailed"])
-    fig = px.scatter(df, x=df.index + 1, y="field", color="field", hover_data=["sentence"], height=300)
-    st.plotly_chart(fig, use_container_width=True)
-    st.markdown(f"<div class='coherence-box'><b>🧠 المجال المهيمن:</b> {sem['dominant_field']}</div>", unsafe_allow_html=True)
+def detect_tension(sem_detailed):
+    fields = [d['field'] for d in sem_detailed if d['field'] not in ['صمت', 'بناء']]
+    unique_f = set(fields)
+    tensions = {tuple(sorted(["الرحمة", "الصراع"])): "⚡ تدافع (الرحمة والقوة)",
+                tuple(sorted(["العمل", "الجزاء"])): "🤝 انسجام (تحقق الثمرة)"}
+    for f1 in unique_f:
+        for f2 in unique_f:
+            pair = tuple(sorted([f1, f2]))
+            if pair in tensions: return tensions[pair]
+    return "✅ تناغم دلالي"
 
 # =========================================================
-# 4) واجهة التشغيل v13.1 Quad-Sovereign
+# 4) واجهة التشغيل v14.0
 # =========================================================
-st.title("🛰️ محراب نبراس v13.1 Stable Sovereign")
+st.title("🛰️ محراب نبراس v14.0 Sovereign Leap")
 c1, c2, c3 = st.columns(3)
 inputs = [c1.text_area("📍 المسار 1", key="v1"), c2.text_area("📍 المسار 2", key="v2"), c3.text_area("📍 المسار 3", key="v3")]
 
-if st.button("🚀 إطلاق الرصد الإمبراطوري المستقر", use_container_width=True):
-    results = [analyze_path(t, letters_idx, quranic_root_index) if t.strip() else None for t in inputs]
-    all_s_results = []
-
+if st.button("🚀 إطلاق المحرك الإمبراطوري v14.0", use_container_width=True):
+    results = [analyze_path_v14(t, letters_idx, quranic_root_index) if t.strip() else None for t in inputs]
+    
     if any(results):
         score_cols = st.columns(3)
         for i, r in enumerate(results):
             if r:
                 with score_cols[i]: st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{r['total']}</h1><p>{r['orbit']}</p></div>", unsafe_allow_html=True)
-                with st.expander(f"✨ تحليل المسار {i+1}", expanded=True):
+                with st.expander(f"✨ المحراب الرباعي v14.0", expanded=True):
                     sentences = [s.strip() for s in re.sub(r"[\.!\?؛،]", ".", inputs[i]).split(".") if s.strip()]
-                    s_results = [{"sentence": s, "analysis": analyze_path(s, letters_idx, quranic_root_index)} for s in sentences]
-                    all_s_results.append(s_results)
-
+                    s_results = [{"sentence": s, "analysis": analyze_path_v14(s, letters_idx, quranic_root_index)} for s in sentences]
+                    
                     col_net, col_heat, col_coh, col_sem = st.columns([1, 1, 1, 1])
-                    
-                    # 🟩 العمود 1: الشبكة (بتعديل الجذر المنفرد)
+                    nodes, _ = build_root_network(s_results) # (نفس دالة v13 المستقرة)
+                    v_edges = build_v14_nexus(nodes) # علاقات v14 الافتراضية
+
                     with col_net:
-                        nodes, edges = build_root_network(s_results)
-                        render_root_network(nodes, edges, f"المسار {i+1}")
-                    
-                    # 🟦 العمود 2: الحرارة (تعديل 2: دعم الجذر الواحد)
-                    with col_heat:
+                        st.markdown("#### 🕸️ شبكة العلاقات")
                         if nodes:
-                            st.markdown("#### 🔥 الخريطة الحرارية")
-                            df_energy = pd.DataFrame([{"جذر": k, "طاقة": v["energy"], "مدار": v["orbit"]} for k, v in nodes.items()])
-                            st.plotly_chart(px.density_heatmap(df_energy, x="جذر", y="مدار", z="طاقة", color_continuous_scale="Inferno", height=300), use_container_width=True)
-                        else: st.info("لا توجد طاقة مرصودة.")
-                    
-                    # 🟧 العمود 3: الانسجام والزمن
+                            # رسم الشبكة باستخدام v_edges لضمان الاتصال
+                            pos = {r: (random.uniform(0, 1), random.uniform(0, 1)) for r in nodes}
+                            edge_x, edge_y = [], []
+                            for (a, b) in v_edges:
+                                x0, y0 = pos[a]; x1, y1 = pos[b]
+                                edge_x += [x0, x1, None]; edge_y += [y0, y1, None]
+                            fig = go.Figure()
+                            fig.add_trace(go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=1, color='#333'), hoverinfo='none'))
+                            fig.add_trace(go.Scatter(x=[pos[r][0] for r in nodes], y=[pos[r][1] for r in nodes], mode='markers+text', text=list(nodes.keys()),
+                                                     marker=dict(size=25, color='#4CAF50'), textposition="top center"))
+                            fig.update_layout(showlegend=False, height=250, margin=dict(l=0,r=0,t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(showgrid=False, zeroline=False, showticklabels=False), yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
+                            st.plotly_chart(fig, use_container_width=True)
+
+                    with col_heat:
+                        st.markdown("#### 🔥 طاقة الجذور")
+                        if nodes:
+                            df_e = pd.DataFrame([{"جذر": k, "طاقة": v["energy"]} for k, v in nodes.items()])
+                            st.plotly_chart(px.bar(df_e, x="جذر", y="طاقة", color="طاقة", color_continuous_scale="Viridis", height=250), use_container_width=True)
+
                     with col_coh:
-                        coh = analyze_coherence(s_results)
-                        st.markdown(f"<div class='coherence-box'>🔹 انسجام المدار: {round(coh.get('ratio',0)*100, 2)}%</div>", unsafe_allow_html=True)
-                        st.markdown("#### ⏳ الانحراف الزمني")
+                        st.markdown("#### ⏳ الانحراف")
                         df_drift = pd.DataFrame([{"index": k+1, "orbit": s["analysis"]["orbit"]} for k, s in enumerate(s_results)])
                         st.plotly_chart(px.line(df_drift, x="index", y="orbit", markers=True, height=250), use_container_width=True)
-                    
-                    # 🟪 العمود 4: المعنى
-                    with col_sem:
-                        sem = analyze_semantics(s_results)
-                        render_semantic_map(sem, f"المسار {i+1}")
-            else: all_s_results.append(None)
 
-st.sidebar.write("v13.1 Stable | خِت فِت.")
+                    with col_sem:
+                        st.markdown("#### 🧠 المعنى")
+                        sem = analyze_semantics(s_results) # (نفس دالة v13 المستقرة)
+                        st.markdown(f"<div class='coherence-box'><b>المجال:</b> {sem['dominant_field']}</div>", unsafe_allow_html=True)
+                        tension_msg = detect_tension(sem['detailed'])
+                        st.markdown(f"<div class='tension-alert'>{tension_msg}</div>", unsafe_allow_html=True)
+
+st.sidebar.write("v14.0 Sovereign Leap | خِت فِت.")
+
+# وظائف مساعدة مفقودة من v13 (لإكمال الكود)
+def build_root_network(s_res):
+    nodes = {}
+    for item in s_res:
+        for r in item["analysis"]["matched_roots"]:
+            if r["root"] not in nodes: nodes[r["root"]] = {"orbit": r["orbit"], "energy": r["weight"]}
+    return nodes, None
+
+def analyze_semantics(s_res):
+    fields = []
+    detailed = []
+    for s in s_res:
+        roots = s["analysis"]["matched_roots"]
+        f = Counter([SEMANTIC_FIELDS.get(r["root"], "بناء") for r in roots]).most_common(1)[0][0] if roots else "صمت"
+        fields.append(f); detailed.append({"sentence": s["sentence"], "field": f})
+    return {"dominant_field": Counter(fields).most_common(1)[0][0] if fields else "غير مصنف", "detailed": detailed}
