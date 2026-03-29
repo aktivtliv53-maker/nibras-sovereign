@@ -12,7 +12,7 @@ import json
 # =========================================================
 # 1) التهيئة والقاموس الوجودي المطلق (The Sovereign Core)
 # =========================================================
-st.set_page_config(page_title="Nibras v17.5 Ultra Final", page_icon="🔱", layout="wide")
+st.set_page_config(page_title="Nibras v17.5 Ultra Final FIXED", page_icon="🔱", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -45,7 +45,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 2) محركات التحليل المتقدمة (v15 -> v17.5)
+# 2) محركات التحليل (v15 -> v17.5)
 # =========================================================
 def load_data(file_name):
     paths = [file_name, os.path.join("data", file_name)]
@@ -70,7 +70,7 @@ def match_root(word, root_index):
     return None, None
 
 # =========================================================
-# 3) المعمار النهائي (The Final Construction)
+# 3) البناء المحصن من تكرار المعرفات (ID Protection)
 # =========================================================
 letters_data = load_data("sovereign_letters_v1.json")
 roots_data = load_data("quran_roots_complete.json")
@@ -79,16 +79,16 @@ if letters_data and roots_data:
     l_idx = {normalize_arabic(i["letter"]): i for i in letters_data if "letter" in i}
     r_idx = {normalize_arabic(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
 
-    st.title("🛰️ محراب نبراس v17.5 Ultra Unified Final")
+    st.title("🛰️ محراب نبراس v17.5 Ultra Final (Fixed)")
     
     tab1, tab2, tab3 = st.tabs(["🔍 المحراب والنية", "🌌 اللوحة الكونية (Gravity & Cross)", "🧭 المستشار والمركز"])
 
     with tab1:
         c1, c2, c3 = st.columns(3)
-        p1 = c1.text_area("📍 المسار 1", height=120, key="up1")
-        p2 = c2.text_area("📍 المسار 2", height=120, key="up2")
-        p3 = c3.text_area("📍 المسار 3", height=120, key="up3")
-        run = st.button("🚀 استنطاق التمام السيادي", use_container_width=True)
+        p1 = c1.text_area("📍 المسار 1", height=120, key="txt_p1")
+        p2 = c2.text_area("📍 المسار 2", height=120, key="txt_p2")
+        p3 = c3.text_area("📍 المسار 3", height=120, key="txt_p3")
+        run = st.button("🚀 استنطاق التمام السيادي", use_container_width=True, key="run_btn")
 
     if run:
         all_res = []
@@ -104,14 +104,11 @@ if letters_data and roots_data:
             else: all_res.append(None)
 
         if any(all_res):
-            # 1) محركات الترابط (Recovered: Cross Edges)
             nodes_g, intra_g, cross_g = {}, Counter(), Counter()
             for idx, s_list in enumerate(all_res):
                 if not s_list: continue
-                path_roots = []
                 for s in s_list:
                     r_list = [r["root"] for r in s["analysis"]["roots"]]
-                    path_roots.extend(r_list)
                     for r_info in s["analysis"]["roots"]:
                         r = r_info["root"]
                         nodes_g[r] = nodes_g.get(r, {"orbit": r_info["orbit"], "energy": r_info["weight"], "paths": set(), "count": 0})
@@ -119,13 +116,11 @@ if letters_data and roots_data:
                     for i in range(len(r_list)):
                         for j in range(i+1, len(r_list)): intra_g[tuple(sorted([r_list[i], r_list[j]]))] += 1
                 
-                # حساب العلاقات العابرة (Cross Edges) v16.5
                 for r_name, info in nodes_g.items():
                     for other_r, other_info in nodes_g.items():
                         if r_name != other_r and info["orbit"] == other_info["orbit"] and (info["paths"] != other_info["paths"]):
                             cross_g[tuple(sorted([r_name, other_r]))] += 0.5
 
-            # 2) محرك الرنين والجاذبية (Visible Layers)
             res_map = {r: (len(info["paths"]) * info["energy"]) for r, info in nodes_g.items()}
             gravity = {r: {"force": (info["energy"] * res_map[r]) / info["count"], "radius": np.log1p(info["energy"]*res_map[r])*0.05} for r, info in nodes_g.items()}
             
@@ -135,55 +130,51 @@ if letters_data and roots_data:
                 for i, s_list in enumerate(all_res):
                     if s_list:
                         with cols[i]:
-                            # المحراب الرباعي
                             total_energy = sum(s["analysis"]["energy"] for s in s_list)
                             st.markdown(f"<div class='ultra-card'><h3>مسار {i+1}</h3><h1>{round(total_energy, 1)}</h1><span class='resonance-tag'>رنين المسار: {round(total_energy * 0.12, 2)}</span></div>", unsafe_allow_html=True)
                             
-                            # محرك النية العميقة (Deep Intent Engine v15.2)
                             roots_in_p = [r["root"] for s in s_list for r in s["analysis"]["roots"]]
-                            fields = [SEMANTIC_FIELDS.get(r, "بناء") for r in roots_in_p]
-                            dom_field = Counter(fields).most_common(1)[0][0] if fields else "بناء"
-                            st.markdown(f"""<div class='intent-engine-box'><b>النية العميقة:</b> تتجه نحو <b>{dom_field}</b><br>
-                                        <small>المجال المهيمن: {dom_field}</small></div>""", unsafe_allow_html=True)
+                            dom_field = Counter([SEMANTIC_FIELDS.get(r, "بناء") for r in roots_in_p]).most_common(1)[0][0] if roots_in_p else "بناء"
+                            st.markdown(f"""<div class='intent-engine-box'><b>النية العميقة:</b> <b>{dom_field}</b></div>""", unsafe_allow_html=True)
                             
-                            with st.expander("✨ طيف الرنين والانحراف (Visible Layers)"):
+                            with st.expander("✨ طيف الرنين والانحراف", expanded=True):
                                 df_res = pd.DataFrame([{"root": r, "res": v} for r, v in res_map.items() if r in roots_in_p])
-                                if not df_res.empty: st.plotly_chart(px.line_polar(df_res, r="res", theta="root", line_close=True, template="plotly_dark", height=200), use_container_width=True)
+                                if not df_res.empty:
+                                    # إضافة KEY فريد لكل رسم بياني لمنع التكرار
+                                    st.plotly_chart(px.line_polar(df_res, r="res", theta="root", line_close=True, template="plotly_dark", height=200), use_container_width=True, key=f"polar_{i}")
+                                    
+                                df_d = pd.DataFrame([{"idx": j+1, "orbit": s["analysis"]["roots"][0]["orbit"] if s["analysis"]["roots"] else "بناء"} for j, s in enumerate(s_list)])
+                                st.plotly_chart(px.line(df_d, x="idx", y="orbit", markers=True, height=150), use_container_width=True, key=f"line_orbit_{i}")
 
             with tab2:
-                # اللوحة الكونية الكاملة (v17.5 Ultra: Gravity + Intra + Cross)
                 fig = go.Figure()
                 pos = {n: (random.random(), random.random()) for n in nodes_g}
-                # رسم العلاقات العابرة (Cross Edges)
                 for (a, b), weight in cross_g.items():
                     fig.add_trace(go.Scatter(x=[pos[a][0], pos[b][0]], y=[pos[a][1], pos[b][1]], mode="lines", line=dict(width=weight*2, color="rgba(79,195,247,0.4)", dash="dot"), hoverinfo="none"))
-                # رسم الجاذبية والعلاقات الداخلية
                 for n, w in gravity.items():
                     for step in [1, 2]:
                         fig.add_shape(type="circle", xref="x", yref="y", x0=pos[n][0]-w["radius"]*step, y0=pos[n][1]-w["radius"]*step, x1=pos[n][0]+w["radius"]*step, y1=pos[n][1]+w["radius"]*step, fillcolor="rgba(79,195,247,0.05)", line=dict(width=0))
                 for (a, b), weight in intra_g.items():
                     fig.add_trace(go.Scatter(x=[pos[a][0], pos[b][0]], y=[pos[a][1], pos[b][1]], mode="lines", line=dict(width=weight/2, color="rgba(150,150,150,0.2)"), hoverinfo="none"))
-                # العقد
                 for n, info in nodes_g.items():
                     q = Q_ARCHETYPES.get(n, "بناء"); u = UNIVERSAL_ARCHETYPES.get(q, "The Architect")
                     fig.add_trace(go.Scatter(x=[pos[n][0]], y=[pos[n][1]], mode="markers+text", text=[f"<b>{n}</b><br>{u}"], marker=dict(size=25+(info['count']*10), color=ARCHE_COLORS.get(q, "#4CAF50"), line=dict(width=2, color="#fff")), textposition="top center"))
                 fig.update_layout(height=800, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(visible=False), yaxis=dict(visible=False), showlegend=False)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, key="main_cosmic_canvas")
 
             with tab3:
-                # المستشار والمركز الدلالي (v16 + v17 + v17.5)
                 dom_root = max(res_map.items(), key=lambda x: x[1])[0] if res_map else "صمت"
                 st.markdown(f"""
                 <div class='advisor-final'>
                     <h2>🧭 المستشار السيادي v17.5 Ultra Final</h2>
                     <hr style='opacity: 0.2;'>
-                    <p>🎯 <b>المحور الدلالي المركزي (v16):</b> <span style='color:#FFD700; font-size:1.2em;'>{dom_root}</span></p>
-                    <p>🌊 <b>طيف الرنين الكوني (v16.5):</b> أعلى رنين مسجل في جذر <b>{dom_root}</b> بقيمة {round(res_map[dom_root], 1)}</p>
-                    <p>🔮 <b>النمط الوجودي الحاكم (v17):</b> {UNIVERSAL_ARCHETYPES.get(Q_ARCHETYPES.get(dom_root, "بناء"), "The Architect")}</p>
-                    <p>🕳️ <b>بئر الجاذبية الأعظم (v17.5):</b> {max(gravity.items(), key=lambda x: x[1]["force"])[0]}</p>
+                    <p>🎯 <b>المحور الدلالي المركزي:</b> <span style='color:#FFD700; font-size:1.2em;'>{dom_root}</span></p>
+                    <p>🌊 <b>طيف الرنين الكوني:</b> أعلى رنين في جذر <b>{dom_root}</b> بقيمة {round(res_map[dom_root], 1)}</p>
+                    <p>🔮 <b>النمط الوجودي الحاكم:</b> {UNIVERSAL_ARCHETYPES.get(Q_ARCHETYPES.get(dom_root, "بناء"), "The Architect")}</p>
+                    <p>🕳️ <b>بئر الجاذبية الأعظم:</b> {max(gravity.items(), key=lambda x: x[1]["force"])[0]}</p>
                     <hr style='opacity: 0.2;'>
-                    <p>✅ <b>التوجيه النهائي:</b> المنظومة مكتملة الترابط. العلاقات العابرة (Cross Edges) تشير إلى وحدة الموضوع عبر المسارات الثلاثة، مع سيادة مطلقة لنمط {UNIVERSAL_ARCHETYPES.get(Q_ARCHETYPES.get(dom_root, "بناء"), "The Architect")}.</p>
+                    <p>✅ <b>التوجيه النهائي:</b> تم تثبيت كل المعرفات البصرية (Keys). المنظومة الآن تعمل بتناغم مطلق دون تكرار في الهوية.</p>
                 </div>
                 """, unsafe_allow_html=True)
 
-st.sidebar.write("v17.5 Ultra Unified Final | خِت فِت.")
+st.sidebar.write("v17.5 Ultra Unified Final Fixed | خِت فِت.")
