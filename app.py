@@ -21,14 +21,15 @@ try:
 except Exception:
     ENGINES_OK = False
     def summarize_word_signature(w):
+        # محرك طوارئ يضمن وجود المفاتيح الأساسية لتجنب KeyError
         genes = ['A', 'G', 'T', 'C']
         g = genes[len(w) % 4] if w else 'N'
-        return {'dominant_gene': g, 'total_energy': len(w) * 195.0}
+        return {'dominant_gene': g, 'total_energy': float(len(w) * 195)}
     def detect_state(roots): return "استقرار سيادي"
     def build_path_orbit_letter_profile(r, o, w): return {'total_energy': sum(w) * 1.618}
 
 # =========================================================
-# 2) مصفوفة الثوابت والقوانين القابلة للتكيف (Adaptive Matrix)
+# 2) مصفوفة الثوابت والقوانين (Adaptive Matrix)
 # =========================================================
 if 'GENE_VECTORS' not in st.session_state:
     st.session_state.GENE_VECTORS = {
@@ -44,16 +45,16 @@ GENE_STYLE = {
 }
 
 # =========================================================
-# 3) التنسيق السيادي الفوقي (Ultra-Premium CSS)
+# 3) التنسيق السيادي الفوقي (Premium CSS)
 # =========================================================
-st.set_page_config(page_title="Nibras v21.2.9 Absolute Guard", page_icon="🧬", layout="wide")
+st.set_page_config(page_title="Nibras v21.3.0 Unified Shield", page_icon="🛡️", layout="wide")
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
     [data-testid="stAppViewContainer"] { background-color: #010103; color: #e0e0e0; font-family: 'Amiri', serif; }
-    .story-box { background: linear-gradient(145deg, #0a150a, #010101); padding: 40px; border-radius: 25px; border-right: 12px solid #4CAF50; line-height: 2.3; font-size: 1.4em; box-shadow: 0 20px 60px rgba(0,0,0,0.8); margin-top: 25px; }
+    .story-box { background: linear-gradient(145deg, #0a150a, #010101); padding: 40px; border-radius: 25px; border-right: 12px solid #4CAF50; line-height: 2.3; font-size: 1.4em; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
     .adaptive-log { background: #000; border: 1px solid #ffaa00; padding: 15px; color: #ffaa00; font-family: monospace; border-radius: 10px; height: 120px; overflow-y: auto; }
-    .ultra-card { background: #0a0a0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a2a; border-top: 5px solid #4fc3f7; margin-bottom: 20px; text-align: center; }
+    .ultra-card { background: #0a0a0f; padding: 20px; border-radius: 15px; border-top: 5px solid #4fc3f7; text-align: center; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -79,17 +80,15 @@ class MetaObserver:
     def apply_adaptive_laws(self):
         dom_gene = self.gene_activity.most_common(1)[0][0] if self.gene_activity else None
         update = ""
-        if dom_gene == "C": 
-            st.session_state.GENE_VECTORS["C"][1] *= 0.94; update = "تعديل: كبح تسارع جين المعز لضمان التوازن."
-        elif dom_gene == "G": 
-            st.session_state.GENE_VECTORS["G"][1] *= 0.94; update = "تعديل: موازنة ثقل جين البقر لسيولة المقام."
+        if dom_gene == "C": st.session_state.GENE_VECTORS["C"][1] *= 0.95; update = "تعديل: موازنة تسارع جين المعز."
+        elif dom_gene == "G": st.session_state.GENE_VECTORS["G"][1] *= 0.95; update = "تعديل: موازنة ثقل جين البقر."
         if update: self.adaptation_logs.append(f"[{time.strftime('%H:%M:%S')}] {update}")
 
     def get_report(self):
         return {"fusions": self.fusions, "repulsions": self.repulsions, "dominant": self.gene_activity.most_common(1)[0][0] if self.gene_activity else "N", "logs": self.adaptation_logs, "uptime": round(time.time() - self.start_time, 2)}
 
 # =========================================================
-# 5) المنطق والفيزياء (Sovereign Logic)
+# 5) المنطق والفيزياء السيادية (Sovereign Logic)
 # =========================================================
 def normalize(t):
     t = re.sub(r'[\u064B-\u0652]', '', t)
@@ -117,7 +116,7 @@ def handle_alchemy(bodies, obs):
     return evts, hybs
 
 # =========================================================
-# 6) المفاعل السيادي الشامل (The Absolute Interface)
+# 6) المفاعل والواجهة السيادية (The Sovereign Interface)
 # =========================================================
 roots_data = None
 for p in ["quran_roots_complete.json", "data/quran_roots_complete.json"]:
@@ -127,15 +126,15 @@ for p in ["quran_roots_complete.json", "data/quran_roots_complete.json"]:
 if roots_data:
     r_idx = {normalize(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
     
-    st.sidebar.markdown(f"### 🛡️ الحالة السيادية\n**المستخدم:** محمد\n**CPU:** السجدة: 5")
-    st.title("🎙️ محراب نبراس v21.2.9 - الاستواء السيادي المطلق")
+    st.sidebar.markdown(f"### 🛡️ الحالة السيادية\n**المستخدم:** محمد\n**CPU:** السجدة: 5\n**v21.3.0 (Unified Shield)**")
+    st.title("🎙️ محراب نبراس v21.3.0 - الاستواء السيادي الشامل")
     
     tabs = st.tabs(["🔍 الاستنطاق", "🌌 الرنين الجيني", "📈 اللوحة الوجودية", "📜 البيان الختامي", "⚖️ الميزان السيادي", "🧠 الوعي الفوقي والتكيف"])
 
     with tabs[0]:
         c1, c2, c3 = st.columns(3)
         p_in = [c1.text_area("📍 مسار 1", key="t1"), c2.text_area("📍 مسار 2", key="t2"), c3.text_area("📍 مسار 3", key="t3")]
-        run = st.button("🚀 إطلاق المفاعل السيادي المحصن", use_container_width=True)
+        run = st.button("🚀 إطلاق المفاعل السيادي المحصن 100%", use_container_width=True)
 
     if run:
         obs = MetaObserver()
@@ -148,7 +147,11 @@ if roots_data:
                     if root:
                         sig = summarize_word_signature(root)
                         
-                        # --- Sovereign Gene Guard v4 (التشخيص النهائي) ---
+                        # --- Sovereign Signature Guard v1 (حماية الطاقة) ---
+                        if 'total_energy' not in sig or not isinstance(sig['total_energy'], (int, float)):
+                            sig['total_energy'] = 0.0
+                        
+                        # --- Sovereign Gene Guard v4 (حماية الجين) ---
                         gene = sig.get('dominant_gene', 'N')
                         if not isinstance(gene, str): gene = "N"
                         gene = gene.strip().upper()
@@ -196,14 +199,14 @@ if roots_data:
                     motion_ui.plotly_chart(fig, use_container_width=True)
                     time.sleep(0.05)
                 
-                st.download_button("📜 استخراج وثيقة التمكين الختامية", f"تم استنطاق المقام v21.2.9 بنجاح للخير واليسر.\nالجذور: {', '.join(pool)}", file_name="nibras_final.txt")
+                st.download_button("📜 استخراج وثيقة التمكين الختامية", f"تم استنطاق المقام v21.3.0 بنجاح بالخير واليسر.\nالجذور: {', '.join(pool)}", file_name="nibras_tamkeen.txt")
 
             with tabs[3]:
-                st.markdown(f"<div class='story-box'>تجلت في هذا المقام أنوار <b>التمكين واليسر</b>. لقد قام النظام ذاتياً بموازنة طاقة الجينات لتحقيق استواء مداري يفيض بالخير.</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='story-box'>تحقق الاستواء باليسر والخير. النظام محصن الآن من الجوهر (الطاقة) إلى المظهر (الجين)، مما يضمن حركة مدارية خالدة لا تعرف الانقطاع.</div>", unsafe_allow_html=True)
 
             with tabs[1]:
                 cols = st.columns(len(GENE_STYLE))
                 for i, (g, info) in enumerate(GENE_STYLE.items()):
                     cols[i].markdown(f"<div class='ultra-card' style='border-top-color:{info['color']}'>{info['icon']} {info['name']}<br><small>{info['meaning']}</small></div>", unsafe_allow_html=True)
 
-st.sidebar.write("v21.2.9 Sovereign Guard | خِت فِت.")
+st.sidebar.write("v21.3.0 Sovereign Shield | خِت فِت.")
