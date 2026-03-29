@@ -7,7 +7,7 @@ import re
 import random
 
 # =========================================================
-# 0) محرك التحميل والبيانات (Data Core)
+# 0) محرك التحميل الأساسي (Data Loader)
 # =========================================================
 try:
     from core_paths import load_json
@@ -16,9 +16,9 @@ except ImportError:
     st.stop()
 
 # =========================================================
-# 1) إعداد الواجهة والقاموس الدلالي
+# 1) إعدادات الواجهة والقاموس الدلالي
 # =========================================================
-st.set_page_config(page_title="Nibras v14.1 Refined Sovereign", page_icon="🏛️", layout="wide")
+st.set_page_config(page_title="Nibras v14.1 Absolute", page_icon="🏛️", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -40,14 +40,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 2) محركات التحليل المركزية (The Core Engines)
+# 2) محركات التحليل - الترتيب السيادي المحكم (Final Order)
 # =========================================================
-try:
-    letters_raw = load_json("sovereign_letters_v1.json")
-    roots_data = load_json("quran_roots_complete.json")
-except Exception as e:
-    st.error(f"⚠️ فشل الرصد: {e}"); st.stop()
 
+# [1] التطهير
 def normalize_arabic(text):
     if not text: return ""
     text = re.sub(r'[\u0617-\u061A\u064B-\u0652\u0670]', '', text)
@@ -55,40 +51,58 @@ def normalize_arabic(text):
     for k, v in replacements.items(): text = text.replace(k, v)
     return re.sub(r'\s+', ' ', re.sub(r'[^\u0621-\u064A\s]', ' ', text)).strip()
 
+# [2] الاشتقاق العميق
 def deep_morpho_extract(word):
     w = normalize_arabic(word)
     w = re.sub(r"^(وال|فال|بال|ال|يست|يت|تست|نست|است|لل|ب|و|ف|ي|ت|ن|ا)", "", w)
     w = re.sub(r"(كم|هم|نا|ها|وا|ون|ين|ات|كما|هما|ه|ي|ت|تم)$", "", w)
     return w if len(w) <= 3 else w[:3]
 
+# [3] مطابقة الجذور
 def match_sovereign_root(word, root_index):
     word_norm = normalize_arabic(word)
     prefixes = ["وال", "فال", "بال", "ال", "و", "ف", "ب", "ل"]
-    for p in [""] + prefixes:
-        candidate = word_norm[len(p):] if word_norm.startswith(p) else word_norm
-        if candidate in root_index: return candidate, root_index[candidate]
-        if len(candidate) >= 3 and candidate[:3] in root_index: return candidate[:3], root_index[candidate[:3]]
+    candidates = {word_norm}
+    for p in prefixes:
+        if word_norm.startswith(p) and len(word_norm)-len(p)>=2:
+            candidates.add(word_norm[len(p):])
+    
+    for c in list(candidates):
+        if c in root_index: return c, root_index[c]
+        if len(c)>=3 and c[:3] in root_index: return c[:3], root_index[c[:3]]
+    
     est = deep_morpho_extract(word_norm)
     if est in root_index: return est, root_index[est]
     return None, None
 
-def analyze_path_v14_1(text, l_idx, r_idx):
+# [4] المحرك الأساسي (الذي كان مفقوداً)
+def analyze_path(text, l_idx, r_idx):
     norm = normalize_arabic(text)
     res = {"mass": 0.0, "speed": 0.0, "energy": 0.0, "orbit": "غير_مرصود", "matched_roots": [], "orbit_counter": Counter()}
     for char in norm.replace(" ", ""):
         m = l_idx.get(char)
-        if m: res["mass"] += float(m.get("mass", 0)); res["speed"] += float(m.get("speed", 0))
+        if m: 
+            res["mass"] += float(m.get("mass", 0))
+            res["speed"] += float(m.get("speed", 0))
     for word in norm.split():
         m_root, entry = match_sovereign_root(word, r_idx)
         if m_root:
-            res["energy"] += entry["weight"]; res["orbit_counter"][entry["orbit"]] += entry["weight"]
+            res["energy"] += entry["weight"]
+            res["orbit_counter"][entry["orbit"]] += entry["weight"]
             res["matched_roots"].append({"word": word, "root": m_root, "orbit": entry["orbit"], "weight": entry["weight"]})
     if res["orbit_counter"]: res["orbit"] = res["orbit_counter"].most_common(1)[0][0]
     res["total"] = round(res["mass"] + res["speed"] + res["energy"], 2)
     return res
 
+# [5] محرك التعزيز السيادي v14.1
+def analyze_path_v14_1(text, l_idx, r_idx):
+    # البدء بالنتائج الأساسية
+    res = analyze_path(text, l_idx, r_idx)
+    # هنا يمكن إضافة منطق v14 الإضافي لو لزم (حالياً مدمج في analyze_path القوي)
+    return res
+
 # =========================================================
-# 3) محرك الشبكة الهجين والتوتر (Hybrid Nexus & Tension)
+# 3) محركات العرض والانسجام (Nexus & Tension)
 # =========================================================
 def build_hybrid_network(s_results):
     nodes = {}
@@ -97,7 +111,8 @@ def build_hybrid_network(s_results):
         roots_info = item["analysis"]["matched_roots"]
         roots_list = [r["root"] for r in roots_info]
         for r in roots_info:
-            if r["root"] not in nodes: nodes[r["root"]] = {"orbit": r["orbit"], "energy": r["weight"]}
+            if r["root"] not in nodes: 
+                nodes[r["root"]] = {"orbit": r["orbit"], "energy": r["weight"]}
         for i in range(len(roots_list)):
             for j in range(i + 1, len(roots_list)):
                 real_edges[tuple(sorted([roots_list[i], roots_list[j]]))] += 5
@@ -132,20 +147,29 @@ def detect_tension(sem_detailed):
     return "✅ تناغم دلالي"
 
 # =========================================================
-# 4) واجهة التشغيل v14.1 المستقرة
+# 4) تحميل البيانات وتدفق التطبيق
 # =========================================================
-st.title("🛰️ محراب نبراس v14.1 Unified Refined")
+try:
+    letters_raw = load_json("sovereign_letters_v1.json")
+    roots_data = load_json("quran_roots_complete.json")
+    letters_idx = {normalize_arabic(i.get("letter", "")): i for i in letters_raw if i.get("letter")} if isinstance(letters_raw, list) else {}
+    quranic_root_index = {normalize_arabic(r["root"]): {"root": normalize_arabic(r["root"]), "weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "مدار مجهول")} for r in roots_data.get("roots", [])} if roots_data else {}
+except Exception as e:
+    st.error(f"⚠️ خطأ بيانات: {e}"); st.stop()
+
+st.title("🛰️ محراب نبراس v14.1 Absolute Sovereign")
 c1, c2, c3 = st.columns(3)
 inputs = [c1.text_area("📍 المسار 1", key="v1"), c2.text_area("📍 المسار 2", key="v2"), c3.text_area("📍 المسار 3", key="v3")]
 
-if st.button("🚀 إطلاق المحرك الإمبراطوري v14.1", use_container_width=True):
+if st.button("🚀 إطلاق الرصد الإمبراطوري", use_container_width=True):
     results = [analyze_path_v14_1(t, letters_idx, quranic_root_index) if t.strip() else None for t in inputs]
     
     if any(results):
         score_cols = st.columns(3)
         for i, r in enumerate(results):
             if r:
-                with score_cols[i]: st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{r['total']}</h1><p>{r['orbit']}</p></div>", unsafe_allow_html=True)
+                with score_cols[i]: 
+                    st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{r['total']}</h1><p>{r['orbit']}</p></div>", unsafe_allow_html=True)
                 with st.expander(f"✨ المحراب الرباعي v14.1", expanded=True):
                     sentences = [s.strip() for s in re.sub(r"[\.!\?؛،]", ".", inputs[i]).split(".") if s.strip()]
                     s_results = [{"sentence": s, "analysis": analyze_path_v14_1(s, letters_idx, quranic_root_index)} for s in sentences]
@@ -164,7 +188,7 @@ if st.button("🚀 إطلاق المحرك الإمبراطوري v14.1", use_co
                             fig = go.Figure()
                             fig.add_trace(go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=1, color='#333'), hoverinfo='none'))
                             fig.add_trace(go.Scatter(x=[pos[r][0] for r in nodes], y=[pos[r][1] for r in nodes], mode='markers+text', text=list(nodes.keys()),
-                                                     marker=dict(size=[20 + (v['energy']/10) for v in nodes.values()], color='#4CAF50'), textposition="top center"))
+                                                     marker=dict(size=[25 + (v['energy']/8) for v in nodes.values()], color='#4CAF50'), textposition="top center"))
                             fig.update_layout(showlegend=False, height=250, margin=dict(l=0,r=0,t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(showgrid=False, zeroline=False, showticklabels=False), yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                             st.plotly_chart(fig, use_container_width=True)
 
@@ -184,7 +208,7 @@ if st.button("🚀 إطلاق المحرك الإمبراطوري v14.1", use_co
                     with col_sem:
                         st.markdown("#### 🧠 المعنى")
                         sem = analyze_semantics_v14(s_results)
-                        st.markdown(f"<div class='coherence-box'><b>المجال:</b> {sem['dominant_field']}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='coherence-box'><b>المجال المهيمن:</b> {sem['dominant_field']}</div>", unsafe_allow_html=True)
                         st.markdown(f"<div class='tension-alert'>{detect_tension(sem['detailed'])}</div>", unsafe_allow_html=True)
 
-st.sidebar.write("v14.1 Unified | خِت فِت.")
+st.sidebar.write("v14.1 Absolute | خِت فِت.")
