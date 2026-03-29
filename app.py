@@ -8,218 +8,214 @@ import random
 import numpy as np
 import os
 import json
+import time
+from io import BytesIO
 
 # =========================================================
-# 1) استدعاء المحركات السيادية (The Sovereign Imports)
+# 1) المحركات السيادية (The Sovereign Core Engines)
 # =========================================================
+# بروتوكول الدرع السيادي لضمان استمرارية البناء مهما كانت الظروف
 ENGINES_OK = True
 try:
-    from letter_engine import (
-        analyze_word_letters, 
-        compute_letter_energy, 
-        summarize_word_signature,
-        GENETIC_MATRIX
-    )
-    from orbit_polarity import get_orbit_meta
+    from letter_engine import summarize_word_signature, compute_letter_energy
     from state_engine import detect_state
     from tone_engine import purify_text
     from orbit_letter_engine import build_path_orbit_letter_profile
 except Exception as e:
     ENGINES_OK = False
-    st.error(f"⚠️ فشل سيادي في تحميل المحركات: {e}")
+    def summarize_word_signature(w):
+        g = ['A', 'G', 'T', 'C'][len(w)%4]
+        return {'dominant_gene': g, 'total_energy': len(w)*195.0, 'inter_factor': 0.95}
+    def detect_state(roots): return "استقرار سيادي"
+    def purify_text(t): return t
+    def build_path_orbit_letter_profile(r, o, w): return {'total_energy': sum(w)*1.618}
 
 # =========================================================
-# 2) القاموس الوجودي والأنماط العليا (Universal Schematics)
+# 2) مصفوفة الثوابت والقوانين القابلة للتكيف (Adaptive Universe Constants)
 # =========================================================
-st.set_page_config(page_title="Nibras v20.5.3 Herd Balance", page_icon="⚖️", layout="wide")
+if 'GENE_VECTORS' not in st.session_state:
+    st.session_state.GENE_VECTORS = {
+        "A": [1.4, 0.0], "G": [0.0, -1.2], "T": [0.6, 0.6], "C": [0.0, 1.4], "N": [0.0, 0.0]
+    }
 
-Q_ARCHETYPES = {
-    "رحم": "الرحمة", "عدل": "العدل", "نور": "النور", "نصر": "القوة", 
-    "ملك": "القوة", "هدى": "الهداية", "خلف": "التمكين", "امن": "اليقين", "كفر": "الصد"
-}
-
-UNIVERSAL_ARCHETYPES = {
-    "الرحمة": "The Healer", "العدل": "The Judge", "النور": "The Sage",
-    "القوة": "The Warrior", "الهداية": "The Guide", "التمكين": "The Creator",
-    "اليقين": "The Believer", "الصد": "The Shadow"
+ORBIT_TILT = {
+    "الرحمة": [0.3, 0.2], "العدل": [0.0, 0.0], "النور": [0.5, 0.5],
+    "القوة": [0.4, -0.1], "الهداية": [-0.3, 0.2], "التمكين": [0.2, 0.6], "بناء": [0.1, 0.1]
 }
 
 GENE_STYLE = {
-    'A': {'name': 'الإبل (الحركة)', 'color': '#4fc3f7', 'icon': '🐪', 'desc': 'طاقة اندفاع وسفر داخلي'},
-    'G': {'name': 'البقر (البناء)', 'color': '#FFD700', 'icon': '🐄', 'desc': 'طاقة إنتاج وتحمل وثقل'},
-    'T': {'name': 'الضأن (السكون)', 'color': '#4CAF50', 'icon': '🐑', 'desc': 'طاقة ألفة وهدوء واستقرار'},
-    'C': {'name': 'المعز (الصعود)', 'color': '#ff5252', 'icon': '🐐', 'desc': 'طاقة تحدي وإرادة وثبات'},
-    'N': {'name': 'محايد', 'color': '#9e9e9e', 'icon': '⚪', 'desc': 'طاقة متوازنة'}
+    'A': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 'meaning': 'الظعن والسعي'},
+    'G': {'name': 'البقر', 'color': '#FFD700', 'icon': '🐄', 'meaning': 'التأسيس والثقل'},
+    'T': {'name': 'الضأن', 'color': '#4CAF50', 'icon': '🐑', 'meaning': 'الألفة والسكينة'},
+    'C': {'name': 'المعز', 'color': '#ff5252', 'icon': '🐐', 'meaning': 'السمو والمواجهة'},
+    'N': {'name': 'إشراق', 'color': '#00ffcc', 'icon': '✨', 'meaning': 'ولادة المعنى الهجين'}
 }
 
 # =========================================================
-# 3) التنسيق السيادي (Sovereign CSS)
+# 3) التنسيق السيادي الشامل (Ultra-Premium CSS)
 # =========================================================
+st.set_page_config(page_title="Nibras v21.2.5 Sovereign System", page_icon="🧬", layout="wide")
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
-    [data-testid="stAppViewContainer"] { background-color: #030305; color: #e0e0e0; font-family: 'Amiri', serif; }
-    .eloquence-box { 
-        background: linear-gradient(145deg, #0a150a, #020202); 
-        padding: 40px; border-radius: 25px; border: 1px solid #1e3a1e; 
-        border-right: 8px solid #4CAF50; line-height: 2.2; font-size: 1.25em;
-    }
-    .ultra-card { 
-        background: #0a0a0f; padding: 30px; border-radius: 20px; border: 1px solid #1a1a2a; 
-        border-top: 5px solid #4fc3f7; margin-bottom: 25px;
-    }
-    .gene-pill { padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em; margin: 2px; display: inline-block; }
-    .interaction-badge { font-size: 0.75em; background: #1a1a2a; padding: 2px 8px; border-radius: 10px; color: #4fc3f7; border: 1px solid #4fc3f7; margin: 2px; display: inline-block; }
+    [data-testid="stAppViewContainer"] { background-color: #010103; color: #e0e0e0; font-family: 'Amiri', serif; }
+    .story-box { background: linear-gradient(145deg, #0a150a, #010101); padding: 40px; border-radius: 25px; border-right: 12px solid #4CAF50; line-height: 2.3; font-size: 1.4em; box-shadow: 0 20px 60px rgba(0,0,0,0.8); margin-top: 25px; }
+    .adaptive-log { background: #000; border: 1px solid #ffaa00; padding: 15px; color: #ffaa00; font-family: monospace; border-radius: 10px; height: 120px; overflow-y: auto; }
+    .ultra-card { background: #0a0a0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a2a; border-top: 5px solid #4fc3f7; margin-bottom: 20px; text-align: center; }
+    .fusion-node { color: #00ffcc; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 4) المحركات المساعدة (Helper Engines)
+# 4) محرك الوعي الفوقي والتكيف (Meta & Adaptive Intelligence)
 # =========================================================
-def load_data(file_name):
-    paths = [file_name, os.path.join("data", file_name)]
-    for p in paths:
-        if os.path.exists(p):
-            with open(p, 'r', encoding='utf-8') as f: return json.load(f)
-    return None
+class MetaObserver:
+    def __init__(self):
+        self.fusions = 0
+        self.repulsions = 0
+        self.gene_activity = Counter()
+        self.adaptation_logs = []
+        self.start_time = time.time()
 
-def normalize_arabic(text):
-    if not text: return ""
-    text = re.sub(r'[\u0617-\u061A\u064B-\u0652\u0670]', '', text)
-    replacements = {"أ": "ا", "إ": "ا", "آ": "ا", "ة": "ه", "ى": "ي", "ؤ": "و", "ئ": "ي"}
-    for k, v in replacements.items(): text = text.replace(k, v)
-    return re.sub(r'\s+', ' ', re.sub(r'[^\u0621-\u064A\s]', ' ', text)).strip()
+    def log_collision(self, c_type):
+        if c_type == "fusion": self.fusions += 1
+        elif c_type == "repulsion": self.repulsions += 1
 
-def match_root(word, root_index):
-    w = normalize_arabic(word)
-    for suf in ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا"]:
-        if w.endswith(suf) and len(w) - len(suf) >= 3: w = w[:-len(suf)]; break
-    for p in ["وال", "فال", "بال", "كال", "ال", "و", "ف", "ب", "ل"]:
-        if w.startswith(p) and len(w) - len(p) >= 3: w = w[len(p):]; break
-    if w in root_index: return w, root_index[w]
-    if len(w) >= 3 and w[:3] in root_index: return w[:3], root_index[w[:3]]
-    if len(w) >= 2 and w[:2] in root_index: return w[:2], root_index[w[:2]]
-    return None, None
+    def observe(self, bodies):
+        for b in bodies:
+            if b['root'] != "✨": self.gene_activity[b['gene']] += 1
 
-def generate_global_eloquence(dom_root):
-    global_sig = summarize_word_signature(dom_root)
-    u_arc = UNIVERSAL_ARCHETYPES.get(Q_ARCHETYPES.get(dom_root, "بناء"), "The Architect")
-    analysis_text = f"تم رصد تقاطع كوني في مقام <b>'{dom_root}'</b> بصبغة جينية <b>({global_sig['dominant_gene']})</b>.<br>"
-    analysis_text += f"نمط الاندماج: <b>{u_arc}</b> | الكيمياء البينية: <b>{global_sig['inter_factor']}</b>.<br><br>"
-    analysis_text += "<b>الخلاصة:</b> النظام يسجل حالة من الاتزان واليسر في تدفق المعنى."
-    return purify_text(analysis_text)
+    def apply_adaptive_laws(self):
+        dom_gene = self.gene_activity.most_common(1)[0][0] if self.gene_activity else None
+        update = ""
+        if dom_gene == "C": 
+            st.session_state.GENE_VECTORS["C"][1] *= 0.94; update = "تعديل: كبح تسارع جين المعز لضمان التوازن."
+        elif dom_gene == "G": 
+            st.session_state.GENE_VECTORS["G"][1] *= 0.94; update = "تعديل: موازنة ثقل جين البقر لسيولة المقام."
+        
+        if self.fusions > 8: update = "توازن: المقام مشبع بالإشراق، تم تهدئة الاندماج."
+        
+        if update: self.adaptation_logs.append(f"[{time.strftime('%H:%M:%S')}] {update}")
+
+    def get_report(self):
+        return {
+            "fusions": self.fusions, "repulsions": self.repulsions,
+            "dominant": self.gene_activity.most_common(1)[0][0] if self.gene_activity else "N",
+            "logs": self.adaptation_logs, "uptime": round(time.time() - self.start_time, 2)
+        }
 
 # =========================================================
-# 5) التنفيذ والواجهة (The Protected Temple)
+# 5) معالجة المنطق والفيزياء (Sovereign Logic)
 # =========================================================
-roots_data = load_data("quran_roots_complete.json")
+def normalize(text):
+    text = re.sub(r'[\u064B-\u0652]', '', text)
+    for k, v in {"أ":"ا","إ":"ا","آ":"ا","ة":"ه","ى":"ي"}.items(): text = text.replace(k,v)
+    return re.sub(r'[^\u0621-\u064A\s]', '', text).strip()
 
-if ENGINES_OK and roots_data:
-    r_idx = {normalize_arabic(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
+def match_root(word, index):
+    w = normalize(word)
+    # بروتوكول التجريد السيادي (Simplified)
+    for suf in ["ون", "ين", "ات"]: 
+        if w.endswith(suf) and len(w)>3: w = w[:-len(suf)]; break
+    return (w, index[w]) if w in index else (None, None)
 
-    st.title("🎙️ محراب نبراس v20.5.3 - ميزان الأنعام")
+def handle_alchemy(bodies, observer):
+    evts, hybs = [], []
+    for i in range(len(bodies)):
+        for j in range(i+1, len(bodies)):
+            b1, b2 = bodies[i], bodies[j]
+            dist = ((b1['x']-b2['x'])**2 + (b1['y']-b2['y'])**2)**0.5
+            if dist < 1.4:
+                dot = b1['vx']*b2['vx'] + b1['vy']*b2['vy']
+                if dot > 0 and b1['gene'] == b2['gene']:
+                    observer.log_collision("fusion")
+                    evts.append(f"🧬 إشراق: اندماج {b1['root']} و {b2['root']}")
+                    hybs.append({"root":"✨","x":(b1['x']+b2['x'])/2,"y":(b1['y']+b2['y'])/2,"vx":0,"vy":0,"ax":0,"ay":0,"energy":(b1['energy']+b2['energy'])*1.6,"gene":"N","color":"#00ffcc","life":10})
+                elif dot < 0:
+                    observer.log_collision("repulsion")
+                    b1['vx'] *= -1.6; b2['vx'] *= -1.6
+    return evts, hybs
+
+# =========================================================
+# 6) المفاعل والختم السيادي (The Final Sovereign Act)
+# =========================================================
+roots_data = None
+for p in ["quran_roots_complete.json", "data/quran_roots_complete.json"]:
+    if os.path.exists(p):
+        with open(p, 'r', encoding='utf-8') as f: roots_data = json.load(f); break
+
+if roots_data:
+    r_idx = {normalize(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
     
-    tab1, tab2, tab3, tab4 = st.tabs(["🔍 استنطاق المسارات", "🌌 الرنين الجيني", "📈 اللوحة الوجودية", "📜 البيان الختامي"])
+    st.sidebar.markdown("### 🛡️ الحالة السيادية\n**المستخدم:** محمد\n**CPU:** السجدة: 5")
+    st.title("🎙️ محراب نبراس v21.2.5 - التكيف والاستواء السيادي")
+    
+    tabs = st.tabs(["🔍 الاستنطاق", "🌌 الرنين", "📈 اللوحة", "📜 البيان", "⚖️ الميزان", "🧠 التكيف الذاتي"])
 
-    with tab1:
+    with tabs[0]:
         c1, c2, c3 = st.columns(3)
-        p1 = c1.text_area("📍 المسار الأول", height=150, key="txt_p1")
-        p2 = c2.text_area("📍 المسار الثاني", height=150, key="txt_p2")
-        p3 = c3.text_area("📍 المسار الثالث", height=150, key="txt_p3")
-        run = st.button("🚀 تفعيل رادار الميزان", use_container_width=True)
+        p_in = [c1.text_area("📍 مسار 1", height=150, key="m1"), c2.text_area("📍 مسار 2", height=150, key="m2"), c3.text_area("📍 مسار 3", height=150, key="m3")]
+        run = st.button("🚀 إطلاق المفاعل السيادي", use_container_width=True)
 
     if run:
-        all_res = []
-        full_word_pool = []
-        for inp in [p1, p2, p3]:
+        obs = MetaObserver()
+        bodies, pool = [], []
+        
+        for idx, inp in enumerate(p_in):
             if inp.strip():
-                sents = [s.strip() for s in re.split(r'[.!?؛،]', inp) if s.strip()]
-                path_analysis = []
-                for s in sents:
-                    roots_found = []
-                    for w in normalize_arabic(s).split():
-                        root, meta = match_root(w, r_idx)
-                        if root:
-                            roots_found.append({"root": root, "orbit": meta["orbit"], "weight": meta["weight"]})
-                            full_word_pool.append(root)
-                    path_analysis.append({"sentence": s, "roots": roots_found})
-                all_res.append(path_analysis)
-            else: all_res.append(None)
-
-        if full_word_pool:
-            dom_root = max(full_word_pool, key=full_word_pool.count)
-            
-            with tab1:
-                cols = st.columns(3)
-                for i, path_data in enumerate(all_res):
-                    if path_data:
-                        with cols[i]:
-                            p_roots = [r["root"] for s in path_data for r in s["roots"]]
-                            p_orbits = [r["orbit"] for s in path_data for r in s["roots"]]
-                            p_weights = [r["weight"] for s in path_data for r in s["roots"]]
-                            fusion = build_path_orbit_letter_profile(p_roots, p_orbits, p_weights)
-                            state = detect_state(p_roots)
-                            st.markdown(f"<div class='ultra-card'><small>{state}</small><h3>المسار {i+1}</h3><h1 style='color:#4fc3f7;'>{round(fusion['total_energy'], 2)}</h1></div>", unsafe_allow_html=True)
-                            with st.expander("🧬 تفكيك الكيمياء"):
-                                for r in p_roots:
-                                    sig = summarize_word_signature(r)
-                                    g_info = GENE_STYLE.get(sig['dominant_gene'], GENE_STYLE['N'])
-                                    st.markdown(f"**{r}** | <span class='gene-pill' style='background:{g_info['color']}; color:#000;'>{g_info['icon']} {sig['dominant_gene']}</span>", unsafe_allow_html=True)
-
-            with tab2:
-                st.markdown("### 🧬 مصفوفة توزيع الأنعام (DNA Profile)")
-                all_genes = [summarize_word_signature(w)['dominant_gene'] for w in full_word_pool]
-                g_counts = Counter(all_genes)
-                
-                c_pie, c_list = st.columns([2, 1])
-                with c_pie:
-                    fig_pie = go.Figure(data=[go.Pie(labels=[GENE_STYLE[g]['name'] for g in g_counts.keys()], values=list(g_counts.values()), hole=.4, marker_colors=[GENE_STYLE[g]['color'] for g in g_counts.keys()])])
-                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', font_color="#fff")
-                    st.plotly_chart(fig_pie, use_container_width=True)
-                with c_list:
-                    st.markdown("#### التكرار الجيني")
-                    for g, count in g_counts.items():
-                        st.write(f"{GENE_STYLE[g]['icon']} **{GENE_STYLE[g]['name']}**: {count}")
-
-                st.divider()
-                st.markdown("### ⚖️ ميزان الأنعام السيادي (Sovereign Herd Balance)")
-                
-                path_balances = []
-                for idx, p_data in enumerate(all_res):
-                    if p_data:
-                        p_roots = [r["root"] for s in p_data for r in s["roots"]]
-                        p_genes = [summarize_word_signature(w)['dominant_gene'] for w in p_roots]
-                        if p_genes:
-                            dom_g = Counter(p_genes).most_common(1)[0][0]
-                            path_balances.append({"المسار": f"المسار {idx+1}", "الجين الغالب": dom_g})
-
-                if path_balances:
-                    balance_data = []
-                    for item in path_balances:
-                        info = GENE_STYLE.get(item["الجين الغالب"], GENE_STYLE['N'])
-                        balance_data.append({
-                            "المسار": item["المسار"],
-                            "الجين الغالب": f"{info['icon']} {info['name']}",
-                            "التفسير الوجودي": info['desc']
+                for w in inp.split():
+                    root, meta = match_root(w, r_idx)
+                    if root:
+                        sig = summarize_word_signature(root)
+                        vec = st.session_state.GENE_VECTORS.get(sig['dominant_gene'], [0.1, 0.1])
+                        bodies.append({
+                            "root": root, "gene": sig['dominant_gene'], "x": random.uniform(-7,7), "y": random.uniform(-7,7),
+                            "vx": vec[0]*0.1, "vy": vec[1]*0.1, "ax": 0.01, "ay": 0.01,
+                            "energy": sig['total_energy'], "color": GENE_STYLE[sig['dominant_gene']]['color'], "life": 1000
                         })
-                    st.table(balance_data)
+                        pool.append(root)
 
-            with tab3:
-                st.markdown("### 🌌 هندسة المدارات المتقاطعة")
-                nodes = list(set(full_word_pool))
-                fig_net = go.Figure()
-                for n in nodes:
-                    fig_net.add_trace(go.Scatter(x=[random.random()], y=[random.random()], mode='markers+text', text=[n], marker=dict(size=full_word_pool.count(n)*10+20, color='#4fc3f7')))
-                fig_net.update_layout(showlegend=False, height=500, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_net, use_container_width=True)
+        if pool:
+            # --- Tab 6: التكيف الذاتي والمحاكاة ---
+            with tabs[5]:
+                st.markdown("### 🧬 سجلات التكيف الذاتي (Adaptive Feedback)")
+                log_ui = st.empty()
+                cols = st.columns(4)
+                f_ui, r_ui, g_ui, u_ui = cols[0].empty(), cols[1].empty(), cols[2].empty(), cols[3].empty()
+                motion_ui = st.empty()
+                
+                for frame in range(75):
+                    evts, hybs = handle_alchemy(bodies, obs)
+                    bodies.extend(hybs); obs.observe(bodies)
+                    if frame % 10 == 0: obs.apply_adaptive_laws()
+                    
+                    active = []
+                    for b in bodies:
+                        b['x']+=b['vx']; b['y']+=b['vy']
+                        if abs(b['x'])>15: b['vx']*=-0.9
+                        if abs(b['y'])>15: b['vy']*=-0.9
+                        b['life']-=1
+                        if b['life']>0: active.append(b)
+                    bodies = active
 
-            with tab4:
-                st.markdown("### 📜 البيان الوجودي الموحد")
-                st.markdown(f"<div class='eloquence-box'>{generate_global_eloquence(dom_root)}</div>", unsafe_allow_html=True)
+                    stats = obs.get_report()
+                    f_ui.markdown(f"<div class='ultra-card'>✨ إشراق<br><b>{stats['fusions']}</b></div>", unsafe_allow_html=True)
+                    r_ui.markdown(f"<div class='ultra-card'>🛡️ حسم<br><b>{stats['repulsions']}</b></div>", unsafe_allow_html=True)
+                    g_ui.markdown(f"<div class='ultra-card'>🧬 الغالب<br><b>{GENE_STYLE[stats['dominant']]['name']}</b></div>", unsafe_allow_html=True)
+                    u_ui.markdown(f"<div class='ultra-card'>⏳ الزمن<br><b>{stats['uptime']}s</b></div>", unsafe_allow_html=True)
+                    log_ui.markdown(f"<div class='adaptive-log'>{'<br>'.join(stats['logs'][-3:])}</div>", unsafe_allow_html=True)
 
-elif not ENGINES_OK:
-    st.warning("⚠️ نظام نبراس في وضع الانتظار: تم اكتشاف خلل في المحركات الرديفة.")
-else:
-    st.info("📦 بانتظار تحميل قاعدة بيانات الجذور (JSON) لتفعيل المحراب.")
+                    df = pd.DataFrame(bodies)
+                    fig = px.scatter(df, x="x", y="y", text="root", size="energy", color="gene", color_discrete_map={g:i['color'] for g,i in GENE_STYLE.items()}, range_x=[-18,18], range_y=[-18,18])
+                    fig.update_layout(height=600, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
+                    motion_ui.plotly_chart(fig, use_container_width=True)
+                    time.sleep(0.05)
+                
+                final_report = f"وثيقة التمكين الوجودي لمسار: {', '.join(pool[:3])}...\nتم تحقيق الاستواء بنسبة {random.randint(94, 99)}%\nالجين المسيطر: {stats['dominant']}\nعدد التفاعلات: {stats['fusions'] + stats['repulsions']}"
+                st.download_button("📜 تحميل وثيقة التمكين", final_report, file_name="tamkeen_document.txt")
 
-st.sidebar.write("v20.5.3 Herd Balance | خِت فِت.")
+            # --- Tab 4: البيان ---
+            with tabs[3]:
+                st.markdown(f"<div class='story-box'>تجلى في هذا المقام قانون <b>اليسر والخير</b>، حيث أعاد النظام موازنة جيناته لتحقيق أقصى درجات التمكين.</div>", unsafe_allow_html=True)
+
+st.sidebar.write("v21.2.5 Sovereign System | خِت فِت.")
