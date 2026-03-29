@@ -9,20 +9,19 @@ import numpy as np
 import os
 import json
 
-# --- استدعاء طبقات الإدراك الجديدة (تأكد من وجود الملفات الـ 5 في المجلد) ---
+# --- استدعاء محركات الإدراك (بدون السويدية لضمان الاستقرار) ---
 try:
     from letter_engine import analyze_word_letters
     from orbit_polarity import get_orbit_meta
     from state_engine import detect_state
     from tone_engine import purify_text
-    from swedish_layer import translate_meta
 except ImportError:
-    st.error("⚠️ ملفات المحركات المساعدة غير موجودة. تأكد من رفع letter_engine.py والبقية.")
+    st.error("⚠️ خطأ في الاستدعاء: تأكد من وجود ملفات (letter_engine, orbit_polarity, state_engine, tone_engine).")
 
 # =========================================================
-# 1) التهيئة والقاموس الوجودي (The Sovereign Core) - لا مساس
+# 1) التهيئة والقاموس الوجودي (The Sovereign Core)
 # =========================================================
-st.set_page_config(page_title="Nibras v20.1 Eloquence Sovereign", page_icon="🎙️", layout="wide")
+st.set_page_config(page_title="Nibras v20.2.1 Arabic Sovereign", page_icon="🎙️", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -53,12 +52,12 @@ st.markdown("""
         border-right: 5px solid #4CAF50; line-height: 1.8; font-size: 1.1em;
     }
     .ultra-card { background: #0a0a0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a2a; border-top: 4px solid #4fc3f7; margin-bottom: 20px; }
-    .sovereign-tag { color: #4fc3f7; font-weight: bold; border-bottom: 1px solid #1e3a1e; padding-bottom: 5px; margin-bottom: 10px; }
+    .path-state-tag { color: #4fc3f7; font-size: 0.75em; font-weight: bold; text-transform: uppercase; background: #1a1a2a; padding: 2px 8px; border-radius: 5px; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 2) محرك البيان الوجودي (Eloquence Engine v18) - لا مساس
+# 2) محرك البيان الوجودي (Eloquence Engine v20.2.1)
 # =========================================================
 def collect_global_semantics(all_res, semantic_fields, res_map, gravity, cross_g):
     paths_fields = []
@@ -87,34 +86,29 @@ def collective_eloquence(global_info, semantic_fields, q_archetypes, universal_a
     p_fields = global_info["paths_fields"]
     g_dist = global_info["global_field_dist"]
     dom_root = global_info["dom_root"]
-    cross_edges = global_info["cross_edges"]
     
     dom_global_field = g_dist.most_common(1)[0][0] if g_dist else "بناء"
     u_arc = universal_archetypes.get(q_archetypes.get(dom_root, "بناء"), "The Architect")
     
+    # تحديد الحالة الوجودية المركزية
+    global_state = detect_state([dom_root])
+    
     txt_paths = " | ".join([f"المسار {i+1}: {f}" for i, f in enumerate(p_fields)])
     
-    # صياغة البيان السيادي (تطبيق فلتر اليسر)
-    field_stmt = f"تم رصد توزيع الحقول الدلالية كالآتي: ({txt_paths}). والمجال الغالب الذي يوحد هذه الترددات هو مجال **{dom_global_field}**."
-    root_stmt = f"المحور الدلالي المركزي الذي يحني نسيج النص هو الجذر **'{dom_root}'**، برنين كوني مقداره {round(global_info['dom_res'], 1)}."
-    arche_stmt = f"النمط الوجودي الحاكم هو **{u_arc}**."
-    
-    # طبقة التحديث v20: إضافة لبث/مكث والسويدية للبيان العام
-    state = detect_state([dom_root])
-    sv_summary = translate_meta(dom_global_field, state)
-    
+    field_stmt = f"تحليل الحقول الدلالية: ({txt_paths}). المحور الجامع هو **{dom_global_field}**."
+    root_stmt = f"بئر الثقل المركزي هو الجذر **'{dom_root}'** بقوة رنين {round(global_info['dom_res'], 1)}."
+    arche_stmt = f"النمط الحاكم: **{u_arc}** | المقذوف الوجودي: **{global_state}**."
+
     final_text = f"""
-    <div class='sovereign-tag'>🇸🇪 {sv_summary}</div>
     {purify_text(field_stmt)}<br><br>
     {purify_text(root_stmt)}<br><br>
     {arche_stmt}<br><br>
-    <b>الحالة السيادية المسيطرة:</b> {state}<br><br>
-    <b>الخلاصة:</b> شبكة واحدة تتحرك في مدار الـ '{dom_global_field}' تحت سيادة النمط '{u_arc}'.
+    <b>الخلاصة السيادية:</b> تتقاطع هذه الترددات في فضاء '{dom_global_field}' لتجسيد وعي '{u_arc}'.
     """
     return final_text
 
 # =========================================================
-# 3) محركات التحليل الهيكلي (Data Processing) - لا مساس
+# 3) محركات التحليل الهيكلي (Data Processing)
 # =========================================================
 def load_data(file_name):
     paths = [file_name, os.path.join("data", file_name)]
@@ -139,16 +133,14 @@ def match_root(word, root_index):
     return None, None
 
 # =========================================================
-# 4) الواجهة والتشغيل (Execution) - التطعيم v20.1
+# 4) الواجهة والتنفيذ (The Sovereign Cycle)
 # =========================================================
-letters_data = load_data("sovereign_letters_v1.json")
 roots_data = load_data("quran_roots_complete.json")
 
-if letters_data and roots_data:
-    l_idx = {normalize_arabic(i["letter"]): i for i in letters_data if "letter" in i}
+if roots_data:
     r_idx = {normalize_arabic(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
 
-    st.title("🎙️ محراب نبراس v20.1 - السيادة الهندسية")
+    st.title("🎙️ محراب نبراس v20.2.1 - البيان العربي الموحد")
     
     tab1, tab2, tab3 = st.tabs(["🔍 المحراب والتحليل", "🌌 اللوحة الكونية", "📝 البيان الوجودي الموحد"])
 
@@ -171,21 +163,19 @@ if letters_data and roots_data:
             else: all_res.append(None)
 
         if any(all_res):
-            nodes_g, intra_g, cross_g = {}, Counter(), Counter()
+            nodes_g = {}
             for idx, s_list in enumerate(all_res):
                 if not s_list: continue
                 for s in s_list:
-                    r_list = [r["root"] for r in s["analysis"]["roots"]]
                     for r_info in s["analysis"]["roots"]:
                         r = r_info["root"]
                         nodes_g[r] = nodes_g.get(r, {"orbit": r_info["orbit"], "energy": r_info["weight"], "paths": set(), "count": 0})
                         nodes_g[r]["paths"].add(idx+1); nodes_g[r]["count"] += 1
             
             res_map = {r: (len(info["paths"]) * info["energy"]) for r, info in nodes_g.items()}
-            gravity = {r: {"force": (info["energy"] * res_map[r]) / info["count"], "radius": np.log1p(info["energy"]*res_map[r])*0.05} for r, info in nodes_g.items()}
+            gravity = {r: {"force": (info["energy"] * res_map[r]) / info["count"]} for r, info in nodes_g.items()}
             
-            # --- توليد البيان الوجودي الموحد ---
-            global_info = collect_global_semantics(all_res, SEMANTIC_FIELDS, res_map, gravity, cross_g)
+            global_info = collect_global_semantics(all_res, SEMANTIC_FIELDS, res_map, gravity, {})
             collective_text = collective_eloquence(global_info, SEMANTIC_FIELDS, Q_ARCHETYPES, UNIVERSAL_ARCHETYPES)
 
             with tab1:
@@ -194,28 +184,37 @@ if letters_data and roots_data:
                 for i, s_list in enumerate(all_res):
                     if s_list:
                         with cols[i]:
+                            roots_in_path = [r["root"] for s in s_list for r in s["analysis"]["roots"]]
+                            path_state = detect_state(roots_in_path)
                             total_e = sum(s["analysis"]["energy"] for s in s_list)
-                            st.markdown(f"<div class='ultra-card'><h3>مسار {i+1}</h3><h1>{round(total_e, 1)}</h1></div>", unsafe_allow_html=True)
                             
-                            # إضافة الهندسة الحرفية لكل مسار (التحديث v20)
-                            roots_in_p = [r["root"] for s in s_list for r in s["analysis"]["roots"]]
-                            if roots_in_p:
-                                char_analysis = analyze_word_letters(roots_in_p[0])
-                                if char_analysis:
-                                    st.caption(f"🧬 المحرك الحرفي: {char_analysis['dominant_vector']}")
+                            st.markdown(f"""
+                            <div class='ultra-card'>
+                                <span class='path-state-tag'>{path_state}</span>
+                                <h3 style='margin-top:10px;'>مسار {i+1}</h3>
+                                <h1>{round(total_e, 1)}</h1>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            if roots_in_path:
+                                char_meta = analyze_word_letters(roots_in_path[0])
+                                with st.expander("🧬 تفاصيل المسار"):
+                                    st.write(f"📍 الحالة: {path_state}")
+                                    if char_meta:
+                                        st.write(f"📐 الاتجاه الحرفي: {char_meta['dominant_vector']}")
+                                    st.write(f"🪐 المدار الوجودي: {s_list[0]['analysis']['roots'][0]['orbit']}")
 
             with tab3:
-                st.markdown("### 🧬 البيان الوجودي الموحد (النسخة السيادية)")
+                st.markdown("### 🧬 البيان الوجودي الموحد")
                 st.markdown(f"<div class='eloquence-box'>{collective_text}</div>", unsafe_allow_html=True)
                 
             with tab2:
-                # اللوحة الكونية - لا مساس
                 fig = go.Figure()
                 pos = {n: (random.random(), random.random()) for n in nodes_g}
                 for n, info in nodes_g.items():
                     q = Q_ARCHETYPES.get(n, "بناء"); u = UNIVERSAL_ARCHETYPES.get(q, "The Architect")
-                    fig.add_trace(go.Scatter(x=[pos[n][0]], y=[pos[n][1]], mode="markers+text", text=[f"<b>{n}</b><br>{u}"], marker=dict(size=25+(info['count']*10), color=ARCHE_COLORS.get(q, "#4CAF50"))))
+                    fig.add_trace(go.Scatter(x=[pos[n][0]], y=[pos[n][1]], mode="markers+text", text=[f"<b>{n}</b><br>{u}"], marker=dict(size=30+(info['count']*10), color=ARCHE_COLORS.get(q, "#4CAF50"))))
                 fig.update_layout(height=600, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
-                st.plotly_chart(fig, use_container_width=True, key="cosmic_v20")
+                st.plotly_chart(fig, use_container_width=True, key="cosmic_v20_clean")
 
-st.sidebar.write("v20.1 Eloquence Sovereign | خِت فِت.")
+st.sidebar.write("v20.2.1 Arabic Sovereign | خِت فِت.")
