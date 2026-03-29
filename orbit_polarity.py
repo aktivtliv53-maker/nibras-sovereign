@@ -1,7 +1,19 @@
-# orbit_polarity.py
+# orbit_polarity.py — v20.3
 ORBIT_POLARITY_MAP = {
-    "التمكين": "الابتلاء", "الإيمان": "الضلال", "النور": "الظلام",
-    "الرحمة": "العقاب", "العدل": "الظلم", "بناء": "هدم", "الإصلاح": "الفساد"
+    "التمكين": "الابتلاء",
+    "الإيمان": "الضلال",
+    "النور": "الظلام",
+    "الرحمة": "العقاب",
+    "العدل": "الظلم",
+    "بناء": "هدم",
+    "الإصلاح": "الفساد"
 }
+
 def get_orbit_meta(orbit: str):
-    return {"main": orbit, "opposite": ORBIT_POLARITY_MAP.get(orbit, "توازن وجودي")}
+    opposite = ORBIT_POLARITY_MAP.get(orbit)
+    relation = "تقابل" if opposite else "توازن"
+    return {
+        "main": orbit,
+        "opposite": opposite if opposite else "توازن وجودي",
+        "relation": relation
+    }
