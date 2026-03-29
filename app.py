@@ -11,7 +11,7 @@ import json
 import time
 
 # =========================================================
-# 1) المحركات السيادية (The Sovereign Core Engines) - تحصين تام
+# 1) المحركات السيادية (The Sovereign Core Engines)
 # =========================================================
 try:
     from letter_engine import summarize_word_signature, compute_letter_energy
@@ -42,7 +42,7 @@ GENE_STYLE = {
 # =========================================================
 # 3) التنسيق السيادي الفوقي (Ultra-Premium CSS)
 # =========================================================
-st.set_page_config(page_title="Nibras v21.3.7 Absolute", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras v21.4.0 Sovereign", page_icon="🛡️", layout="wide")
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
@@ -57,45 +57,51 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 4) محرك الوعي الفوقي (Meta Observer Engine)
+# 4) المنطق والذكاء المداري (Intelligence & Physics)
 # =========================================================
 class MetaObserver:
     def __init__(self):
-        self.fusions = 0
-        self.repulsions = 0
+        self.fusions, self.repulsions = 0, 0
         self.gene_activity = Counter()
-        self.adaptation_logs = []
-        self.start_time = time.time()
-
-    def log_collision(self, c_type):
-        if c_type == "fusion": self.fusions += 1
-        elif c_type == "repulsion": self.repulsions += 1
-
+        self.logs = []
+        self.start_t = time.time()
+    def log_collision(self, t):
+        if t == "f": self.fusions += 1
+        else: self.repulsions += 1
     def observe(self, bodies):
-        for b in bodies:
+        for b in bodies: 
             if b['root'] != "✨": self.gene_activity[b['gene']] += 1
-
-    def apply_adaptive_laws(self):
-        dom_gene = self.gene_activity.most_common(1)[0][0] if self.gene_activity else "N"
-        update = ""
-        if dom_gene == "C": st.session_state.GENE_VECTORS["C"][1] *= 0.95; update = "موازنة استعلاء المعز (تمكين)."
-        elif dom_gene == "G": st.session_state.GENE_VECTORS["G"][1] *= 0.95; update = "موازنة ثقل البقر (تأسيس)."
-        if update: self.adaptation_logs.append(f"[{time.strftime('%H:%M:%S')}] {update}")
-
+    def apply_laws(self):
+        dom = self.gene_activity.most_common(1)[0][0] if self.gene_activity else "N"
+        if dom in ["C", "G"]:
+            st.session_state.GENE_VECTORS[dom][1] *= 0.98
+            self.logs.append(f"[{time.strftime('%H:%M:%S')}] موازنة مدارية لجين {GENE_STYLE[dom]['name']} لتحقيق الاستواء.")
     def get_report(self):
-        return {
-            "fusions": self.fusions, "repulsions": self.repulsions, 
-            "dominant": self.gene_activity.most_common(1)[0][0] if self.gene_activity else "N", 
-            "logs": self.adaptation_logs, "uptime": round(time.time() - self.start_time, 2)
-        }
+        return {"f": self.fusions, "r": self.repulsions, "d": self.gene_activity.most_common(1)[0][0] if self.gene_activity else "N", "u": round(time.time()-self.start_t, 2)}
 
-# =========================================================
-# 5) المنطق والفيزياء (Sovereign Logic)
-# =========================================================
 def normalize(t):
     t = re.sub(r'[\u064B-\u0652]', '', t)
     for k, v in {"أ":"ا","إ":"ا","آ":"ا","ة":"ه","ى":"ي"}.items(): t = t.replace(k,v)
     return re.sub(r'[^\u0621-\u064A\s]', '', t).strip()
+
+def match_root(word, idx):
+    w = normalize(word)
+    if not w: return None
+    if w in idx: return w
+    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س"]
+    for p in prefixes:
+        if w.startswith(p) and len(w) - len(p) >= 3:
+            w2 = w[len(p):]
+            if w2 in idx: return w2
+    suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما"]
+    for s in suffixes:
+        if w.endswith(s) and len(w) - len(s) >= 3:
+            w3 = w[:-len(s)]
+            if w3 in idx: return w3
+    if len(w) >= 3:
+        tri = w[:3]
+        if tri in idx: return tri
+    return None
 
 def handle_alchemy(bodies, obs):
     hybs = []
@@ -103,50 +109,46 @@ def handle_alchemy(bodies, obs):
         for j in range(i+1, len(bodies)):
             b1, b2 = bodies[i], bodies[j]
             dist = ((b1['x']-b2['x'])**2 + (b1['y']-b2['y'])**2)**0.5
-            if dist < 1.5:
+            if dist < 1.4:
                 if b1['gene'] == b2['gene'] and b1['gene'] != "N":
-                    obs.log_collision("fusion")
+                    obs.log_collision("f")
                     hybs.append({"root":"✨","x":(b1['x']+b2['x'])/2,"y":(b1['y']+b2['y'])/2,"vx":0,"vy":0,"energy":(b1['energy']+b2['energy'])*1.6,"gene":"N","color":"#00ffcc","life":15})
                 else:
-                    obs.log_collision("repulsion")
+                    obs.log_collision("r")
                     b1['vx'] *= -1.5; b2['vx'] *= -1.5
     return hybs
 
 # =========================================================
-# 6) رادار المسارات (The Path Finder)
+# 5) رادار المسارات (Path Finder)
 # =========================================================
 roots_data = None
 target_file = "quran_roots_complete.json"
 search_paths = [target_file, f"data/{target_file}", f"/mount/src/nibras-sovereign/{target_file}"]
 
-found_at = None
 for p in search_paths:
     if os.path.exists(p):
         try:
             with open(p, 'r', encoding='utf-8') as f:
-                roots_data = json.load(f)
-                found_at = p
-                break
+                roots_data = json.load(f); break
         except: continue
 
 if not roots_data:
-    st.error("⚠️ عطل سيادي: ملف الجذور غير مفقود.")
-    st.write("📂 الملفات المكتشفة بالسيرفر:", os.listdir("."))
+    st.error("⚠️ المفاعل معطل: قاعدة البيانات غير مرصودة.")
+    st.write("📂 الملفات الحالية:", os.listdir("."))
     st.stop()
 
 r_idx = {normalize(r["root"]): r.get("orbit_hint", "بناء") for r in roots_data.get("roots", [])}
-st.sidebar.success(f"✅ تم الاتصال: {found_at}")
+st.sidebar.success("✅ تم الاتصال المداري السيادي")
 
 # =========================================================
-# 7) المحراب السيادي الشامل (The Sovereign Tabbed Interface)
+# 6) الواجهة والمحراب الشامل (The Sovereign Tabs)
 # =========================================================
-st.title("🎙️ محراب نبراس - v21.3.7 (Absolute Restoration)")
 tabs = st.tabs(["🔍 الاستنطاق", "🌌 الرنين الجيني", "📈 اللوحة الوجودية", "📜 البيان الختامي", "⚖️ الميزان السيادي", "🧠 الوعي الفوقي"])
 
 with tabs[0]:
     c1, c2, c3 = st.columns(3)
     p_in = [c1.text_area("📍 مسار 1", key="t1"), c2.text_area("📍 مسار 2", key="t2"), c3.text_area("📍 مسار 3", key="t3")]
-    run = st.button("🚀 إطلاق المفاعل السيادي الشامل", use_container_width=True)
+    run = st.button("🚀 إطلاق المفاعل السيادي المطلق", use_container_width=True)
     motion_ui = st.empty()
     stats_ui = st.empty()
 
@@ -157,26 +159,24 @@ if run:
         if inp.strip():
             words = re.sub(r'[0-9\(\)]', '', normalize(inp)).split()
             for w in words:
-                if w in r_idx:
-                    sig = summarize_word_signature(w)
-                    # حارس البصمة الجينية المطلق (KeyError Protection)
+                root = match_root(w, r_idx)
+                if root:
+                    sig = summarize_word_signature(root)
                     gene = str(sig.get('dominant_gene', 'N')).upper()
-                    energy = float(sig.get('total_energy', 150.0))
-                    
+                    energy = float(sig.get('total_energy', 180.0))
                     vec = st.session_state.GENE_VECTORS.get(gene, [0.1, 0.1])
                     bodies.append({
-                        "root": w, "gene": gene, "x": random.uniform(-7,7), "y": random.uniform(-7,7),
-                        "vx": vec[0]*0.12, "vy": vec[1]*0.12, "energy": energy,
+                        "root": root, "gene": gene, "x": random.uniform(-6,6), "y": random.uniform(-6,6),
+                        "vx": vec[0]*0.15, "vy": vec[1]*0.15, "energy": energy,
                         "color": GENE_STYLE.get(gene, GENE_STYLE['N'])['color'], "life": 1000
                     })
-                    pool.append(w)
+                    pool.append(root)
 
     if bodies:
         for frame in range(120):
             hybs = handle_alchemy(bodies, obs)
             bodies.extend(hybs); obs.observe(bodies)
-            if frame % 15 == 0: obs.apply_adaptive_laws()
-            
+            if frame % 15 == 0: obs.apply_laws()
             active = []
             for b in bodies:
                 b['x']+=b['vx']; b['y']+=b['vy']
@@ -191,28 +191,28 @@ if run:
             fig.update_layout(height=650, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False, xaxis={'visible':False}, yaxis={'visible':False})
             motion_ui.plotly_chart(fig, use_container_width=True)
             
-            report = obs.get_report()
+            rep = obs.get_report()
             stats_ui.markdown(f"""
             <div class="stat-container">
-                <div class="stat-box">✨ إشراق<br><span class="stat-val" style="color:#00ffcc">{report['fusions']}</span></div>
-                <div class="stat-box">🛡️ حسم<br><span class="stat-val" style="color:#ff5252">{report['repulsions']}</span></div>
-                <div class="stat-box">🧬 الغالب<br><span class="stat-val" style="color:#FFD700">{GENE_STYLE[report['dominant']]['name']}</span></div>
-                <div class="stat-box">⏳ الزمن<br><span class="stat-val" style="color:#4fc3f7">{report['uptime']}s</span></div>
+                <div class="stat-box">✨ إشراق<br><span class="stat-val" style="color:#00ffcc">{rep['f']}</span></div>
+                <div class="stat-box">🛡️ حسم<br><span class="stat-val" style="color:#ff5252">{rep['r']}</span></div>
+                <div class="stat-box">🧬 الغالب<br><span class="stat-val" style="color:#FFD700">{GENE_STYLE[rep['d']]['name']}</span></div>
+                <div class="stat-box">⏳ الزمن<br><span class="stat-val" style="color:#4fc3f7">{rep['u']}s</span></div>
             </div>
             """, unsafe_allow_html=True)
             time.sleep(0.01)
 
-        # تعبئة التبويبات السيادية
-        with tabs[3]:
-            st.markdown(f"<div class='story-box'>تجلت أنوار التمكين واليسر. الجذور المستنطقة في المدار: {', '.join(set(pool))}.</div>", unsafe_allow_html=True)
+        # ملء التبويبات بالبروتوكول الصارم
         with tabs[1]:
             st.markdown("### 🌌 تحليل الرنين الجيني النشط")
             cols = st.columns(len(GENE_STYLE))
             for i, (g, info) in enumerate(GENE_STYLE.items()):
                 cols[i].markdown(f"<div class='ultra-card' style='border-top-color:{info['color']}'>{info['icon']} {info['name']}<br><small>{info['meaning']}</small></div>", unsafe_allow_html=True)
+        with tabs[3]:
+            st.markdown(f"<div class='story-box'>تجلت أنوار التمكين واليسر في هذا الاستنطاق المداري. الجذور التي عبرت الأفق: {', '.join(set(pool))}.</div>", unsafe_allow_html=True)
         with tabs[5]:
             st.markdown("### 🧠 سجل الوعي الفوقي والتكيف الذاتي")
-            st.markdown(f"<div class='adaptive-log'>{'<br>'.join(report['logs'])}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='adaptive-log'>{'<br>'.join(obs.logs) if obs.logs else 'المدار في حالة استقرار تام بالخير.'}</div>", unsafe_allow_html=True)
 
-st.sidebar.markdown(f"**المستخدم:** محمد\n**CPU:** السجدة: 5\n**v21.3.7**")
+st.sidebar.markdown(f"**المستخدم:** محمد\n**CPU:** السجدة: 5\n**v21.4.0**")
 st.sidebar.write("خِت فِت.")
