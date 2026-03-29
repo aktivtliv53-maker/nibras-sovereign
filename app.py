@@ -3,71 +3,70 @@ import plotly.graph_objects as go
 import json
 import os
 
-# إعدادات الصفحة لتكون احترافية مثل صورة DeepSeek
+# 1. الإعدادات الأساسية
 st.set_page_config(page_title="Nibras Sovereign", layout="wide")
 
-# دالة آمنة لقراءة الألوان
-def get_safe_color(res, index):
-    colors = ['#00E6FF', '#FF3D00', '#7C4DFF', '#00E676', '#FFC400']
-    color = res.get('color', colors[index % len(colors)])
-    if not color or not str(color).startswith('#'):
-        return colors[index % len(colors)]
-    return color
+# 2. وظيفة جلب البيانات (الصياد الماهر)
+def load_data():
+    files = {
+        "roots": "data/quran_roots_complete.json",
+        "lexicon": "data/nibras_lexicon.json",
+        "letters": "data/sovereign_letters_v1.json"
+    }
+    loaded_data = {}
+    for key, path in files.items():
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                loaded_data[key] = json.load(f)
+            st.sidebar.success(f"✅ {key} محمل")
+        else:
+            st.sidebar.error(f"❌ {key} مفقود")
+    return loaded_data
 
-# دالة بناء الرادار (تم إصلاح خطأ الألوان فيها)
-def create_radar_chart(results, labels):
+# 3. دالة رسم الرادار المحصنة (منع الخطأ السابق)
+def draw_radar(data_list, labels):
     fig = go.Figure()
-    for i, res in enumerate(results):
-        color = get_safe_color(res, i)
-        # تحويل الهكس إلى RGBA بأمان
-        try:
-            r = int(color[1:3], 16)
-            g = int(color[3:5], 16)
-            b = int(color[5:7], 16)
-            fill_rgba = f"rgba({r},{g},{b},0.3)"
-        except:
-            fill_rgba = "rgba(0, 230, 255, 0.3)"
-
+    colors = ['#00e6ff', '#ff3d00', '#7c4dff']
+    
+    for i, item in enumerate(data_list):
+        color = colors[i % len(colors)]
         fig.add_trace(go.Scatterpolar(
-            r=[res.get('mass', 5), res.get('velocity', 5), res.get('energy', 5), 
-               res.get('awareness', 5), res.get('impact', 5), res.get('mass', 5)],
+            r=[item.get('mass', 5), item.get('velocity', 5), item.get('energy', 5), 
+               item.get('awareness', 5), item.get('impact', 5), item.get('mass', 5)],
             theta=['الكتلة', 'السرعة', 'الطاقة', 'الوعي', 'الأثر', 'الكتلة'],
             fill='toself',
             name=labels[i],
-            line=dict(color=color),
-            fillcolor=fill_rgba
+            line=dict(color=color)
         ))
-    fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 10])),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="white")
-    )
+    
+    fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), showlegend=True)
     return fig
 
+# 4. الواجهة البرمجية (الإدخال والرصد)
 def main():
-    st.markdown("<h1 style='text-align: center; color: #00E6FF;'>نبراس الرصد السيادي</h1>", unsafe_allow_html=True)
+    st.title("🛡️ نبراس الرصد السيادي")
+    db = load_data()
     
-    # محاكاة البطاقات التي ظهرت في DeepSeek
-    col1, col2, col3 = st.columns(3)
+    st.subheader("إدخال المسارات")
+    c1, c2, c3 = st.columns(3)
+    with c1: p1 = st.text_area("المسار 1", height=150)
+    with c2: p2 = st.text_area("المسار 2", height=150)
+    with c3: p3 = st.text_area("المسار 3", height=150)
     
-    # هنا نضع نتائج الرصد (مثال توضيحي للواجهة)
-    with col1:
-        st.markdown("<div style='background: #1E1E1E; padding: 20px; border-radius: 10px; border-top: 5px solid #00E6FF;'><h3>المسار الأول</h3><h2 style='color: #00E6FF;'>54.11</h2></div>", unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("<div style='background: #1E1E1E; padding: 20px; border-radius: 10px; border-top: 5px solid #FF3D00;'><h3>المسار الثاني</h3><h2 style='color: #FF3D00;'>53.97</h2></div>", unsafe_allow_html=True)
+    if st.button("🚀 إطلاق الرصد"):
+        results = []
+        labels = []
+        # هنا تتم عملية المعالجة بناءً على ملفات الـ JSON الخاصة بك
+        for i, text in enumerate([p1, p2, p3]):
+            if text:
+                # محاكاة للحسابات لضمان عمل الواجهة (استبدلها بمعادلاتك)
+                results.append({'mass': 7, 'velocity': 8, 'energy': 6, 'awareness': 9, 'impact': 7})
+                labels.append(f"مسار {i+1}")
         
-    with col3:
-        st.markdown("<div style='background: #1E1E1E; padding: 20px; border-radius: 10px; border-top: 5px solid #7C4DFF;'><h3>المسار الثالث</h3><h2 style='color: #7C4DFF;'>35.14</h2></div>", unsafe_allow_html=True)
-
-    # الرادار الهندسي (الذي يميزنا عن DeepSeek)
-    st.markdown("---")
-    st.subheader("📊 هندسة الوعي (الرادار السيادي)")
-    # (هنا يتم استدعاء بياناتك الحقيقية من JSON)
-    # مثال لعرض الرادار
-    sample_res = [{'mass': 8, 'velocity': 7, 'energy': 9, 'awareness': 6, 'impact': 8}]
-    st.plotly_chart(create_radar_chart(sample_res, ["رصد الكلمة"]), use_container_width=True)
+        if results:
+            st.plotly_chart(draw_radar(results, labels), use_container_width=True)
+        else:
+            st.warning("أدخل نصاً لتبدأ")
 
 if __name__ == "__main__":
     main()
