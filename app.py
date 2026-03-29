@@ -10,21 +10,26 @@ import os
 import json
 
 # =========================================================
-# 1) استدعاء الطبقات (بروتوكول السيادة v20.3.4)
+# 1) استدعاء المحركات السيادية (The Sovereign Imports)
 # =========================================================
 try:
-    from letter_engine import analyze_word_letters
+    from letter_engine import (
+        analyze_word_letters, 
+        compute_letter_energy, 
+        summarize_word_signature,
+        GENETIC_MATRIX
+    )
     from orbit_polarity import get_orbit_meta
     from state_engine import detect_state
     from tone_engine import purify_text
     from orbit_letter_engine import build_path_orbit_letter_profile
 except ImportError as e:
-    st.error(f"⚠️ نقص في الملفات الهيكلية: {e}. راجع مستودع الملفات الثمانية.")
+    st.error(f"⚠️ نقص في الملفات المحركة: {e}. تأكد من وجود ملفات v20.5 في المستودع.")
 
 # =========================================================
-# 2) التهيئة والقاموس الوجودي (The Sovereign Core)
+# 2) القاموس الوجودي والأنماط العليا (Universal Schematics)
 # =========================================================
-st.set_page_config(page_title="Nibras v20.3.4 Sovereign Fusion", page_icon="🎙️", layout="wide")
+st.set_page_config(page_title="Nibras v20.5.1 Sovereign Synthesis", page_icon="🏛️", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -44,61 +49,40 @@ UNIVERSAL_ARCHETYPES = {
     "اليقين": "The Believer", "الصد": "The Shadow"
 }
 
-ARCHE_COLORS = {"الرحمة": "#4fc3f7", "القوة": "#ff5252", "الهداية": "#4CAF50", "العدل": "#FFD700", "النور": "#bb86fc"}
+# مصفوفة الألوان والأنعام
+GENE_MAP_STYLING = {
+    'A': {'name': 'الإبل (الحركة)', 'color': '#4fc3f7', 'icon': '🐪'},
+    'G': {'name': 'البقر (البناء)', 'color': '#FFD700', 'icon': '🐄'},
+    'T': {'name': 'الضأن (السكون)', 'color': '#4CAF50', 'icon': '🐑'},
+    'C': {'name': 'المعز (الصعود)', 'color': '#ff5252', 'icon': '🐐'},
+    'N': {'name': 'محايد', 'color': '#9e9e9e', 'icon': '⚪'}
+}
 
+# =========================================================
+# 3) التنسيق السيادي (Sovereign CSS)
+# =========================================================
 st.markdown("""
 <style>
-    [data-testid="stAppViewContainer"] { background-color: #030305; color: #e0e0e0; }
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+    [data-testid="stAppViewContainer"] { background-color: #030305; color: #e0e0e0; font-family: 'Amiri', serif; }
     .eloquence-box { 
         background: linear-gradient(145deg, #0a150a, #020202); 
-        padding: 30px; border-radius: 20px; border: 1px solid #1e3a1e; 
-        border-right: 5px solid #4CAF50; line-height: 1.8; font-size: 1.1em;
+        padding: 40px; border-radius: 25px; border: 1px solid #1e3a1e; 
+        border-right: 8px solid #4CAF50; line-height: 2.2; font-size: 1.25em; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    .ultra-card { background: #0a0a0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a2a; border-top: 4px solid #4fc3f7; margin-bottom: 20px; }
-    .path-state-tag { color: #4fc3f7; font-size: 0.75em; font-weight: bold; background: #1a1a2a; padding: 2px 8px; border-radius: 5px; text-transform: uppercase; }
-    .fusion-sig { color: #4CAF50; font-family: monospace; font-size: 0.85em; }
+    .ultra-card { 
+        background: #0a0a0f; padding: 30px; border-radius: 20px; border: 1px solid #1a1a2a; 
+        border-top: 5px solid #4fc3f7; margin-bottom: 25px; transition: 0.3s;
+    }
+    .ultra-card:hover { border-color: #4fc3f7; transform: translateY(-5px); }
+    .gene-pill { padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em; margin: 2px; display: inline-block; }
+    .stTabs [data-baseweb="tab-list"] { gap: 20px; }
+    .stTabs [data-baseweb="tab"] { height: 60px; font-size: 1.1em; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 3) محركات التحليل (Eloquence & Logic)
-# =========================================================
-def collect_global_semantics(all_res, res_map):
-    paths_fields = []
-    for s_list in all_res:
-        if not s_list:
-            paths_fields.append("صمت")
-            continue
-        roots_in_p = [r["root"] for s in s_list for r in s["analysis"]["roots"]]
-        fields = [SEMANTIC_FIELDS.get(r, "بناء") for r in roots_in_p]
-        dom_field = Counter(fields).most_common(1)[0][0] if fields else "بناء"
-        paths_fields.append(dom_field)
-    
-    g_dist = Counter(paths_fields)
-    dom_root = max(res_map.items(), key=lambda x: x[1])[0] if res_map else "صمت"
-    return paths_fields, g_dist, dom_root
-
-def collective_eloquence(paths_fields, g_dist, dom_root, res_map):
-    dom_global_field = g_dist.most_common(1)[0][0] if g_dist else "بناء"
-    u_arc = UNIVERSAL_ARCHETYPES.get(Q_ARCHETYPES.get(dom_root, "بناء"), "The Architect")
-    global_state = detect_state([dom_root])
-    
-    txt_paths = " | ".join([f"المسار {i+1}: {f}" for i, f in enumerate(paths_fields)])
-    field_stmt = f"رصد الحقول الدلالية: ({txt_paths}). المجال الموحد هو **{dom_global_field}**."
-    root_stmt = f"المحور المركزي هو الجذر **'{dom_root}'** برنين {round(res_map.get(dom_root, 0), 1)}."
-    arche_stmt = f"النمط الحاكم: **{u_arc}** | الحالة الوجودية: **{global_state}**."
-
-    return f"""
-    <div class='eloquence-box'>
-        {purify_text(field_stmt)}<br><br>
-        {purify_text(root_stmt)}<br><br>
-        {arche_stmt}<br><br>
-        <b>خلاصة السيادة:</b> تتقاطع المسارات في مدار '{dom_global_field}' لتشكيل وعي '{u_arc}'.
-    </div>
-    """
-
-# =========================================================
-# 4) دوال معالجة البيانات (Smart Extraction)
+# 4) محركات المنطق والبيان (Logic Engines)
 # =========================================================
 def load_data(file_name):
     paths = [file_name, os.path.join("data", file_name)]
@@ -116,111 +100,145 @@ def normalize_arabic(text):
 
 def match_root(word, root_index):
     w = normalize_arabic(word)
-
-    # إزالة لواحق الجمع والتأنيث (تحديث v20.3.4)
+    # بروتوكول التفكيك الذكي v20.5.1
     for suf in ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا"]:
-        if w.endswith(suf) and len(w) - len(suf) >= 3:
-            w = w[:-len(suf)]
-            break
-
-    # إزالة البادئات (تحديث v20.3.4)
+        if w.endswith(suf) and len(w) - len(suf) >= 3: w = w[:-len(suf)]; break
     for p in ["وال", "فال", "بال", "كال", "ال", "و", "ف", "ب", "ل"]:
-        if w.startswith(p) and len(w) - len(p) >= 3:
-            w = w[len(p):]
-            break
-
-    # مطابقة مباشرة
+        if w.startswith(p) and len(w) - len(p) >= 3: w = w[len(p):]; break
     if w in root_index: return w, root_index[w]
-
-    # مطابقة أول 3 أحرف
     if len(w) >= 3 and w[:3] in root_index: return w[:3], root_index[w[:3]]
-
-    # مطابقة أول 2 حرفين (للحالات الصعبة)
     if len(w) >= 2 and w[:2] in root_index: return w[:2], root_index[w[:2]]
-
     return None, None
 
+def generate_global_eloquence(all_words, dom_root, paths_data):
+    # محرك البيان الختامي
+    global_sig = summarize_word_signature(dom_root)
+    u_arc = UNIVERSAL_ARCHETYPES.get(Q_ARCHETYPES.get(dom_root, "بناء"), "The Architect")
+    
+    analysis_text = f"تم رصد تقاطع كوني في مقام <b>'{dom_root}'</b>. "
+    analysis_text += f"هذا المقام يجسد نمط <b>{u_arc}</b> بصبغة جينية من نوع <b>({global_sig['dominant_gene']})</b>.<br>"
+    analysis_text += f"معامل الكيمياء البينية للمنظومة: <b>{global_sig['inter_factor']}</b>، "
+    analysis_text += f"مما يشير إلى { 'اندماج متسارع' if global_sig['inter_factor'] > 1.1 else 'استقرار سكوني' }.<br><br>"
+    analysis_text += "<b>الخلاصة السيادية:</b> المسارات المفتوحة الآن تبني صرحاً من الخير واليسر."
+    
+    return purify_text(analysis_text)
+
 # =========================================================
-# 5) التنفيذ والواجهة (The Final Engine Execution)
+# 5) محراب العرض (The Grand Temple)
 # =========================================================
 roots_data = load_data("quran_roots_complete.json")
 
 if roots_data:
     r_idx = {normalize_arabic(r["root"]): {"weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in roots_data.get("roots", [])}
 
-    st.title("🎙️ محراب نبراس v20.3.4 - رادار الاستخراج الذكي")
+    st.title("🎙️ محراب نبراس v20.5.1 - الاندماج العظيم")
+    st.sidebar.markdown(f"**المستخدم:** محمد<br>**المقام:** سورة السجدة الآية 5<br>**الوضع:** سيادي كامل", unsafe_allow_html=True)
     
-    tab1, tab2, tab3 = st.tabs(["🔍 استنطاق المسارات", "🌌 اللوحة الكونية", "📝 البيان الموحد"])
+    tab1, tab2, tab3, tab4 = st.tabs(["🔍 استنطاق المسارات", "🌌 الرنين الجيني", "📈 اللوحة الوجودية", "📜 البيان الختامي"])
 
     with tab1:
         c1, c2, c3 = st.columns(3)
-        p1 = c1.text_area("📍 المسار 1", height=120, key="txt_p1")
-        p2 = c2.text_area("📍 المسار 2", height=120, key="txt_p2")
-        p3 = c3.text_area("📍 المسار 3", height=120, key="txt_p3")
-        run = st.button("🚀 تفعيل الاندماج المعزز", use_container_width=True)
+        p1 = c1.text_area("📍 المسار الأول", height=150, key="txt_p1", placeholder="أدخل الآية أو الكلمات هنا...")
+        p2 = c2.text_area("📍 المسار الثاني", height=150, key="txt_p2")
+        p3 = c3.text_area("📍 المسار الثالث", height=150, key="txt_p3")
+        run = st.button("🚀 إطلاق رادار الاندماج", use_container_width=True)
 
     if run:
         all_res = []
+        full_word_pool = []
         for inp in [p1, p2, p3]:
             if inp.strip():
                 sents = [s.strip() for s in re.split(r'[.!?؛،]', inp) if s.strip()]
-                all_res.append([{"sentence": s, "analysis": {
-                    "roots": [{"root": match_root(w, r_idx)[0], "orbit": match_root(w, r_idx)[1]["orbit"], "weight": match_root(w, r_idx)[1]["weight"]} for w in normalize_arabic(s).split() if match_root(w, r_idx)[0]]
-                }} for s in sents])
+                path_analysis = []
+                for s in sents:
+                    roots = []
+                    for w in normalize_arabic(s).split():
+                        root, meta = match_root(w, r_idx)
+                        if root:
+                            roots.append({"root": root, "orbit": meta["orbit"], "weight": meta["weight"]})
+                            full_word_pool.append(root)
+                    path_analysis.append({"sentence": s, "roots": roots})
+                all_res.append(path_analysis)
             else: all_res.append(None)
 
-        if any(all_res):
-            nodes_g = {}
-            for idx, s_list in enumerate(all_res):
-                if not s_list: continue
-                for s in s_list:
-                    for r_info in s["analysis"]["roots"]:
-                        r = r_info["root"]
-                        nodes_g[r] = nodes_g.get(r, {"orbit": r_info["orbit"], "energy": r_info["weight"], "paths": set(), "count": 0})
-                        nodes_g[r]["paths"].add(idx+1); nodes_g[r]["count"] += 1
+        if full_word_pool:
+            dom_root = max(full_word_pool, key=full_word_pool.count)
             
-            res_map = {r: (len(info["paths"]) * info["energy"]) for r, info in nodes_g.items()}
-            paths_fields, g_dist, dom_root = collect_global_semantics(all_res, res_map)
-
             with tab1:
                 st.divider()
                 cols = st.columns(3)
-                for i, s_list in enumerate(all_res):
-                    if s_list:
+                for i, path_data in enumerate(all_res):
+                    if path_data:
                         with cols[i]:
-                            words = [r["root"] for s in s_list for r in s["analysis"]["roots"]]
-                            orbits = [r["orbit"] for s in s_list for r in s["analysis"]["roots"]]
-                            root_energies = [r["weight"] for s in s_list for r in s["analysis"]["roots"]]
-
-                            fusion = build_path_orbit_letter_profile(words, orbits, root_energies)
-                            path_state = detect_state(words)
-
+                            p_roots = [r["root"] for s in path_data for r in s["roots"]]
+                            p_orbits = [r["orbit"] for s in path_data for r in s["roots"]]
+                            p_weights = [r["weight"] for s in path_data for r in s["roots"]]
+                            
+                            fusion = build_path_orbit_letter_profile(p_roots, p_orbits, p_weights)
+                            state = detect_state(p_roots)
+                            
                             st.markdown(f"""
                             <div class='ultra-card'>
-                                <span class='path-state-tag'>{path_state}</span>
-                                <h3 style='margin-top:10px;'>مسار {i+1}</h3>
-                                <h1>{round(fusion['total_energy'], 1)}</h1>
+                                <div style='text-align:right;'><small>{state}</small></div>
+                                <h3 style='margin:0;'>المسار {i+1}</h3>
+                                <h1 style='color:#4fc3f7; margin:10px 0;'>{round(fusion['total_energy'], 2)}</h1>
+                                <p style='font-size:0.9em; opacity:0.7;'>عدد الجذور المرصودة: {len(p_roots)}</p>
                             </div>
                             """, unsafe_allow_html=True)
                             
-                            with st.expander("🧬 بصمة الحرف والمدار"):
-                                st.write(f"🔋 طاقة الاندماج: **{round(fusion['total_energy'], 2)}**")
-                                st.divider()
-                                for item in fusion["profile"]:
-                                    st.markdown(f"**{item['word']}**")
-                                    st.markdown(f"<span class='fusion-sig'>مدار: {item['orbit']} | طاقة: {round(item['fused_energy'], 2)}</span>", unsafe_allow_html=True)
+                            with st.expander("🧬 تفكيك الكيمياء الجينية"):
+                                for r in p_roots:
+                                    sig = summarize_word_signature(r)
+                                    g_info = GENE_MAP_STYLING.get(sig['dominant_gene'], GENE_MAP_STYLING['N'])
+                                    st.markdown(f"**{r}** | <span class='gene-pill' style='background:{g_info['color']}; color:#000;'>{g_info['icon']} {g_info['name']}</span>", unsafe_allow_html=True)
+                                    if sig.get('interactions'):
+                                        st.caption(" • ".join([f"{inter['pair']}({inter['type']})" for inter in sig['interactions'][:3]]))
+
+            with tab2:
+                # رادار الأنعام الجيني
+                st.markdown("### 🧬 مصفوفة توزيع الأنعام (DNA Profile)")
+                all_genes = [summarize_word_signature(w)['dominant_gene'] for w in full_word_pool]
+                g_counts = Counter(all_genes)
+                
+                c_pie, c_info = st.columns([2, 1])
+                with c_pie:
+                    fig_pie = go.Figure(data=[go.Pie(
+                        labels=[GENE_MAP_STYLING[g]['name'] for g in g_counts.keys()],
+                        values=list(g_counts.values()),
+                        hole=.5,
+                        marker_colors=[GENE_MAP_STYLING[g]['color'] for g in g_counts.keys()]
+                    )])
+                    fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', font_color="#fff")
+                    st.plotly_chart(fig_pie, use_container_width=True)
+                
+                with c_info:
+                    st.markdown("#### التحليل النوعي")
+                    for g, count in g_counts.items():
+                        info = GENE_MAP_STYLING[g]
+                        st.write(f"{info['icon']} **{info['name']}**: {count} مرة")
 
             with tab3:
-                st.markdown("### 📜 البيان الوجودي الموحد")
-                st.markdown(collective_eloquence(paths_fields, g_dist, dom_root, res_map), unsafe_allow_html=True)
-                
-            with tab2:
-                fig = go.Figure()
-                pos = {n: (random.random(), random.random()) for n in nodes_g}
-                for n, info in nodes_g.items():
+                # اللوحة الوجودية (Network)
+                st.markdown("### 🌌 هندسة المدارات المتقاطعة")
+                nodes = list(set(full_word_pool))
+                fig_net = go.Figure()
+                for n in nodes:
+                    size = full_word_pool.count(n) * 15 + 20
                     q = Q_ARCHETYPES.get(n, "بناء")
-                    fig.add_trace(go.Scatter(x=[pos[n][0]], y=[pos[n][1]], mode="markers+text", text=[f"<b>{n}</b>"], marker=dict(size=35+(info['count']*12), color=ARCHE_COLORS.get(q, "#4CAF50"))))
-                fig.update_layout(height=600, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
-                st.plotly_chart(fig, use_container_width=True, key="cosmic_v20_4")
+                    fig_net.add_trace(go.Scatter(
+                        x=[random.random()], y=[random.random()],
+                        mode='markers+text',
+                        text=[f"<b>{n}</b>"],
+                        textposition="top center",
+                        marker=dict(size=size, color='#4CAF50' if n == dom_root else '#1e3a1e', line=dict(width=2, color='#4fc3f7'))
+                    ))
+                fig_net.update_layout(showlegend=False, height=500, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+                st.plotly_chart(fig_net, use_container_width=True)
 
-st.sidebar.write("v20.3.4 Sovereign Full Architecture | خِت فِت.")
+            with tab4:
+                st.markdown("### 📜 البيان الوجودي الموحد")
+                eloquence_html = generate_global_eloquence(full_word_pool, dom_root, all_res)
+                st.markdown(f"<div class='eloquence-box'>{eloquence_html}</div>", unsafe_allow_html=True)
+
+st.sidebar.markdown("---")
+st.sidebar.write("v20.5.1 Sovereign Fusion | خِت فِت.")
