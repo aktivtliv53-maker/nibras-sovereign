@@ -17,9 +17,9 @@ except ImportError:
     st.stop()
 
 # =========================================================
-# 1) إعداد الواجهة v13.0 الإمبراطورية
+# 1) إعداد الواجهة v13.1 - المحراب الرباعي المستقر
 # =========================================================
-st.set_page_config(page_title="Nibras v13.0 Quad-Sovereign", page_icon="🏛️", layout="wide")
+st.set_page_config(page_title="Nibras v13.1 Stable Sovereign", page_icon="🏛️", layout="wide")
 
 SEMANTIC_FIELDS = {
     "امن": "الإيمان", "صدق": "الإيمان", "كفر": "الضلال", "فسد": "الفساد",
@@ -27,7 +27,7 @@ SEMANTIC_FIELDS = {
     "غفر": "الرحمة", "قتل": "الصراع", "قاتل": "الصراع", "نصر": "القوة",
     "ملك": "القوة", "نور": "النور", "ظلم": "الظلام", "عدل": "العدل",
     "عمل": "العمل", "قول": "البيان", "ذكر": "الذكر", "بشر": "البشارة",
-    "نذر": "التحذير", "يسر": "اليسر", "عسر": "الشدة"
+    "نذر": "التحذير", "يسر": "اليسر", "عسر": "الشدة", "غني": "الغنى"
 }
 
 st.markdown("""
@@ -40,7 +40,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================================================
-# 2) محركات التحليل (تطبيع، جذور، مدارات)
+# 2) محركات التحليل (تعديل 3: تحسين الاستخراج)
 # =========================================================
 try:
     letters_raw = load_json("sovereign_letters_v1.json")
@@ -60,7 +60,9 @@ quranic_root_index = {normalize_arabic(r["root"]): {"root": normalize_arabic(r["
 
 def match_quranic_root(word, root_index):
     word = normalize_arabic(word)
-    prefixes = ["وال", "فال", "بال", "ال", "و", "ف", "ب"]
+    # تعديل 3: إزالة الضمائر الشائعة لزيادة دقة المطابقة
+    word = re.sub(r"(كم|هم|نا|ها|ه|ي|ات|ون|ين)$", "", word)
+    prefixes = ["وال", "فال", "بال", "ال", "و", "ف", "ب", "ل"]
     candidates = {word}
     for p in prefixes: 
         if word.startswith(p) and len(word)-len(p)>=2: candidates.add(word[len(p):])
@@ -85,7 +87,7 @@ def analyze_path(text, l_idx, r_idx):
     return res
 
 # =========================================================
-# 3) محركات العرض والرسوم (الطبقات المدمجة)
+# 3) محركات العرض (تعديل 1 و 2: دعم النصوص القصيرة)
 # =========================================================
 def build_root_network(sentence_results):
     nodes, edges = {}, Counter()
@@ -100,8 +102,16 @@ def build_root_network(sentence_results):
     return nodes, edges
 
 def render_root_network(nodes, edges, title):
-    if not nodes or not edges:
-        st.info(f"ℹ️ {title}: لا توجد علاقات كافية للشبكة."); return
+    if not nodes:
+        st.info(f"ℹ️ {title}: لا توجد جذور مرصودة."); return
+    
+    # تعديل 1: عرض الجذور حتى لو لم توجد علاقات (Edges)
+    if not edges:
+        st.markdown("#### 🕸️ شبكة الجذور (جذر منفرد)")
+        for r in nodes:
+            st.markdown(f"<div class='coherence-box'>📍 جذر مرصود: **{r}**</div>", unsafe_allow_html=True)
+        return
+
     st.markdown(f"#### 🕸️ شبكة الجذور")
     pos = {r: (random.uniform(0, 1), random.uniform(0, 1)) for r in nodes}
     edge_x, edge_y = [], []
@@ -118,9 +128,8 @@ def render_root_network(nodes, edges, title):
     st.plotly_chart(fig, use_container_width=True)
 
 def analyze_coherence(sentence_results):
-    if not sentence_results: return {}
     orbits = [s["analysis"]["orbit"] for s in sentence_results if s["analysis"]["orbit"] != "غير_مرصود"]
-    if not orbits: return {"ratio": 0, "dominant_orbit": "غير_مرصود"}
+    if not orbits: return {"ratio": 0, "dominant_orbit": "بناء أولي"}
     dom = Counter(orbits).most_common(1)[0][0]
     coherent = [s for s in sentence_results if s["analysis"]["orbit"] == dom]
     return {"dominant_orbit": dom, "ratio": len(coherent)/len(sentence_results), "coherent": coherent}
@@ -141,22 +150,14 @@ def render_semantic_map(sem, title):
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(f"<div class='coherence-box'><b>🧠 المجال المهيمن:</b> {sem['dominant_field']}</div>", unsafe_allow_html=True)
 
-def render_cross_path_coherence(results):
-    valid = [r for r in results if r]
-    if len(valid) < 2: return
-    st.markdown("---")
-    st.subheader("🌐 الانسجام الكوني بين المسارات")
-    df = pd.DataFrame([{"path": f"مسار {i+1}", "orbit": r["orbit"], "energy": r["energy"]} for i, r in enumerate(results) if r])
-    st.plotly_chart(px.scatter(df, x="path", y="orbit", size="energy", color="orbit", title="خريطة الانسجام البيني"), use_container_width=True)
-
 # =========================================================
-# 4) واجهة التشغيل الرئيسية v13.0
+# 4) واجهة التشغيل v13.1 Quad-Sovereign
 # =========================================================
-st.title("🛰️ محراب نبراس v13.0 Quad-Sovereign")
+st.title("🛰️ محراب نبراس v13.1 Stable Sovereign")
 c1, c2, c3 = st.columns(3)
 inputs = [c1.text_area("📍 المسار 1", key="v1"), c2.text_area("📍 المسار 2", key="v2"), c3.text_area("📍 المسار 3", key="v3")]
 
-if st.button("🚀 إطلاق الرصد الإمبراطوري v13.0", use_container_width=True):
+if st.button("🚀 إطلاق الرصد الإمبراطوري المستقر", use_container_width=True):
     results = [analyze_path(t, letters_idx, quranic_root_index) if t.strip() else None for t in inputs]
     all_s_results = []
 
@@ -165,48 +166,38 @@ if st.button("🚀 إطلاق الرصد الإمبراطوري v13.0", use_cont
         for i, r in enumerate(results):
             if r:
                 with score_cols[i]: st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{r['total']}</h1><p>{r['orbit']}</p></div>", unsafe_allow_html=True)
-                with st.expander(f"✨ المحراب الهندسي للمسار {i+1}", expanded=True):
+                with st.expander(f"✨ تحليل المسار {i+1}", expanded=True):
                     sentences = [s.strip() for s in re.sub(r"[\.!\?؛،]", ".", inputs[i]).split(".") if s.strip()]
                     s_results = [{"sentence": s, "analysis": analyze_path(s, letters_idx, quranic_root_index)} for s in sentences]
                     all_s_results.append(s_results)
 
-                    col_net, col_heat, col_coh, col_sem = st.columns([1.2, 1.2, 1, 1.2])
-                    # العمود 1: الشبكة
+                    col_net, col_heat, col_coh, col_sem = st.columns([1, 1, 1, 1])
+                    
+                    # 🟩 العمود 1: الشبكة (بتعديل الجذر المنفرد)
                     with col_net:
                         nodes, edges = build_root_network(s_results)
                         render_root_network(nodes, edges, f"المسار {i+1}")
-                    # العمود 2: الحرارة
+                    
+                    # 🟦 العمود 2: الحرارة (تعديل 2: دعم الجذر الواحد)
                     with col_heat:
                         if nodes:
-                            df_energy = pd.DataFrame([{"جذر": r, "طاقة": d["energy"], "مدار": d["orbit"]} for r, d in nodes.items()])
                             st.markdown("#### 🔥 الخريطة الحرارية")
+                            df_energy = pd.DataFrame([{"جذر": k, "طاقة": v["energy"], "مدار": v["orbit"]} for k, v in nodes.items()])
                             st.plotly_chart(px.density_heatmap(df_energy, x="جذر", y="مدار", z="طاقة", color_continuous_scale="Inferno", height=300), use_container_width=True)
-                    # العمود 3: الانسجام والزمن
+                        else: st.info("لا توجد طاقة مرصودة.")
+                    
+                    # 🟧 العمود 3: الانسجام والزمن
                     with col_coh:
                         coh = analyze_coherence(s_results)
                         st.markdown(f"<div class='coherence-box'>🔹 انسجام المدار: {round(coh.get('ratio',0)*100, 2)}%</div>", unsafe_allow_html=True)
                         st.markdown("#### ⏳ الانحراف الزمني")
                         df_drift = pd.DataFrame([{"index": k+1, "orbit": s["analysis"]["orbit"]} for k, s in enumerate(s_results)])
                         st.plotly_chart(px.line(df_drift, x="index", y="orbit", markers=True, height=250), use_container_width=True)
-                    # العمود 4: المعنى
+                    
+                    # 🟪 العمود 4: المعنى
                     with col_sem:
                         sem = analyze_semantics(s_results)
                         render_semantic_map(sem, f"المسار {i+1}")
             else: all_s_results.append(None)
 
-        # الطبقات الكونية الختامية
-        render_cross_path_coherence(results)
-        
-        # تحليل المجال الدلالي الكوني
-        all_semantic_fields = []
-        for s_res in all_s_results:
-            if s_res:
-                sem_data = analyze_semantics(s_res)
-                all_semantic_fields.append(sem_data["dominant_field"])
-        
-        if all_semantic_fields:
-            st.markdown("### 🧠 المجال الدلالي الكوني")
-            df_sem_global = pd.DataFrame({"مسار": [f"مسار {idx+1}" for idx in range(len(results)) if results[idx]], "مجال": all_semantic_fields})
-            st.plotly_chart(px.bar(df_sem_global, x="مسار", y="مجال", color="مجال", title="توزيع المجالات الدلالية الكبرى"), use_container_width=True)
-
-st.sidebar.write("v13.0 Quad-Sovereign | خِت فِت.")
+st.sidebar.write("v13.1 Stable | خِت فِت.")
