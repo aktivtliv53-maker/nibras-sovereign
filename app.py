@@ -119,13 +119,14 @@ def analyze_semantics_v14(s_res_list):
     return {"dominant_field": Counter(fields).most_common(1)[0][0] if fields else "غير مصنف"}
 
 def semantic_advisor_v151(nodes, global_semantics):
-    if not nodes: return {"core": "صمت", "flow": "سكون", "judgment": "نص ساكن", "advice": "أدخل نصاً."}
+    if not nodes: return {"core": "صمت", "flow": "سكون", "judgment": "نص ساكن", "advice": "أدخل نصاً للتفعيل."}
     core_root = max(nodes.items(), key=lambda x: x[1]["count"] + len(x[1]["paths"]) * 5)[0]
     p_present = sorted(list(set().union(*(n["paths"] for n in nodes.values()))))
     unique_fields = list(set(v["dominant_field"] for v in global_semantics.values()))
     advice = "توازن سيادي. "
-    if "العمل" in unique_fields: advice += "النص يحث على تفعيل الطاقة الكامنة. "
-    if "الرحمة" in unique_fields: advice += "اللطف ييسر المسارات الحالية. "
+    if "العمل" in unique_fields: advice += "النص يحث على تفعيل الطاقة الكامنة في الإنجاز. "
+    if "الرحمة" in unique_fields: advice += "اللطف يغلف المسارات ويفتح باب اليسر. "
+    if "التمكين" in unique_fields: advice += "المسار يتجه نحو ثبات العاقبة واستقرار الدور الوجودي. "
     return {"core": core_root, "flow": " → ".join([f"المسار {p}" for p in p_present]), "judgment": "ارتقاء من " + " و ".join(unique_fields), "advice": advice}
 
 # =========================================================
@@ -134,9 +135,9 @@ def semantic_advisor_v151(nodes, global_semantics):
 try:
     l_idx = {normalize_arabic(i["letter"]): i for i in load_json("sovereign_letters_v1.json") if i.get("letter")}
     r_idx = {normalize_arabic(r["root"]): {"root": normalize_arabic(r["root"]), "weight": float(r.get("frequency", 1)), "orbit": r.get("orbit_hint", "بناء")} for r in load_json("quran_roots_complete.json").get("roots", [])}
-except: st.error("❌ فشل تحميل القواعد."); st.stop()
+except: st.error("❌ فشل تحميل القواعد السيادية."); st.stop()
 
-st.title("🛰️ محراب نبراس v15.1 Final Sovereign")
+st.title("🛰️ محراب نبراس v15.1 Sovereign Advisor")
 cols_in = st.columns(3)
 texts = [cols_in[i].text_area(f"📍 المسار {i+1}", key=f"v{i}") for i in range(3)]
 
@@ -149,7 +150,6 @@ if st.button("🚀 استنطاق المستشار السيادي", use_containe
         else: all_s_results.append(None)
     
     if any(all_s_results):
-        # [أ] عرض البطاقات والطبقات الأربع لكل مسار
         cols_disp = st.columns(3)
         for i, s_res in enumerate(all_s_results):
             if s_res:
@@ -157,8 +157,8 @@ if st.button("🚀 استنطاق المستشار السيادي", use_containe
                 main_orb = Counter([s["analysis"]["orbit"] for s in s_res]).most_common(1)[0][0]
                 with cols_disp[i]:
                     st.markdown(f"<div class='comparison-card'><h3>مسار {i+1}</h3><h1>{round(total_en, 1)}</h1><p>{main_orb}</p></div>", unsafe_allow_html=True)
-                    with st.expander(f"✨ المحراب الرباعي لمسار {i+1}", expanded=False):
-                        # 1. الشبكة
+                    # تعديل سيادي: expanded=True لعرض الطبقات فوراً
+                    with st.expander(f"✨ المحراب الرباعي لمسار {i+1}", expanded=True):
                         st.markdown("#### 🕸️ شبكة العلاقات")
                         roots_p = Counter([r["root"] for s in s_res for r in s["analysis"]["matched_roots"]])
                         if roots_p:
@@ -167,27 +167,25 @@ if st.button("🚀 استنطاق المستشار السيادي", use_containe
                             fig_net.add_trace(go.Scatter(x=[pos[r][0] for r in roots_p], y=[pos[r][1] for r in roots_p], mode='markers+text', text=list(roots_p.keys()), marker=dict(size=[15 + v*5 for v in roots_p.values()], color='#4CAF50'), textposition="top center"))
                             fig_net.update_layout(height=250, showlegend=False, margin=dict(l=0,r=0,t=0,b=0), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(showgrid=False, showticklabels=False), yaxis=dict(showgrid=False, showticklabels=False))
                             st.plotly_chart(fig_net, use_container_width=True)
-                        # 2. الطاقة
+                        
                         st.markdown("#### 🌀 طيف الطاقة")
                         df_e = pd.DataFrame([{"root": r["root"], "energy": r["weight"], "orbit": r["orbit"]} for s in s_res for r in s["analysis"]["matched_roots"]])
                         if not df_e.empty:
                             fig_e = px.bar_polar(df_e, r="energy", theta="root", color="orbit", template="plotly_dark")
                             fig_e.update_layout(height=250, showlegend=False)
                             st.plotly_chart(fig_e, use_container_width=True)
-                        # 3. الانحراف
+                        
                         st.markdown("#### ⏳ الانحراف")
                         df_d = pd.DataFrame([{"index": idx+1, "orbit": s["analysis"]["orbit"]} for idx, s in enumerate(s_res)])
                         st.plotly_chart(px.line(df_d, x="index", y="orbit", markers=True, height=200), use_container_width=True)
-                        # 4. المعنى
+                        
                         sem_p = analyze_semantics_v14(s_res)
                         st.markdown(f"🧠 **المجال المهيمن:** {sem_p['dominant_field']}")
 
-        # [ب] تشغيل المحركات الكونية والمستشار
         nodes_g, intra_g, cross_g = build_global_semantic_graph(all_s_results)
         global_sem = {i+1: analyze_semantics_v14(s_list) for i, s_list in enumerate(all_s_results) if s_list}
         adv = semantic_advisor_v151(nodes_g, global_sem)
         
-        # [ج] عرض المستشار والشبكة الكونية
         st.markdown(f"<div class='advisor-box'><h3>🧭 المستشار الدلالي v15.1</h3><p><b>🔹 المحور المركزي:</b> {adv['core']}</p><p><b>🔹 اتجاه التدفق:</b> {adv['flow']}</p><p><b>🔹 الحكم الدلالي:</b> {adv['judgment']}</p><p><b>🔹 التوصية السيادية:</b> {adv['advice']}</p></div>", unsafe_allow_html=True)
         
         st.markdown("### 🌌 شبكة المعنى الكونية (Global Semantic Graph)")
