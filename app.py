@@ -103,21 +103,27 @@ def summarize_word_signature(root):
 
 def generate_geometric_insight_v2(root):
     """توليد بصيرة تركيبية من هندسة حروف الجذر - نسخة محكمة الإغلاق"""
-    if not root:
-        return "مدار صامت"
+    if not root or len(root) < 2:
+        return "مدار صامت أو جذر غير مكتمل"
     
-    # جلب تفاصيل الحروف
-    parts = [LETTER_GEOMETRY.get(c, f"تفاعل طاقي للحرف ({c})") for c in root]
+    # تنظيف الجذر من أية زوائد
+    clean_root = root.strip()
+    parts = [LETTER_GEOMETRY.get(c, f"تفاعل طاقي للحرف ({c})") for c in clean_root]
     
-    # بناء النص التركيبي حسب طول الجذر
+    # بناء البيان مع إغلاق النجوم فوراً لضمان عدم ظهورها كرموز
+    header = "**الاستنطاق الهندسي:** "
+    
     if len(parts) == 1:
-        summary = f"🧬 **الاستنطاق الهندسي:** يتشكل هذا الجذر من حرف واحد ({root[0]})، {parts[0]}."
+        body = f"يتشكل هذا الجذر من حرف واحد ({clean_root[0]})، {parts[0]}."
+        final_verdict = ""
     elif len(parts) == 2:
-        summary = f"🧬 **الاستنطاق الهندسي:** يبدأ المسار بـ {parts[0]}، يتلوه {parts[1]}، هذا المزيج الثنائي يولد طاقة سيادية متسقة."
+        body = f"يبدأ بـ {parts[0]}، يتلوه {parts[1]}."
+        final_verdict = " هذا المزيج الثنائي يولد طاقة سيادية متسقة."
     else:
-        summary = f"🧬 **الاستنطاق الهندسي:** يبدأ المسار بـ {parts[0]}، يتوسطه {parts[1]}، وينتهي بـ {parts[-1]}. هذا التفاعل التركيبي يخلق مداراً من التمكين السيادي المتكامل."
+        body = f"يبدأ بـ {parts[0]}، يتوسطه {parts[1]}، وينتهي بـ {parts[-1]}."
+        final_verdict = " هذا التفاعل التركيبي يخلق مداراً من التمكين السيادي المتكامل."
     
-    return summary
+    return f"{header}{body}{final_verdict}"
 
 def normalize_sovereign(text):
     """تطهير النص للوصول لجوهر الحرف الهندسي."""
@@ -472,7 +478,7 @@ if state['active']:
             )
             
             # إحصائيات: كم جذراً استخدم الاستنطاق الهندسي وكم له بصيرة حقيقية
-            geometric_count = df_diag['حالة البيانات'].str.contains("🧬 الاستنطاق الهندسي").sum()
+            geometric_count = df_diag['حالة البيانات'].str.contains("الاستنطاق الهندسي").sum()
             real_insight_count = df_diag['حالة البيانات'].str.contains("✅ \(قاعدة البيانات\)").sum()
             
             col1, col2 = st.columns(2)
@@ -501,7 +507,7 @@ if state['active']:
                 if is_placeholder or is_default_length or not file_insight:
                     # استخدام محرك الاستنطاق الهندسي التركيبي
                     geometric_insight = generate_geometric_insight_v2(top_root)
-                    st.info(f"**🔮 الاستنطاق الهندسي لسيد المدار ({top_root}):**\n\n{geometric_insight}")
+                    st.markdown(f"**🔮 الاستنطاق الهندسي لسيد المدار ({top_root}):**\n\n{geometric_insight}")
                     
                     # عرض النص الأصلي للتوضيح
                     if file_insight and len(file_insight) > 0:
