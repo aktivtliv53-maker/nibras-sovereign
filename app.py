@@ -1,130 +1,94 @@
 # -*- coding: utf-8 -*-
 # =========================================================
-# NIBRAS SOVEREIGN v27.0 — THE 1800 ROOTS AWAKENING
+# NIBRAS SOVEREIGN v30.0 — COMPLETE MONOLITH
 # =========================================================
-# نسخة سيادية مغلقة معماريًا لتحليل النصوص عبر:
-# - محرك جذور (1800 جذر مباشر من nibras_lexicon.json)
-# - مستشار قرار | درع الالتباس | تناغم سياقي
-# - ذاكرة موضعية | تصدير موثق | الربط بالمصفوفة الكلية
-# - نظام الأنعام مع Memory Pruning
-# - الميزان الثلاثي (الكتلة + السرعة + الطاقة) بدون عشوائية
-# المرجع: وثيقة العرش - محمد (CPU: As-Sajdah 5)
+# نظام سيادي متكامل لتحليل الجذور القرآنية والرنين السياقي
+# يعمل على Streamlit Cloud مع دعم كامل للملفات الخارجية
 # =========================================================
 
 import streamlit as st
 import json
 import re
 import math
-import time
-import hashlib
-import io
 import os
+from pathlib import Path
 from datetime import datetime
 from collections import Counter, defaultdict
-from pathlib import Path
+from typing import Dict, List, Any, Tuple, Optional, Set
 
 # =========================================================
-# 0) FORCE CACHE CLEAR (كسر جمود الرصد)
+# ===================== 1) IMPORTS & CONFIG =====================
 # =========================================================
-st.cache_data.clear()
-st.cache_resource.clear()
 
-# =========================================================
-# 1) PAGE CONFIG
-# =========================================================
+# PAGE CONFIG
 st.set_page_config(
-    page_title="Nibras Sovereign v27.0 — 1800 ROOTS AWAKENING",
-    page_icon="🧿",
+    page_title="NIBRAS SOVEREIGN v30.0",
+    page_icon="🜂",
     layout="wide",
-    initial_sidebar_state="expanded"
 )
 
-# =========================================================
-# 2) GLOBAL STYLE
-# =========================================================
-GLOBAL_CSS = """
-<style>
-:root {
-    --bg-main: #070b14;
-    --bg-card: rgba(18, 26, 42, 0.82);
-    --bg-soft: rgba(25, 35, 55, 0.55);
-    --text-main: #f4f8ff;
-    --text-soft: #b8c7e6;
-    --accent: #7dd3fc;
-    --accent-2: #a78bfa;
-    --good: #34d399;
-    --warn: #fbbf24;
-    --bad: #f87171;
-    --line: rgba(125, 211, 252, 0.18);
-    --glow: 0 0 24px rgba(125, 211, 252, 0.12);
-}
-
-html, body, [data-testid="stAppViewContainer"] {
-    background:
-      radial-gradient(circle at 20% 20%, rgba(125,211,252,0.06), transparent 28%),
-      radial-gradient(circle at 80% 10%, rgba(167,139,250,0.05), transparent 30%),
-      linear-gradient(180deg, #05070d 0%, #0b1120 100%);
-    color: var(--text-main);
-}
-
-[data-testid="stHeader"] { background: rgba(0,0,0,0); }
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, rgba(9,14,24,0.98), rgba(12,18,30,0.98));
-    border-right: 1px solid rgba(125,211,252,0.08);
-}
-
-.block-container {
-    padding-top: 1.2rem;
-    padding-bottom: 2rem;
-}
-
-.sov-card {
-    background: var(--bg-card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 1rem 1rem;
-    box-shadow: var(--glow);
-    backdrop-filter: blur(10px);
-    margin-bottom: 1rem;
-}
-
-.sov-big {
-    font-size: 1.45rem;
-    font-weight: 800;
-}
-
-.sov-good { color: var(--good); }
-.sov-warn { color: var(--warn); }
-.sov-bad  { color: var(--bad); }
-
-.comparison-card {
-    background: #161616; padding: 15px; border-radius: 15px;
-    border: 1px solid #262626; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-.mentor-box {
-    background: #001f24; border-right: 5px solid #00afcc;
-    padding: 20px; border-radius: 12px; margin-top: 20px;
-}
-.detail-box {
-    background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #222;
-}
-.status-warn {
-    background: #2a1f0f; border: 1px solid #a67c00; padding: 10px; border-radius: 10px; margin: 8px 0;
-}
-.an3am-expander {
-    background: rgba(18, 26, 42, 0.6);
-    border-radius: 12px;
-    margin-bottom: 8px;
-}
-</style>
-"""
-st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+APP_VERSION = "NIBRAS SOVEREIGN v30.0 COMPLETE"
 
 # =========================================================
-# 3) CONSTANTS & RULES
+# ===================== 2) CONSTANTS =====================
 # =========================================================
-APP_VERSION = "27.0 1800 ROOTS AWAKENING"
 
+# STRICT orbit whitelist
+KNOWN_ORBITS: Set[str] = {
+    "وعي", "نور", "رحمة", "حق", "ميزان", "صبر", "هداية", "قوة", "بصيرة", "توحيد"
+}
+DEFAULT_ORBIT = "وعي"
+
+# Paths for data files
+DATA_DIR = Path("data")
+QROOT_DIR = Path("qroot")
+DEFAULT_ROOTS_PATH = DATA_DIR / "quranic_roots_1800.json"
+DEFAULT_LETTERS_PATH = DATA_DIR / "letters_28_compact.json"
+DEFAULT_MATRIX_PATH = DATA_DIR / "matrix_resonance.json"
+
+# Conservative affixes (heuristic only)
+PREFIXES = [
+    "وال", "بال", "كال", "فال", "لل",
+    "ال",
+    "و", "ف", "ب", "ك", "ل", "س",
+    "ي", "ت", "ن", "ا",
+    "است", "مست", "ان", "مت",
+]
+
+SUFFIXES = [
+    "يات", "ات", "ون", "ين", "ان",
+    "هما", "كما", "كم", "كن", "هم", "هن", "ها", "نا",
+    "ية", "ه", "ة", "ي", "ك", "ت", "ا", "و", "ن", "م",
+]
+
+# Weights for candidate sources
+SOURCE_BONUS = {
+    "normalized": 0.22,
+    "teh_marbuta_variant": 0.16,
+    "prefix_strip": 0.18,
+    "suffix_strip": 0.18,
+    "prefix_suffix_strip": 0.20,
+    "double_reduce": 0.08,
+    "sliding_triple": 0.52,
+    "pattern_extract": 0.30,
+}
+
+# Simple morphological patterns
+PATTERN_RULES = [
+    ("است", 3),
+    ("م", 3),
+    ("ت", 3),
+    ("ان", 3),
+    ("ا", 3),
+]
+
+# Arabic regex patterns
+ARABIC_DIACRITICS_RE = re.compile(r"[\u0617-\u061A\u064B-\u0652\u0670\u0640]")
+NON_ARABIC_KEEP_SPACE_RE = re.compile(r"[^\u0621-\u063A\u0641-\u064A\s]")
+MULTISPACE_RE = re.compile(r"\s+")
+ARABIC_ONLY_RE = re.compile(r"^[\u0621-\u063A\u0641-\u064A]+$")
+
+# Normalization policy
 NORMALIZATION_POLICY = {
     "strip_diacritics": True,
     "normalize_hamza": True,
@@ -132,1332 +96,1163 @@ NORMALIZATION_POLICY = {
     "convert_ta_marbuta": True
 }
 
-PREFIXES = ["وال", "فال", "بال", "كال", "لل", "ال", "و", "ف", "ب", "ك", "ل", "س"]
-SUFFIXES = ["كما", "كم", "كن", "هم", "هن", "نا", "ها", "ه", "ية", "ات", "ون", "ين", "ان", "ة", "ي", "ك", "ت", "ا", "ن"]
-
-CONFIDENCE_LABELS = [
-    (0.90, "حاسم"),
-    (0.75, "راجح قوي"),
-    (0.60, "راجح"),
-    (0.40, "استكشافي"),
-    (0.00, "ضعيف"),
-]
-
 # =========================================================
-# 4) ROOT REGISTRY (Extended)
+# ===================== 3) UTILITIES =====================
 # =========================================================
-ROOT_REGISTRY = {
-    "رحم": {"family": "mercy", "domain": "divine_softness", "rank": "central", "tags": ["رحمة", "لطف"]},
-    "نور": {"family": "light", "domain": "guidance", "rank": "central", "tags": ["نور", "هداية"]},
-    "علم": {"family": "knowledge", "domain": "cognition", "rank": "central", "tags": ["علم", "فهم"]},
-    "هدي": {"family": "guidance", "domain": "direction", "rank": "central", "tags": ["هداية"]},
-    "ذكر": {"family": "remembrance", "domain": "presence", "rank": "high", "tags": ["ذكر"]},
-    "امن": {"family": "safety", "domain": "stability", "rank": "high", "tags": ["أمن"]},
-    "قلب": {"family": "inner_core", "domain": "inner_perception", "rank": "high", "tags": ["قلب"]},
-    "صبر": {"family": "fortitude", "domain": "endurance", "rank": "high", "tags": ["صبر"]},
-}
 
-# =========================================================
-# 5) SESSION STATE INIT
-# =========================================================
-def init_sovereign_state():
-    if "sovereign_monolith" not in st.session_state:
-        st.session_state.sovereign_monolith = {
-            "active": False,
-            "mode": "sovereign",
-            "current_text": "",
-            "current_record": None,
-            "analysis_history": [],
-            "visible_history_limit": 5,
-            "pending_ambiguities": [],
-            "resolved_ambiguities": {},
-            "metrics": {},
-            "ui": {
-                "silent_mode": False,
-                "animate": True,
-                "show_ritual": True,
-                "show_advisor_trace": False,
-                "show_debug": False,
-                "show_ambiguity_warnings": True
-            },
-            "version": APP_VERSION
-        }
-    if "session_history" not in st.session_state:
-        st.session_state.session_history = []
-    if "ambiguity_choices" not in st.session_state:
-        st.session_state.ambiguity_choices = {}
+def clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
+    return max(low, min(high, value))
 
-init_sovereign_state()
-
-def S():
-    return st.session_state.sovereign_monolith
-
-# =========================================================
-# 6) UTILITIES
-# =========================================================
-def now_iso():
+def now_iso() -> str:
     return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
 
-def analysis_id():
+def analysis_id() -> str:
     return "analysis_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
 
-def confidence_label(score: float):
-    for th, label in CONFIDENCE_LABELS:
-        if score >= th:
-            return label
-    return "ضعيف"
+def safe_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
 
-def clamp(x, lo=0.0, hi=1.0):
-    return max(lo, min(hi, x))
+def is_arabic_word(text: str) -> bool:
+    return bool(text) and bool(ARABIC_ONLY_RE.fullmatch(text))
 
-def sha256_text(text: str):
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+def dedupe_keep_order(items: List[str]) -> List[str]:
+    seen = set()
+    out = []
+    for x in items:
+        if x and x not in seen:
+            seen.add(x)
+            out.append(x)
+    return out
 
-def arabic_word_tokenize(text: str):
-    return re.findall(r"[\u0621-\u064A\u0660-\u0669]+", text)
-
-def get_file_size_mb(path):
-    """إرجاع حجم الملف بالميجابايت"""
+def get_file_info(path: str) -> Tuple[float, int]:
+    """إرجاع حجم الملف (MB) وعدد الأسطر"""
     try:
         if path and os.path.exists(path):
-            return round(os.path.getsize(path) / (1024 * 1024), 2)
-    except:
+            size_mb = round(os.path.getsize(path) / (1024 * 1024), 2)
+            with open(path, "r", encoding="utf-8") as f:
+                lines = sum(1 for _ in f)
+            return size_mb, lines
+    except Exception:
         pass
-    return 0.0
+    return 0, 0
 
-# =========================================================
-# 7) NORMALIZATION ENGINE
-# =========================================================
-ARABIC_DIACRITICS = re.compile(r"[\u0617-\u061A\u064B-\u0652\u0670\u0640]")
+def safe_read_json(path: Path) -> Any:
+    if not path.exists():
+        raise FileNotFoundError(f"Missing JSON file: {path}")
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
 
-def normalize_arabic(text: str, policy=None):
-    if policy is None:
-        policy = NORMALIZATION_POLICY
-
-    t = str(text or "").strip()
-
-    if policy.get("strip_diacritics", True):
-        t = ARABIC_DIACRITICS.sub("", t)
-
-    if policy.get("normalize_hamza", True):
-        t = re.sub(r"[أإآٱ]", "ا", t)
-        t = t.replace("ؤ", "و").replace("ئ", "ي")
-
-    if policy.get("convert_alef_maqsura", True):
-        t = t.replace("ى", "ي")
-
-    if policy.get("convert_ta_marbuta", True):
-        t = t.replace("ة", "ه")
-
-    t = re.sub(r"[^\u0621-\u064A0-9\s]", " ", t)
-    t = re.sub(r"\s+", " ", t).strip()
-    return t
-
-# =========================================================
-# 8) ROOT CANDIDATE ENGINE
-# =========================================================
-def strip_prefixes(word):
-    out = set()
-    for p in PREFIXES:
-        if word.startswith(p) and len(word) - len(p) >= 2:
-            out.add(word[len(p):])
-    return out
-
-def strip_suffixes(word):
-    out = set()
-    for s in SUFFIXES:
-        if word.endswith(s) and len(word) - len(s) >= 2:
-            out.add(word[:-len(s)])
-    return out
-
-def reduce_doubles(word):
-    if len(word) < 2:
-        return word
-    out = [word[0]]
-    for ch in word[1:]:
-        if ch != out[-1]:
-            out.append(ch)
-    reduced = "".join(out)
-    return reduced if len(reduced) >= 2 else word
-
-def sliding_triples(word):
-    triples = set()
-    if len(word) >= 3:
-        for i in range(len(word) - 2):
-            triples.add(word[i:i+3])
-    return triples
-
-def generate_root_candidates(word: str):
-    w = normalize_arabic(word)
-    if not w:
-        return []
-
-    candidates = []
-    seen = set()
-
-    def add(form, source, weight):
-        form = normalize_arabic(form)
-        if not form or len(form) < 2:
-            return
-        key = (form, source)
-        if key in seen:
-            return
-        seen.add(key)
-        candidates.append({
-            "form": form,
-            "source": source,
-            "weight": float(weight)
-        })
-
-    add(w, "normalized", 1.00)
-
-    p_stripped = strip_prefixes(w)
-    for f in p_stripped:
-        add(f, "prefix_strip", 0.92)
-
-    s_stripped = strip_suffixes(w)
-    for f in s_stripped:
-        add(f, "suffix_strip", 0.90)
-
-    both = set()
-    for p in p_stripped:
-        both.update(strip_suffixes(p))
-    for s in s_stripped:
-        both.update(strip_prefixes(s))
-    for f in both:
-        add(f, "prefix_suffix_strip", 0.88)
-
-    for item in list(candidates):
-        red = reduce_doubles(item["form"])
-        if red != item["form"]:
-            add(red, "double_reduce", item["weight"] * 0.86)
-
-    for item in list(candidates):
-        if 3 <= len(item["form"]) <= 6:
-            for tri in sliding_triples(item["form"]):
-                add(tri, "sliding_triple", item["weight"] * 0.78)
-
-    candidates = sorted(
-        candidates,
-        key=lambda x: (-x["weight"], -len(x["form"]), x["form"])
-    )
-    return candidates
-
-# =========================================================
-# 9) DATA LOADING (FLAT LIST - 1800 ROOTS DIRECT)
-# =========================================================
-def safe_load_json_file(filename):
-    search_paths = [Path("."), Path("./data"), Path("./qroot")]
+def search_file_path(filename: str) -> Optional[Path]:
+    """البحث عن ملف في المسارات المتعددة"""
+    search_paths = [Path("."), DATA_DIR, QROOT_DIR]
     for folder in search_paths:
         file_path = folder / filename
         if file_path.exists():
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    return json.load(f), str(file_path)
-            except Exception as e:
-                st.error(f"خطأ في قراءة {filename}: {e}")
-    return None, None
-
-# تحميل ملف الحروف
-letters_raw, path_l = safe_load_json_file("sovereign_letters_v1.json")
+            return file_path
+    return None
 
 # =========================================================
-# 10) BUILD LETTERS INDEX
+# ===================== 4) NORMALIZATION =====================
 # =========================================================
-letters_idx = {}
-if isinstance(letters_raw, list):
-    for item in letters_raw:
-        char = item.get("letter")
-        if char:
-            letters_idx[normalize_arabic(char)] = item
+
+def normalize_arabic(text: str, force_teh_marbuta_to_ha: bool = False) -> str:
+    """
+    Conservative normalization:
+    - Remove diacritics
+    - Normalize hamzas/alef variants
+    - Normalize yaa maqsura
+    - Keep spaces
+    - Optionally convert ة -> ه
+    """
+    if not isinstance(text, str):
+        text = str(text)
+
+    t = text.strip()
+    t = ARABIC_DIACRITICS_RE.sub("", t)
+
+    # Normalize hamza/alef variants
+    t = (
+        t.replace("أ", "ا")
+         .replace("إ", "ا")
+         .replace("آ", "ا")
+         .replace("ٱ", "ا")
+         .replace("ؤ", "و")
+         .replace("ئ", "ي")
+         .replace("ى", "ي")
+    )
+
+    if force_teh_marbuta_to_ha:
+        t = t.replace("ة", "ه")
+
+    t = NON_ARABIC_KEEP_SPACE_RE.sub(" ", t)
+    t = MULTISPACE_RE.sub(" ", t).strip()
+    return t
+
+def teh_marbuta_variant(word: str) -> Optional[str]:
+    if "ة" in word:
+        return word.replace("ة", "ه")
+    return None
+
+def tokenize_arabic(text: str) -> List[str]:
+    """استخراج الكلمات العربية من نص"""
+    t = normalize_arabic(text, force_teh_marbuta_to_ha=False)
+    if not t:
+        return []
+    return [w for w in t.split() if len(w) >= 2]
+
+def arabic_word_tokenize(text: str) -> List[str]:
+    """Alias for tokenize_arabic"""
+    return tokenize_arabic(text)
 
 # =========================================================
-# 11) LOAD FLAT LEXICON (1800 ROOTS - NO CACHE BLOCK)
+# ===================== 5) WORD SHAPING =====================
 # =========================================================
-@st.cache_data(ttl=0, show_spinner=False)  # ttl=0 لمنع التخزين المؤقت الطويل
-def load_flat_lexicon():
-    """تحميل المعجم المسطح (Flat List) مباشرة بدون فلترة"""
-    lexicon_raw, path_x = safe_load_json_file("nibras_lexicon.json")
-    
-    root_index = defaultdict(list)
-    roots_list = []
-    
-    if isinstance(lexicon_raw, list):
-        for item in lexicon_raw:
-            if isinstance(item, dict):
-                # استخراج الجذر مباشرة
-                root = item.get("root") or item.get("name") or item.get("lemma") or ""
-                root = normalize_arabic(str(root).strip())
-                
-                if not root or len(root) < 2:
-                    continue
-                
-                # استخراج الوزن (frequency أو weight)
-                weight = item.get("frequency") or item.get("weight") or 1.0
-                try:
-                    weight = float(weight)
-                except:
-                    weight = 1.0
-                
-                # المدار (إذا لم يوجد، نستخدم مدار افتراضي حسب طاقة الحروف)
-                orbit = item.get("orbit") or item.get("orbit_hint") or "وعي"
-                if orbit not in ["سيادة", "فطرة", "تمكين", "يسر", "وعي", "هداية", "تزكية", "أزل"]:
-                    # توزيع تلقائي حسب أول حرف في الجذر
-                    first_char = root[0] if root else ""
-                    if first_char in ["ا", "ع", "ق", "ه", "و", "ل"]:
-                        orbit = "سيادة"
-                    elif first_char in ["ر", "ح", "م", "ن"]:
-                        orbit = "فطرة"
-                    elif first_char in ["ف", "ت", "ك", "س"]:
-                        orbit = "تمكين"
-                    elif first_char in ["ي", "ب", "د"]:
-                        orbit = "يسر"
-                    else:
-                        orbit = "وعي"
-                
-                # البصيرة
-                insight = item.get("insight") or item.get("description") or f"الجذر {root} يحمل طاقة مدار {orbit}"
-                
-                entry = {
-                    "root": root,
-                    "weight": weight,
-                    "orbit": orbit,
-                    "insight": insight
-                }
-                
-                root_index[root].append(entry)
-                roots_list.append(root)
-    
-    # إحصاءات
-    total_roots = len(root_index)
-    total_entries = sum(len(v) for v in root_index.values())
-    
-    return dict(root_index), roots_list, total_roots, total_entries, path_x
 
-# تحميل المعجم المسطح
-quranic_root_index, roots_list, total_roots, total_entries, path_x = load_flat_lexicon()
+def reduce_doubles(word: str) -> str:
+    """Conservative duplicate reduction"""
+    if len(word) <= 3:
+        return word
+    out = []
+    prev = None
+    repeat_count = 0
+    for ch in word:
+        if ch == prev:
+            repeat_count += 1
+            if repeat_count >= 2:
+                continue
+        else:
+            repeat_count = 0
+        out.append(ch)
+        prev = ch
+    return "".join(out)
+
+def strip_prefixes(word: str) -> List[str]:
+    results = []
+    for p in sorted(PREFIXES, key=len, reverse=True):
+        if word.startswith(p) and len(word) - len(p) >= 3:
+            results.append(word[len(p):])
+    return dedupe_keep_order(results)
+
+def strip_suffixes(word: str) -> List[str]:
+    results = []
+    for s in sorted(SUFFIXES, key=len, reverse=True):
+        if word.endswith(s) and len(word) - len(s) >= 3:
+            results.append(word[:-len(s)])
+    return dedupe_keep_order(results)
+
+def strip_prefix_suffix(word: str) -> List[str]:
+    results = []
+    for p in sorted(PREFIXES, key=len, reverse=True):
+        if word.startswith(p) and len(word) - len(p) >= 3:
+            base = word[len(p):]
+            for s in sorted(SUFFIXES, key=len, reverse=True):
+                if base.endswith(s) and len(base) - len(s) >= 3:
+                    results.append(base[:-len(s)])
+    return dedupe_keep_order(results)
+
+def sliding_triples(word: str) -> List[str]:
+    if len(word) < 3:
+        return []
+    triples = []
+    for i in range(len(word) - 2):
+        tri = word[i:i+3]
+        if len(tri) == 3 and is_arabic_word(tri):
+            triples.append(tri)
+    return dedupe_keep_order(triples)
+
+def pattern_extract_roots(word: str) -> List[str]:
+    """Very conservative heuristic pattern extraction"""
+    out = []
+
+    if len(word) == 3 and is_arabic_word(word):
+        out.append(word)
+
+    if len(word) == 4:
+        out.extend([word[:3], word[1:4]])
+
+    for pref, _ in PATTERN_RULES:
+        if word.startswith(pref) and len(word) - len(pref) >= 3:
+            core = word[len(pref):]
+            out.append(core[:3])
+            if len(core) >= 4:
+                out.append(core[0] + core[1] + core[-1])
+
+    if word.startswith("م") and len(word) >= 5:
+        core = word[1:]
+        out.append(core[0] + core[1] + core[-1])
+
+    if word.startswith("ت") and len(word) >= 4:
+        core = word[1:]
+        out.append(core[:3])
+
+    cleaned = []
+    for c in out:
+        c = c.strip()
+        if len(c) == 3 and is_arabic_word(c):
+            cleaned.append(c)
+
+    return dedupe_keep_order(cleaned)
+
+def generate_root_candidates(word: str) -> List[Dict[str, Any]]:
+    """Generate candidate root-like forms with source labels and weights"""
+    base = normalize_arabic(word, force_teh_marbuta_to_ha=False).replace(" ", "")
+    if not base or len(base) < 2:
+        return []
+
+    out: List[Dict[str, Any]] = []
+
+    def add(form: str, source: str, weight: float):
+        form = normalize_arabic(form, force_teh_marbuta_to_ha=False).replace(" ", "")
+        if not form or len(form) < 2 or not is_arabic_word(form):
+            return
+        out.append({
+            "form": form,
+            "source": source,
+            "weight": weight,
+        })
+
+    add(base, "normalized", 1.00)
+
+    tmv = teh_marbuta_variant(base)
+    if tmv and tmv != base:
+        add(tmv, "teh_marbuta_variant", 0.92)
+
+    for w in strip_prefixes(base):
+        add(w, "prefix_strip", 0.88)
+
+    for w in strip_suffixes(base):
+        add(w, "suffix_strip", 0.88)
+
+    for w in strip_prefix_suffix(base):
+        add(w, "prefix_suffix_strip", 0.93)
+
+    reduced = reduce_doubles(base)
+    if reduced != base:
+        add(reduced, "double_reduce", 0.74)
+
+    for p in pattern_extract_roots(base):
+        add(p, "pattern_extract", 0.86)
+
+    for tri in sliding_triples(base):
+        add(tri, "sliding_triple", 0.58)
+
+    best = {}
+    for item in out:
+        key = (item["form"], item["source"])
+        if key not in best or item["weight"] > best[key]["weight"]:
+            best[key] = item
+
+    return list(best.values())
+
+def calculate_normalized_total(mass: float, speed: float, energy: float) -> float:
+    """Internal sovereign index"""
+    nm = math.log1p(max(0.0, mass))
+    ns = math.log1p(max(0.0, speed))
+    ne = math.log1p(max(0.0, energy))
+    total = (nm * 0.33) + (ns * 0.27) + (ne * 0.40)
+    return round(total * 10.0, 4)
+
+def estimate_word_mass_speed(word: str, letters_index: Dict[str, Dict[str, float]]) -> Tuple[float, float]:
+    mass = 0.0
+    speed = 0.0
+    for ch in word:
+        entry = letters_index.get(ch)
+        if entry:
+            mass += safe_float(entry.get("mass", 1.0), 1.0)
+            speed += safe_float(entry.get("speed", 1.0), 1.0)
+        else:
+            mass += 1.0
+            speed += 1.0
+    return round(mass, 4), round(speed, 4)
 
 # =========================================================
-# 12) LOAD MATRIX RESONANCE
+# ===================== 6) DATA LOADING =====================
 # =========================================================
-@st.cache_data(ttl=0, show_spinner=False)
-def load_matrix_resonance():
-    """تحميل مصفوفة الرنين القرآني"""
-    matrix_idx = defaultdict(list)
-    matrix_path = None
-    total_verses = 0
-    indexed_verses = 0
-    
-    for path in [Path("."), Path("./data"), Path("./qroot")]:
-        m_path = path / "matrix_data.json"
-        if m_path.exists():
-            matrix_path = str(m_path)
-            try:
-                with open(m_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                
-                if isinstance(data, list):
-                    total_verses = len(data)
-                    
-                    for entry in data:
-                        verse_text = entry.get('text', '')
-                        if not verse_text:
-                            continue
-                        
-                        if len(verse_text) > 150:
-                            verse_text = verse_text[:150] + "..."
-                        
-                        # استخراج الجذور المحتملة من النص
-                        words = arabic_word_tokenize(verse_text)
-                        roots_in_verse = set()
-                        
-                        for word in words:
-                            norm_word = normalize_arabic(word)
-                            if len(norm_word) >= 2:
-                                if norm_word in quranic_root_index:
-                                    roots_in_verse.add(norm_word)
-                                else:
-                                    for root_cand in generate_root_candidates(norm_word):
-                                        if root_cand["form"] in quranic_root_index:
-                                            roots_in_verse.add(root_cand["form"])
-                        
-                        for root in roots_in_verse:
-                            if len(matrix_idx[root]) < 5:
-                                matrix_idx[root].append({
-                                    "surah": entry.get('surah', entry.get('surah_name', '?')),
-                                    "verse": entry.get('verse', entry.get('verse_number', '?')),
-                                    "text": verse_text
-                                })
-                                indexed_verses += 1
-                    
-                    for root in matrix_idx:
-                        matrix_idx[root] = sorted(matrix_idx[root], key=lambda x: x.get('surah', ''))
-                        
-            except Exception as e:
-                st.error(f"خطأ في تحميل المصفوفة: {e}")
-                return {}, None, 0, 0
-            break
-    
-    return matrix_idx, matrix_path, total_verses, indexed_verses
 
-matrix_idx, matrix_path, total_verses, indexed_verses = load_matrix_resonance()
+def normalize_orbit(orbit_value: Any) -> str:
+    orbit = str(orbit_value).strip() if orbit_value is not None else ""
+    if orbit in KNOWN_ORBITS:
+        return orbit
+    return DEFAULT_ORBIT
 
-# =========================================================
-# 13) ROOT LOOKUP HELPERS
-# =========================================================
-def get_root_meta(root):
-    r = normalize_arabic(root)
-    if r in ROOT_REGISTRY:
-        return ROOT_REGISTRY[r]
-    return {
-        "family": "unknown",
-        "domain": "unknown",
-        "rank": "normal",
-        "tags": []
+def validate_and_load_roots(roots_path: Path = DEFAULT_ROOTS_PATH) -> Dict[str, Any]:
+    """Loads the 1800+ root lexicon with strict diagnostics"""
+    raw = safe_read_json(roots_path)
+
+    if not isinstance(raw, list):
+        raise ValueError("quranic_roots_1800.json must be a JSON array (list).")
+
+    index: Dict[str, Dict[str, Any]] = {}
+    diagnostics = {
+        "path": str(roots_path),
+        "entries_total": len(raw),
+        "entries_valid": 0,
+        "entries_invalid": 0,
+        "duplicate_roots": 0,
+        "missing_root": 0,
+        "non_arabic_roots": 0,
+        "unknown_orbit_count": 0,
+        "unknown_orbits_seen": Counter(),
+        "roots_final": 0,
     }
 
-def lookup_root_candidates(form: str):
-    f = normalize_arabic(form)
-    found = set()
-
-    if isinstance(quranic_root_index, dict):
-        if f in quranic_root_index:
-            found.add(f)
-
-    return sorted(x for x in found if x)
-
-def match_quranic_root(word: str):
-    candidates = generate_root_candidates(word)
-    scored_hits = []
-
-    source_bonus = {
-        "normalized": 0.22,
-        "prefix_strip": 0.18,
-        "suffix_strip": 0.16,
-        "prefix_suffix_strip": 0.14,
-        "double_reduce": 0.08,
-        "sliding_triple": 0.04
-    }
-
-    for c in candidates:
-        roots = lookup_root_candidates(c["form"])
-        if not roots:
+    for item in raw:
+        if not isinstance(item, dict):
+            diagnostics["entries_invalid"] += 1
             continue
 
-        for root in roots:
-            exact_bonus = 0.12 if normalize_arabic(c["form"]) == normalize_arabic(root) else 0.0
-            len_bonus = 0.08 if len(c["form"]) == 3 else 0.0
-            score = clamp(c["weight"] + source_bonus.get(c["source"], 0.0) + exact_bonus + len_bonus)
-            scored_hits.append({
-                "root": normalize_arabic(root),
-                "score": score,
-                "candidate_form": c["form"],
-                "source": c["source"],
-                "weight": c["weight"]
-            })
+        root_raw = item.get("root", "")
+        root = normalize_arabic(str(root_raw), force_teh_marbuta_to_ha=False).replace(" ", "")
 
-    if not scored_hits:
+        if not root:
+            diagnostics["entries_invalid"] += 1
+            diagnostics["missing_root"] += 1
+            continue
+
+        if len(root) < 3 or not is_arabic_word(root):
+            diagnostics["entries_invalid"] += 1
+            diagnostics["non_arabic_roots"] += 1
+            continue
+
+        orbit_original = str(item.get("orbit", "")).strip()
+        orbit = normalize_orbit(orbit_original)
+        if orbit_original and orbit_original not in KNOWN_ORBITS:
+            diagnostics["unknown_orbit_count"] += 1
+            diagnostics["unknown_orbits_seen"][orbit_original] += 1
+
+        energy = safe_float(item.get("energy", item.get("weight", 1.0)), 1.0)
+        mass = safe_float(item.get("mass", 1.0), 1.0)
+        speed = safe_float(item.get("speed", 1.0), 1.0)
+
+        forms = item.get("forms", [])
+        if isinstance(forms, str):
+            forms = [forms]
+        if not isinstance(forms, list):
+            forms = []
+
+        norm_forms = []
+        for f in forms:
+            nf = normalize_arabic(str(f), force_teh_marbuta_to_ha=False).replace(" ", "")
+            if nf and is_arabic_word(nf):
+                norm_forms.append(nf)
+
+        total = calculate_normalized_total(mass, speed, energy)
+
+        if root in index:
+            diagnostics["duplicate_roots"] += 1
+            existing = index[root]
+            existing["energy"] = max(existing["energy"], energy)
+            existing["mass"] = max(existing["mass"], mass)
+            existing["speed"] = max(existing["speed"], speed)
+            existing["total"] = max(existing["total"], total)
+            existing["forms"] = dedupe_keep_order(existing["forms"] + norm_forms)
+            if existing["orbit"] == DEFAULT_ORBIT and orbit in KNOWN_ORBITS:
+                existing["orbit"] = orbit
+            diagnostics["entries_valid"] += 1
+            continue
+
+        index[root] = {
+            "root": root,
+            "orbit": orbit,
+            "energy": round(energy, 4),
+            "mass": round(mass, 4),
+            "speed": round(speed, 4),
+            "total": round(total, 4),
+            "forms": dedupe_keep_order([root] + norm_forms),
+        }
+        diagnostics["entries_valid"] += 1
+
+    diagnostics["roots_final"] = len(index)
+    return {"index": index, "diagnostics": diagnostics}
+
+def validate_and_load_letters(letters_path: Path = DEFAULT_LETTERS_PATH) -> Dict[str, Any]:
+    """Loads compact 28-letter metrics"""
+    raw = safe_read_json(letters_path)
+
+    if not isinstance(raw, dict):
+        raise ValueError("letters_28_compact.json must be a JSON object.")
+
+    index = {}
+    valid_count = 0
+
+    for k, v in raw.items():
+        key = normalize_arabic(str(k), force_teh_marbuta_to_ha=False).replace(" ", "")
+        if len(key) != 1 or not is_arabic_word(key):
+            continue
+        if not isinstance(v, dict):
+            continue
+
+        mass = safe_float(v.get("mass", 1.0), 1.0)
+        speed = safe_float(v.get("speed", 1.0), 1.0)
+        index[key] = {"mass": mass, "speed": speed}
+        valid_count += 1
+
+    diagnostics = {"path": str(letters_path), "letters_valid": valid_count}
+    return {"index": index, "diagnostics": diagnostics}
+
+def validate_and_load_matrix(matrix_path: Path = DEFAULT_MATRIX_PATH) -> Dict[str, Any]:
+    """Flexible matrix file loader"""
+    raw = safe_read_json(matrix_path)
+
+    verses = None
+    if isinstance(raw, list):
+        verses = raw
+    elif isinstance(raw, dict) and isinstance(raw.get("verses"), list):
+        verses = raw["verses"]
+    else:
+        raise ValueError("matrix_resonance.json must be a list or {'verses': [...]}")
+
+    cleaned = []
+    invalid = 0
+
+    for i, item in enumerate(verses):
+        if not isinstance(item, dict):
+            invalid += 1
+            continue
+        verse_id = str(item.get("verse_id", item.get("id", f"verse_{i+1}"))).strip()
+        text = str(item.get("text", "")).strip()
+        if not text:
+            invalid += 1
+            continue
+        cleaned.append({"verse_id": verse_id, "text": text})
+
+    diagnostics = {
+        "path": str(matrix_path),
+        "verses_total": len(verses),
+        "verses_valid": len(cleaned),
+        "verses_invalid": invalid,
+    }
+
+    return {"verses": cleaned, "diagnostics": diagnostics}
+
+# =========================================================
+# ===================== 7) MATRIX INDEXING =====================
+# =========================================================
+
+def build_matrix_root_index(
+    verses: List[Dict[str, Any]],
+    roots_index: Dict[str, Dict[str, Any]]
+) -> Dict[str, Any]:
+    """Build root -> verses mapping using actual root matcher"""
+    from collections import defaultdict
+
+    root_to_verses = defaultdict(list)
+    verse_to_roots = {}
+    processed_words = 0
+
+    for verse in verses:
+        verse_id = verse["verse_id"]
+        text = verse["text"]
+        words = tokenize_arabic(text)
+        found_roots = set()
+
+        for w in words:
+            processed_words += 1
+            m = match_quranic_root(w, roots_index)
+            if m["root"]:
+                found_roots.add(m["root"])
+
+        verse_to_roots[verse_id] = sorted(found_roots)
+        for r in found_roots:
+            root_to_verses[r].append({"verse_id": verse_id, "text": text})
+
+    diagnostics = {
+        "verses_indexed": len(verses),
+        "processed_words": processed_words,
+        "roots_with_verses": len(root_to_verses),
+    }
+
+    return {
+        "root_to_verses": dict(root_to_verses),
+        "verse_to_roots": verse_to_roots,
+        "diagnostics": diagnostics,
+    }
+
+# =========================================================
+# ===================== 8) ROOT MATCHING ENGINE =====================
+# =========================================================
+
+def match_quranic_root(word: str, roots_index: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    """Heuristic root matcher against the 1800+ lexicon"""
+    candidates = generate_root_candidates(word)
+    if not candidates:
         return {
+            "input": word,
             "root": None,
             "confidence": 0.0,
-            "confidence_label": "غير مطابق",
-            "method": "no_match",
+            "orbit": None,
+            "method": None,
+            "candidates_considered": 0,
             "alternatives": [],
-            "ambiguous": False,
-            "requires_human": False,
-            "trace": candidates,
-            "advisor_note": "لم يتم العثور على جذر مطابق ضمن الجذور الـ 1800."
         }
 
-    best_by_root = {}
-    for hit in scored_hits:
-        r = hit["root"]
-        if r not in best_by_root or hit["score"] > best_by_root[r]["score"]:
-            best_by_root[r] = hit
+    scored = []
 
-    ranked = sorted(best_by_root.values(), key=lambda x: (-x["score"], x["root"]))
-    best = ranked[0]
-    alternatives = [x["root"] for x in ranked[1:4]]
+    for item in candidates:
+        form = item["form"]
+        source = item["source"]
+        weight = item["weight"]
+        source_bonus = SOURCE_BONUS.get(source, 0.0)
+
+        if form in roots_index:
+            root_entry = roots_index[form]
+            score = (weight * 0.70) + source_bonus + min(root_entry["energy"] * 0.03, 0.18)
+            scored.append({
+                "root": form,
+                "score": score,
+                "method": source,
+                "entry": root_entry,
+            })
+
+        if len(form) > 3:
+            for sub in pattern_extract_roots(form):
+                if sub in roots_index:
+                    root_entry = roots_index[sub]
+                    score = (weight * 0.62) + source_bonus + 0.06 + min(root_entry["energy"] * 0.03, 0.18)
+                    scored.append({
+                        "root": sub,
+                        "score": score,
+                        "method": f"{source}->pattern_extract",
+                        "entry": root_entry,
+                    })
+
+    if not scored:
+        return {
+            "input": word,
+            "root": None,
+            "confidence": 0.0,
+            "orbit": None,
+            "method": None,
+            "candidates_considered": len(candidates),
+            "alternatives": [],
+        }
+
+    best_per_root = {}
+    for s in scored:
+        r = s["root"]
+        if r not in best_per_root or s["score"] > best_per_root[r]["score"]:
+            best_per_root[r] = s
+
+    ranked = sorted(best_per_root.values(), key=lambda x: x["score"], reverse=True)
+
+    top = ranked[0]
+    second = ranked[1] if len(ranked) > 1 else None
+
+    raw_conf = top["score"]
+    confidence = clamp(raw_conf / 1.25, 0.0, 1.0)
 
     ambiguous = False
-    requires_human = False
-
-    if len(ranked) > 1:
-        gap = best["score"] - ranked[1]["score"]
-        if gap <= 0.06:
+    ambiguity_gap = None
+    if second:
+        ambiguity_gap = top["score"] - second["score"]
+        if ambiguity_gap < 0.08:
             ambiguous = True
-            requires_human = True
-        elif gap <= 0.12:
-            ambiguous = True
-            requires_human = False
-
-    note = f"تمت المطابقة عبر {best['source']} باستخدام الشكل '{best['candidate_form']}'."
-    if ambiguous:
-        note += " توجد احتمالات قريبة تستحق الانتباه."
+            confidence = min(confidence, 0.72)
 
     return {
-        "root": best["root"],
-        "confidence": round(best["score"], 4),
-        "confidence_label": confidence_label(best["score"]),
-        "method": best["source"],
-        "alternatives": alternatives,
+        "input": word,
+        "root": top["root"],
+        "confidence": round(confidence, 4),
+        "orbit": top["entry"]["orbit"],
+        "method": top["method"],
+        "candidates_considered": len(candidates),
         "ambiguous": ambiguous,
-        "requires_human": requires_human,
-        "trace": candidates,
-        "advisor_note": note
+        "ambiguity_gap": round(ambiguity_gap, 4) if ambiguity_gap is not None else None,
+        "alternatives": [
+            {
+                "root": x["root"],
+                "score": round(x["score"], 4),
+                "orbit": x["entry"]["orbit"],
+                "method": x["method"],
+            }
+            for x in ranked[:5]
+        ],
     }
 
 # =========================================================
-# 14) AMBIGUITY SHIELD
+# ===================== 9) CONTEXTUAL HARMONY =====================
 # =========================================================
-def ambiguity_shield(token_index, word, match_result):
-    if not match_result["root"]:
-        return {
-            "ambiguous": False,
-            "mode": "auto",
-            "candidates": [],
-            "message": ""
-        }
 
-    if not match_result["ambiguous"]:
-        return {
-            "ambiguous": False,
-            "mode": "auto",
-            "candidates": [{"root": match_result["root"], "confidence": match_result["confidence"]}],
-            "message": "مطابقة مستقرة."
-        }
-
-    candidates = [{"root": match_result["root"], "confidence": match_result["confidence"]}]
-    for alt in match_result["alternatives"]:
-        candidates.append({"root": alt, "confidence": round(max(0.0, match_result["confidence"] - 0.04), 4)})
-
-    mode = "human" if match_result["requires_human"] else "warning"
-    message = (
-        "الكلمة تحتمل أكثر من جذر، يُستحسن تدخل بشري."
-        if mode == "human"
-        else "يوجد تقارب بين جذور محتملة، لكن النظام رجّح أحدها."
-    )
-
-    return {
-        "ambiguous": True,
-        "mode": mode,
-        "candidates": candidates,
-        "message": message
-    }
-
-def token_key(token_index, word):
-    return f"token_{token_index}_{normalize_arabic(word)}"
-
-# =========================================================
-# 15) CONTEXTUAL HARMONY ENGINE
-# =========================================================
-def contextual_harmony(tokens):
-    matched_roots = [t["match"]["root"] for t in tokens if t["match"]["root"]]
-    if not matched_roots:
+def contextual_harmony(roots_found: List[str], roots_index: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    """Contextual harmony based on orbit cohesion"""
+    if not roots_found:
         return {
             "score": 0.0,
-            "label": "لا تناغم مرصود",
-            "medal": "⚪",
-            "dominant_families": [],
-            "repeated_roots": [],
-            "cluster_strength": 0.0,
-            "centrality_bonus": 0.0
+            "label": "صمت",
+            "dominant_orbit": None,
+            "orbit_distribution": {},
         }
 
-    root_counts = Counter(matched_roots)
-    repeated_roots = [r for r, c in root_counts.items() if c > 1]
+    orbit_counts = Counter()
+    for r in roots_found:
+        orbit = roots_index.get(r, {}).get("orbit", DEFAULT_ORBIT)
+        orbit_counts[orbit] += 1
 
-    families = []
-    domains = []
-    central_bonus = 0.0
+    total = sum(orbit_counts.values())
+    dominant_orbit, dominant_count = orbit_counts.most_common(1)[0]
+    concentration = dominant_count / max(1, total)
 
-    for r in matched_roots:
-        meta = get_root_meta(r)
-        fam = meta.get("family", "unknown")
-        dom = meta.get("domain", "unknown")
-        rank = meta.get("rank", "normal")
-        families.append(fam)
-        domains.append(dom)
-        if rank == "central":
-            central_bonus += 0.02
-        elif rank == "high":
-            central_bonus += 0.01
+    unique_ratio = len(set(roots_found)) / max(1, len(roots_found))
+    harmony = (concentration * 0.7) + ((1 - abs(unique_ratio - 0.75)) * 0.3)
+    harmony = clamp(harmony, 0.0, 1.0)
 
-    fam_counts = Counter(families)
-    dom_counts = Counter(domains)
-
-    dominant_families = [f for f, c in fam_counts.items() if c >= 2 and f != "unknown"]
-
-    total = len(matched_roots)
-    root_repeat_ratio = sum(c for c in root_counts.values() if c > 1) / total
-    family_concentration = max(fam_counts.values()) / total if fam_counts else 0.0
-    domain_concentration = max(dom_counts.values()) / total if dom_counts else 0.0
-
-    cluster_strength = clamp((family_concentration * 0.45) + (domain_concentration * 0.35) + (root_repeat_ratio * 0.20))
-    centrality_bonus = clamp(central_bonus, 0.0, 0.12)
-
-    score = clamp(cluster_strength + centrality_bonus)
-
-    if score >= 0.85:
-        label, medal = "تناغم سيادي عالٍ", "🟢"
-    elif score >= 0.70:
-        label, medal = "تناغم راجح", "🟢"
-    elif score >= 0.50:
-        label, medal = "تناغم متوسط", "🟡"
-    elif score > 0:
-        label, medal = "تناغم ضعيف", "🟠"
+    if harmony >= 0.85:
+        label = "وسام التناغم"
+    elif harmony >= 0.65:
+        label = "وحدة عالية"
+    elif harmony >= 0.45:
+        label = "تماسك متوسط"
     else:
-        label, medal = "لا تناغم مرصود", "⚪"
+        label = "تناثر"
 
     return {
-        "score": round(score, 4),
+        "score": round(harmony, 4),
         "label": label,
-        "medal": medal,
-        "dominant_families": dominant_families,
-        "repeated_roots": repeated_roots,
-        "cluster_strength": round(cluster_strength, 4),
-        "centrality_bonus": round(centrality_bonus, 4)
+        "dominant_orbit": dominant_orbit,
+        "orbit_distribution": dict(orbit_counts),
     }
 
-def contextual_harmony_engine(matched_roots):
-    if not matched_roots:
-        return {
-            "harmony_score": 0,
-            "harmony_label": "لا يوجد تناغم",
-            "dominant_family": None,
-            "family_counter": {}
-        }
+def generate_closing_statement(
+    roots_found: List[str],
+    orbit_counts: Counter,
+    harmony: Dict[str, Any],
+    avg_conf: float,
+) -> str:
+    if not roots_found:
+        return "لم يظهر جذر قرآني حاسم في هذا النص ضمن المعجم الحالي، والنتيجة تميل إلى الصمت التحليلي."
 
-    orbit_counts = Counter([m["orbit"] for m in matched_roots])
-    root_counts = Counter([m["root"] for m in matched_roots])
+    dom = None
+    if orbit_counts:
+        dom = orbit_counts.most_common(1)[0][0]
 
-    total = len(matched_roots)
-    top_orbit, top_orbit_count = orbit_counts.most_common(1)[0]
-    top_root, top_root_count = root_counts.most_common(1)[0]
-
-    orbit_ratio = top_orbit_count / total
-    root_ratio = top_root_count / total
-
-    harmony_score = round((orbit_ratio * 0.7 + root_ratio * 0.3) * 100, 2)
-
-    if harmony_score >= 80:
-        label = "وسام التناغم المطلق"
-    elif harmony_score >= 60:
-        label = "وحدة طاقية عالية"
-    elif harmony_score >= 40:
-        label = "تناغم متوسط"
-    else:
-        label = "تناثر دلالي"
-
-    return {
-        "harmony_score": harmony_score,
-        "harmony_label": label,
-        "dominant_family": top_orbit,
-        "family_counter": dict(orbit_counts)
-    }
+    if harmony["score"] >= 0.85:
+        return f"النص يُظهر وحدة طاقية عالية جدًا، ومداره الغالب هو «{dom}»، مع تناغم سياقي سيادي وثقة تحليلية مرتفعة."
+    if harmony["score"] >= 0.65:
+        return f"النص متماسك دلاليًا، ومداره الغالب هو «{dom}»، مع مؤشرات انسجام واضحة وثقة متوازنة."
+    if avg_conf >= 0.70:
+        return f"النص يحمل جذورًا معتبرة ضمن مدار «{dom}»، لكن بنيته أقل تماسكًا من حالة التناغم الكامل."
+    return "ظهرت جذور محتملة، لكن البنية لا تزال بحاجة إلى قراءة بشرية أدق لتثبيت المسار النهائي."
 
 # =========================================================
-# 16) RITUAL / REPRESENTATIONAL LAYER
+# ===================== 10) MAIN ANALYSIS ENGINE =====================
 # =========================================================
-GENE_MAP = {
-    "ا": "alpha", "ب": "beta", "ت": "theta", "ث": "theta",
-    "ج": "gamma", "ح": "eta", "خ": "kappa", "د": "delta",
-    "ذ": "delta", "ر": "rho", "ز": "zeta", "س": "sigma",
-    "ش": "sigma", "ص": "sigma+", "ض": "sigma+", "ط": "tau",
-    "ظ": "tau+", "ع": "ayn", "غ": "ghayn", "ف": "phi",
-    "ق": "qaf", "ك": "kappa2", "ل": "lambda", "م": "mu",
-    "ن": "nu", "ه": "eta2", "و": "omega", "ي": "iota"
-}
 
-def ritual_layer(tokens):
-    all_text = "".join([t["normalized"] for t in tokens])
-    gene_counts = Counter(GENE_MAP.get(ch, "void") for ch in all_text if ch.strip())
+def analyze_text(
+    text: str,
+    roots_index: Dict[str, Dict[str, Any]],
+    letters_index: Dict[str, Dict[str, float]],
+    matrix_root_index: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    words = tokenize_arabic(text)
 
-    total_chars = max(1, sum(gene_counts.values()))
-    dominant_gene_ratio = max(gene_counts.values()) / total_chars if gene_counts else 0.0
+    word_results = []
+    roots_found = []
+    ambiguity_flags = []
 
-    matched_ratio = sum(1 for t in tokens if t["match"]["root"]) / max(1, len(tokens))
-    resonance_score = clamp((dominant_gene_ratio * 0.35) + (matched_ratio * 0.65))
+    total_mass = 0.0
+    total_speed = 0.0
+    total_energy = 0.0
 
-    left = sum(v for i, v in enumerate(gene_counts.values()) if i % 2 == 0)
-    right = sum(v for i, v in enumerate(gene_counts.values()) if i % 2 == 1)
-    balance_score = clamp(1 - abs(left - right) / max(1, left + right))
+    for w in words:
+        mass, speed = estimate_word_mass_speed(w, letters_index)
+        match = match_quranic_root(w, roots_index)
 
-    return {
-        "gene_counts": dict(gene_counts),
-        "resonance_score": round(resonance_score, 4),
-        "balance_score": round(balance_score, 4)
-    }
+        energy = 0.0
+        orbit = None
+        root = None
 
-# =========================================================
-# 17) FINAL VERDICT ENGINE
-# =========================================================
-def final_verdict(summary, harmony, ritual, human_interventions=0):
-    matched_count = summary["matched_count"]
-    total = summary["matched_count"] + summary["unmatched_count"]
-    matched_ratio = matched_count / max(1, total)
-    avg_conf = summary["avg_confidence"]
-    ambiguous_count = summary["ambiguous_count"]
+        if match["root"]:
+            root = match["root"]
+            entry = roots_index[root]
+            energy = entry["energy"]
+            orbit = entry["orbit"]
+            roots_found.append(root)
 
-    overall = clamp(
-        (avg_conf * 0.45) +
-        (matched_ratio * 0.25) +
-        (harmony["score"] * 0.20) +
-        (ritual["resonance_score"] * 0.10)
-    )
+        total_mass += mass
+        total_speed += speed
+        total_energy += energy
 
-    coherence = clamp(
-        (harmony["score"] * 0.60) +
-        (summary["strong_matches"] / max(1, total) * 0.40)
-    )
-
-    review_penalty = (ambiguous_count * 0.03) + (0.02 if human_interventions > 0 else 0.0)
-    overall = clamp(overall - review_penalty)
-
-    requires_review = ambiguous_count > 0 or overall < 0.75
-    review_items = ambiguous_count
-
-    if overall >= 0.88 and coherence >= 0.80 and ambiguous_count == 0:
-        status = "قابل للاعتماد بثقة عالية"
-    elif overall >= 0.78:
-        status = "قابل للاعتماد البحثي"
-    elif overall >= 0.65:
-        status = "راجح مع مراجعة محدودة"
-    elif overall >= 0.45:
-        status = "استكشافي فقط"
-    else:
-        status = "غير كافٍ للاعتماد"
-
-    statement = (
-        f"التحليل بلغ درجة {status} "
-        f"بثقة كلية {overall:.2f} وتماسك سياقي {coherence:.2f}. "
-        f"عدد مواضع الالتباس: {ambiguous_count}."
-    )
-
-    return {
-        "overall_confidence": round(overall, 4),
-        "coherence_score": round(coherence, 4),
-        "requires_review": requires_review,
-        "review_items": review_items,
-        "human_interventions": human_interventions,
-        "status": status,
-        "statement": statement
-    }
-
-# =========================================================
-# 18) ANALYSIS PIPELINE
-# =========================================================
-def analyze_text(text: str):
-    original_text = str(text or "").strip()
-    normalized_text = normalize_arabic(original_text)
-    words = arabic_word_tokenize(normalized_text)
-
-    tokens = []
-    human_interventions = 0
-
-    for idx, w in enumerate(words):
-        m = match_quranic_root(w)
-        shield = ambiguity_shield(idx, w, m)
-
-        t_key = token_key(idx, w)
-        resolved = S()["resolved_ambiguities"].get(t_key)
-
-        final_root = m["root"]
-        if resolved and resolved.get("chosen_root"):
-            final_root = normalize_arabic(resolved["chosen_root"])
-            human_interventions += 1
-
-        token_record = {
-            "index": idx,
+        word_results.append({
             "word": w,
-            "normalized": normalize_arabic(w),
-            "candidates": [c["form"] for c in generate_root_candidates(w)],
-            "match": {
-                "root": final_root,
-                "confidence": m["confidence"],
-                "confidence_label": m["confidence_label"],
-                "method": m["method"],
-                "alternatives": m["alternatives"],
-                "ambiguous": m["ambiguous"],
-                "requires_human": m["requires_human"]
-            },
-            "shield": shield,
-            "root_meta": get_root_meta(final_root) if final_root else {
-                "family": "unknown", "domain": "unknown", "rank": "normal", "tags": []
-            },
-            "advisor_note": m["advisor_note"]
-        }
-        tokens.append(token_record)
+            "mass": round(mass, 4),
+            "speed": round(speed, 4),
+            "energy": round(energy, 4),
+            "root": root,
+            "orbit": orbit,
+            "confidence": match["confidence"],
+            "method": match["method"],
+            "ambiguous": match.get("ambiguous", False),
+            "alternatives": match.get("alternatives", []),
+        })
 
-    matched = [t for t in tokens if t["match"]["root"]]
-    unmatched = [t for t in tokens if not t["match"]["root"]]
-    strong_matches = [t for t in matched if t["match"]["confidence"] >= 0.75]
-    ambiguous = [t for t in tokens if t["match"]["ambiguous"]]
-
-    avg_conf = sum(t["match"]["confidence"] for t in matched) / max(1, len(matched))
-
-    summary = {
-        "matched_count": len(matched),
-        "unmatched_count": len(unmatched),
-        "avg_confidence": round(avg_conf, 4),
-        "strong_matches": len(strong_matches),
-        "ambiguous_count": len(ambiguous)
-    }
-
-    harmony = contextual_harmony(tokens)
-    ritual = ritual_layer(tokens)
-    verdict = final_verdict(summary, harmony, ritual, human_interventions=human_interventions)
-
-    record = {
-        "id": analysis_id(),
-        "timestamp": now_iso(),
-        "version": APP_VERSION,
-        "mode": S()["mode"],
-        "input": {
-            "original_text": original_text,
-            "normalized_text": normalized_text,
-            "word_count": len(words)
-        },
-        "tokens": tokens,
-        "summary": summary,
-        "harmony": harmony,
-        "ritual": ritual,
-        "final_verdict": verdict
-    }
-
-    fp_material = json.dumps({
-        "text": original_text,
-        "roots": [t["match"]["root"] for t in tokens if t["match"]["root"]],
-        "avg_conf": summary["avg_confidence"],
-        "verdict": verdict["status"],
-        "version": APP_VERSION
-    }, ensure_ascii=False, sort_keys=True)
-
-    record["fingerprint"] = sha256_text(fp_material)
-    return record
-
-# =========================================================
-# 19) MEMORY LEDGER
-# =========================================================
-def push_history(record):
-    preview = record["input"]["original_text"][:60]
-    item = {
-        "id": record["id"],
-        "timestamp": record["timestamp"],
-        "preview": preview + ("..." if len(record["input"]["original_text"]) > 60 else ""),
-        "avg_confidence": record["summary"]["avg_confidence"],
-        "harmony": record["harmony"]["score"],
-        "status": record["final_verdict"]["status"],
-        "fingerprint": record["fingerprint"],
-        "record": record
-    }
-
-    history = S()["analysis_history"]
-    history.insert(0, item)
-    S()["analysis_history"] = history[:20]
-
-def set_current_record(record):
-    S()["current_record"] = record
-    S()["active"] = True
-    S()["current_text"] = record["input"]["original_text"]
-    push_history(record)
-
-# =========================================================
-# 20) QURANIC ANALYSIS FUNCTION
-# =========================================================
-def calculate_absolute_total(mass, speed, energy):
-    return round(float(mass) + float(speed) + float(energy), 2)
-
-def show_resonance_waves(analysis):
-    st.markdown("### 🌊 موجات الميزان السيادي")
-    col_w1, col_w2, col_w3 = st.columns(3)
-    with col_w1:
-        st.metric("الكتلة", f"{analysis['mass']:.2f}")
-        st.progress(min(analysis["mass"] / 250, 1.0))
-    with col_w2:
-        st.metric("السرعة", f"{analysis['speed']:.2f}")
-        st.progress(min(analysis["speed"] / 250, 1.0))
-    with col_w3:
-        st.metric("الطاقة الجذرية", f"{analysis['energy']:.2f}")
-        st.progress(min(analysis["energy"] / 250, 1.0))
-
-def render_sovereign_insight(match_item):
-    root_name = match_item['root']
-    with st.expander(f"🔮 أنعام الجذر: [{root_name}] - المدار: {match_item['orbit']}"):
-        st.markdown(f"**البصيرة:** {match_item['insight']}")
-        st.markdown(f"**الوزن الطاقي:** {match_item['weight']}")
-        
-        resonance = matrix_idx.get(root_name, [])
-        if resonance:
-            st.markdown("---")
-            st.markdown(f"**🪐 الرنين الموضعي ({len(resonance)} موضع):**")
-            for occ in resonance[:5]:
-                st.info(f"📖 {occ['text']}\n\n**[{occ.get('surah', '?')}:{occ.get('verse', '?')}]**")
-        else:
-            st.caption("لم يتم رصد رنين إضافي لهذا الجذر في المصفوفة الحالية.")
-
-def analyze_path(text, l_idx, root_index, use_manual_resolution=True):
-    norm = normalize_arabic(text)
-    res = {
-        "original_text": text,
-        "normalized_text": norm,
-        "mass": 0.0,
-        "speed": 0.0,
-        "energy": 0.0,
-        "orbit": "غير_مرصود",
-        "insight": "لا توجد بصيرة رصدية لهذا المسار.",
-        "direction": "غير محدد",
-        "count": 0,
-        "matched_roots": [],
-        "orbit_counter": Counter(),
-        "ambiguities": [],
-        "confidence": 0.0
-    }
-
-    clean_text = norm.replace(" ", "")
-    dir_counter = Counter()
-    energy_types = Counter()
-
-    for char in clean_text:
-        meta = l_idx.get(char)
-        if meta:
-            res["mass"] += float(meta.get("mass", 0))
-            res["speed"] += float(meta.get("speed", 0))
-            res["count"] += 1
-            d = meta.get("direction", "unknown")
-            dir_counter[d] += 1
-            et = meta.get("energy_type", "unknown")
-            energy_types[et] += 1
-
-    if dir_counter:
-        res["direction"] = dir_counter.most_common(1)[0][0]
-
-    if energy_types:
-        res["dominant_energy_type"] = energy_types.most_common(1)[0][0]
-    else:
-        res["dominant_energy_type"] = "غير محدد"
-
-    words = norm.split()
-    for word in words:
-        matched_root, entries, ambiguous = resolve_root_with_ambiguity(
-            word, root_index, use_manual_resolution=use_manual_resolution
-        )
-
-        if ambiguous:
-            all_matches = get_all_matching_roots(word, root_index)
-            res["ambiguities"].append({
-                "word": word,
-                "options": [
-                    {
-                        "root": m["candidate"],
-                        "orbit": m["best_entry"]["orbit"],
-                        "weight": m["best_entry"]["weight"]
-                    }
-                    for m in all_matches
-                ]
+        if match.get("ambiguous"):
+            ambiguity_flags.append({
+                "word": w,
+                "best_root": match["root"],
+                "alternatives": match.get("alternatives", [])[:3],
             })
 
-        if matched_root and entries:
-            best_entry = max(entries, key=lambda x: x["weight"])
-            res["energy"] += best_entry["weight"]
-            res["orbit_counter"][best_entry["orbit"]] += best_entry["weight"]
-            res["matched_roots"].append({
-                "word": word,
-                "root": matched_root,
-                "orbit": best_entry["orbit"],
-                "weight": best_entry["weight"],
-                "insight": best_entry["insight"]
-            })
+    harmony = contextual_harmony(roots_found, roots_index)
+    total_index = calculate_normalized_total(total_mass, total_speed, total_energy)
 
-    if res["orbit_counter"]:
-        best_orbit, _ = res["orbit_counter"].most_common(1)[0]
-        res["orbit"] = best_orbit
-        for m in res["matched_roots"]:
-            if m["orbit"] == best_orbit:
-                res["insight"] = m["insight"]
+    resonance_refs = []
+    if matrix_root_index and roots_found:
+        root_to_verses = matrix_root_index.get("root_to_verses", {})
+        seen_verse_ids = set()
+        for r in sorted(set(roots_found)):
+            for verse in root_to_verses.get(r, [])[:3]:
+                if verse["verse_id"] not in seen_verse_ids:
+                    resonance_refs.append({
+                        "root": r,
+                        "verse_id": verse["verse_id"],
+                        "text": verse["text"],
+                    })
+                    seen_verse_ids.add(verse["verse_id"])
+                if len(resonance_refs) >= 9:
+                    break
+            if len(resonance_refs) >= 9:
                 break
 
-    harmony = contextual_harmony_engine(res["matched_roots"])
-    res.update(harmony)
+    orbit_counts = Counter(roots_index[r]["orbit"] for r in roots_found if r in roots_index)
 
-    word_count = max(len(words), 1)
-    root_match_ratio = len(res["matched_roots"]) / word_count
-    ambiguity_penalty = min(len(res["ambiguities"]) * 0.08, 0.32)
-    confidence = max(0.0, min(1.0, (root_match_ratio * 0.7 + (res["harmony_score"] / 100) * 0.3) - ambiguity_penalty))
-    res["confidence"] = round(confidence * 100, 2)
+    confidence_values = [wr["confidence"] for wr in word_results if wr["root"]]
+    avg_conf = round(sum(confidence_values) / max(1, len(confidence_values)), 4)
 
-    res["total"] = calculate_absolute_total(res["mass"], res["speed"], res["energy"])
-    
-    return res
+    statement = generate_closing_statement(
+        roots_found=roots_found,
+        orbit_counts=orbit_counts,
+        harmony=harmony,
+        avg_conf=avg_conf,
+    )
 
-# =========================================================
-# 21) AMBIGUITY RESOLUTION HELPERS
-# =========================================================
-def get_all_matching_roots(word, root_index):
-    candidates = generate_root_candidates(word)
-    all_matches = []
-
-    for c in candidates:
-        if c["form"] in root_index:
-            entries = root_index[c["form"]]
-            best_entry = max(entries, key=lambda x: x["weight"])
-            all_matches.append({
-                "candidate": c["form"],
-                "entries": entries,
-                "best_entry": best_entry
-            })
-
-    seen = set()
-    unique = []
-    for m in all_matches:
-        if m["candidate"] not in seen:
-            unique.append(m)
-            seen.add(m["candidate"])
-
-    unique = sorted(unique, key=lambda x: x["best_entry"]["weight"], reverse=True)
-    return unique
-
-def resolve_root_with_ambiguity(word, root_index, use_manual_resolution=True):
-    matches = get_all_matching_roots(word, root_index)
-
-    if not matches:
-        return None, [], False
-
-    word_key = normalize_arabic(word)
-    if word_key in st.session_state.ambiguity_choices:
-        chosen_root = st.session_state.ambiguity_choices[word_key]
-        for m in matches:
-            if m["candidate"] == chosen_root:
-                return chosen_root, m["entries"], len(matches) > 1
-
-    if not use_manual_resolution or len(matches) == 1:
-        return matches[0]["candidate"], matches[0]["entries"], len(matches) > 1
-
-    return matches[0]["candidate"], matches[0]["entries"], True
-
-# =========================================================
-# 22) EXPORT HELPERS
-# =========================================================
-def build_export_payload(result, label="مسار"):
     return {
-        "label": label,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "original_text": result.get("original_text", ""),
-        "normalized_text": result.get("normalized_text", ""),
-        "orbit": result.get("orbit", ""),
-        "insight": result.get("insight", ""),
-        "direction": result.get("direction", ""),
-        "dominant_energy_type": result.get("dominant_energy_type", ""),
-        "mass": result.get("mass", 0),
-        "speed": result.get("speed", 0),
-        "energy": result.get("energy", 0),
-        "total": result.get("total", 0),
-        "confidence": result.get("confidence", 0),
-        "harmony_score": result.get("harmony_score", 0),
-        "harmony_label": result.get("harmony_label", ""),
-        "matched_roots": result.get("matched_roots", []),
-        "ambiguities": result.get("ambiguities", [])
+        "input_text": text,
+        "normalized_words": words,
+        "word_results": word_results,
+        "roots_found": roots_found,
+        "unique_roots": sorted(set(roots_found)),
+        "orbit_counts": dict(orbit_counts),
+        "ambiguity_flags": ambiguity_flags,
+        "summary": {
+            "words_count": len(words),
+            "roots_count": len(roots_found),
+            "unique_roots_count": len(set(roots_found)),
+            "avg_confidence": avg_conf,
+            "total_mass": round(total_mass, 4),
+            "total_speed": round(total_speed, 4),
+            "total_energy": round(total_energy, 4),
+            "total_index": round(total_index, 4),
+        },
+        "harmony": harmony,
+        "resonance_refs": resonance_refs,
+        "closing_statement": statement,
     }
 
-def build_export_text(result, label="مسار"):
-    lines = []
-    lines.append(f"=== الوثيقة الوجودية | {label} ===")
-    lines.append(f"التاريخ: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    lines.append("")
-    lines.append("النص الأصلي:")
-    lines.append(result.get("original_text", ""))
-    lines.append("")
-    lines.append("النص المطبع:")
-    lines.append(result.get("normalized_text", ""))
-    lines.append("")
-    lines.append(f"المدار النهائي: {result.get('orbit', '')}")
-    lines.append(f"البصيرة: {result.get('insight', '')}")
-    lines.append(f"الاتجاه الغالب: {result.get('direction', '')}")
-    lines.append(f"نوع الطاقة الغالب: {result.get('dominant_energy_type', '')}")
-    lines.append(f"الكتلة: {result.get('mass', 0)}")
-    lines.append(f"السرعة: {result.get('speed', 0)}")
-    lines.append(f"الطاقة الجذرية: {result.get('energy', 0)}")
-    lines.append(f"الإجمالي السيادي: {result.get('total', 0)}")
-    lines.append(f"درجة الثقة: {result.get('confidence', 0)}%")
-    lines.append(f"التناغم السياقي: {result.get('harmony_score', 0)}% | {result.get('harmony_label', '')}")
-    lines.append("")
-    lines.append("الجذور المرصودة:")
-    for m in result.get("matched_roots", []):
-        lines.append(f"- الكلمة: {m['word']} | الجذر: {m['root']} | المدار: {m['orbit']} | الوزن: {m['weight']}")
-    lines.append("")
-    lines.append("الالتباسات:")
-    for amb in result.get("ambiguities", []):
-        opts = " | ".join([f"{o['root']} ({o['orbit']}, {o['weight']})" for o in amb["options"]])
-        lines.append(f"- الكلمة: {amb['word']} => {opts}")
-    return "\n".join(lines)
+def export_analysis_json_payload(analysis: Dict[str, Any]) -> Dict[str, Any]:
+    """Clean JSON-safe export payload"""
+    return {
+        "version": APP_VERSION,
+        "input_text": analysis.get("input_text"),
+        "summary": analysis.get("summary"),
+        "unique_roots": analysis.get("unique_roots"),
+        "orbit_counts": analysis.get("orbit_counts"),
+        "harmony": analysis.get("harmony"),
+        "ambiguity_flags": analysis.get("ambiguity_flags"),
+        "closing_statement": analysis.get("closing_statement"),
+        "word_results": analysis.get("word_results"),
+        "resonance_refs": analysis.get("resonance_refs"),
+    }
 
-def metric_card(label, value, subtitle=None, tone="normal"):
-    cls = ""
-    if tone == "good":
-        cls = "sov-good"
-    elif tone == "warn":
-        cls = "sov-warn"
-    elif tone == "bad":
-        cls = "sov-bad"
+# =========================================================
+# ===================== 11) BOOTSTRAP =====================
+# =========================================================
 
-    html = f"""
-    <div class="sov-card">
-        <div class="sov-label">{label}</div>
-        <div class="sov-big {cls}">{value}</div>
-        <div class="sov-label">{subtitle or ""}</div>
-    </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
+@st.cache_resource(show_spinner=True)
+def bootstrap_project() -> Dict[str, Any]:
+    """Full project bootstrap with strict diagnostics"""
+    # Find data files
+    roots_path = search_file_path("quranic_roots_1800.json") or DEFAULT_ROOTS_PATH
+    letters_path = search_file_path("letters_28_compact.json") or DEFAULT_LETTERS_PATH
+    matrix_path = search_file_path("matrix_resonance.json") or DEFAULT_MATRIX_PATH
 
-def chips(items):
-    if not items:
-        st.caption("—")
+    roots_bundle = validate_and_load_roots(roots_path)
+    letters_bundle = validate_and_load_letters(letters_path)
+    matrix_bundle = validate_and_load_matrix(matrix_path)
+
+    matrix_index = build_matrix_root_index(
+        verses=matrix_bundle["verses"],
+        roots_index=roots_bundle["index"],
+    )
+
+    return {
+        "version": APP_VERSION,
+        "roots": roots_bundle,
+        "letters": letters_bundle,
+        "matrix": matrix_bundle,
+        "matrix_index": matrix_index,
+    }
+
+# =========================================================
+# ===================== 12) UI PANELS =====================
+# =========================================================
+
+def inject_global_css():
+    st.markdown("""
+    <style>
+    .main {
+        direction: rtl;
+    }
+
+    .nibras-title {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+
+    .nibras-sub {
+        opacity: 0.85;
+        margin-bottom: 1rem;
+    }
+
+    .glass-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 14px;
+        border-radius: 14px;
+        margin-bottom: 12px;
+    }
+
+    .status-ok {
+        background: rgba(16, 185, 129, 0.10);
+        border: 1px solid rgba(16, 185, 129, 0.45);
+        padding: 10px;
+        border-radius: 10px;
+        margin: 8px 0;
+    }
+
+    .status-error {
+        background: rgba(239, 68, 68, 0.10);
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        padding: 10px;
+        border-radius: 10px;
+        margin: 8px 0;
+    }
+
+    .status-warn {
+        background: rgba(245, 158, 11, 0.10);
+        border: 1px solid rgba(245, 158, 11, 0.45);
+        padding: 10px;
+        border-radius: 10px;
+        margin: 8px 0;
+    }
+
+    .tiny {
+        font-size: 0.85rem;
+        opacity: 0.85;
+    }
+
+    .root-chip {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        margin: 2px 4px 2px 0;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.03);
+        font-size: 0.9rem;
+    }
+
+    .verse-box {
+        border-right: 3px solid rgba(255,255,255,0.18);
+        padding: 10px 12px;
+        margin: 8px 0;
+        background: rgba(255,255,255,0.02);
+        border-radius: 8px;
+    }
+
+    .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        direction: ltr;
+        text-align: left;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+def render_header(version: str):
+    st.markdown(f'<div class="nibras-title">نبراس السيادي — {version}</div>', unsafe_allow_html=True)
+    st.markdown('<div class="nibras-sub">محرك رنين الجذور القرآنية + التناغم السياقي + التشخيص السيادي</div>', unsafe_allow_html=True)
+
+def render_sidebar_diagnostics(bootstrap: Dict[str, Any]):
+    st.sidebar.markdown("## التشخيص السيادي")
+
+    roots_diag = bootstrap["roots"]["diagnostics"]
+    letters_diag = bootstrap["letters"]["diagnostics"]
+    matrix_diag = bootstrap["matrix"]["diagnostics"]
+    matrix_index_diag = bootstrap["matrix_index"]["diagnostics"] if bootstrap.get("matrix_index") else None
+
+    st.sidebar.markdown("### ملف الجذور")
+    st.sidebar.write(f"**المسار:** `{roots_diag['path']}`")
+    st.sidebar.write(f"**إجمالي الإدخالات:** {roots_diag['entries_total']}")
+    st.sidebar.write(f"**الصالحة:** {roots_diag['entries_valid']}")
+    st.sidebar.write(f"**غير الصالحة:** {roots_diag['entries_invalid']}")
+    st.sidebar.write(f"**الجذور النهائية:** {roots_diag['roots_final']}")
+    st.sidebar.write(f"**التكرارات:** {roots_diag['duplicate_roots']}")
+    st.sidebar.write(f"**مدارات غريبة → وعي:** {roots_diag['unknown_orbit_count']}")
+
+    unknown_seen = roots_diag.get("unknown_orbits_seen", {})
+    if unknown_seen:
+        with st.sidebar.expander("المدارات الغريبة المرصودة"):
+            for k, v in unknown_seen.items():
+                st.write(f"- {k}: {v}")
+
+    if roots_diag["roots_final"] >= 1800:
+        st.sidebar.markdown('<div class="status-ok">✅ ملف الجذور تجاوز/حقق 1800+</div>', unsafe_allow_html=True)
+    else:
+        st.sidebar.markdown('<div class="status-warn">⚠️ ملف الجذور أقل من 1800 جذر</div>', unsafe_allow_html=True)
+
+    st.sidebar.markdown("### ملف الحروف")
+    st.sidebar.write(f"**المسار:** `{letters_diag['path']}`")
+    st.sidebar.write(f"**الحروف الصالحة:** {letters_diag['letters_valid']}")
+
+    st.sidebar.markdown("### ملف المصفوفة")
+    st.sidebar.write(f"**المسار:** `{matrix_diag['path']}`")
+    st.sidebar.write(f"**الآيات الكلية:** {matrix_diag['verses_total']}")
+    st.sidebar.write(f"**الآيات الصالحة:** {matrix_diag['verses_valid']}")
+    st.sidebar.write(f"**الآيات غير الصالحة:** {matrix_diag['verses_invalid']}")
+
+    if matrix_index_diag:
+        st.sidebar.markdown("### فهرسة المصفوفة")
+        st.sidebar.write(f"**الآيات المفهرسة:** {matrix_index_diag['verses_indexed']}")
+        st.sidebar.write(f"**الكلمات المعالجة:** {matrix_index_diag['processed_words']}")
+        st.sidebar.write(f"**جذور مرتبطة بآيات:** {matrix_index_diag['roots_with_verses']}")
+
+def render_sidebar_controls() -> Dict[str, Any]:
+    st.sidebar.markdown("## وضع التشغيل")
+    silent_mode = st.sidebar.toggle("الرصد الصامت (مختبري)", value=False)
+    show_word_table = st.sidebar.toggle("إظهار جدول الكلمات", value=True)
+    show_resonance = st.sidebar.toggle("إظهار مراجع الرنين", value=True)
+    show_json_preview = st.sidebar.toggle("معاينة JSON", value=False)
+    max_history = st.sidebar.slider("سجل الجلسة", min_value=1, max_value=10, value=5)
+    return {
+        "silent_mode": silent_mode,
+        "show_word_table": show_word_table,
+        "show_resonance": show_resonance,
+        "show_json_preview": show_json_preview,
+        "max_history": max_history,
+    }
+
+def render_summary(analysis: Dict[str, Any]):
+    s = analysis["summary"]
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("الكلمات", s["words_count"])
+    c2.metric("الجذور", s["roots_count"])
+    c3.metric("الفريدة", s["unique_roots_count"])
+    c4.metric("الثقة", f"{round(s['avg_confidence'] * 100, 1)}%")
+
+    c5, c6, c7, c8 = st.columns(4)
+    c5.metric("الكتلة", s["total_mass"])
+    c6.metric("السرعة", s["total_speed"])
+    c7.metric("الطاقة", s["total_energy"])
+    c8.metric("المؤشر السيادي", s["total_index"])
+
+def render_harmony(analysis: Dict[str, Any]):
+    harmony = analysis["harmony"]
+    st.markdown("### التناغم السياقي")
+    st.progress(float(harmony["score"]))
+    st.write(f"**الحكم:** {harmony['label']}")
+    if harmony["dominant_orbit"]:
+        st.write(f"**المدار الغالب:** {harmony['dominant_orbit']}")
+
+    dist = harmony.get("orbit_distribution", {})
+    if dist:
+        st.write("**توزيع المدارات:**")
+        st.json(dist)
+
+def render_roots(analysis: Dict[str, Any]):
+    st.markdown("### الجذور الفريدة")
+    roots = analysis["unique_roots"]
+    if not roots:
+        st.markdown('<div class="status-warn">⚠️ لم يتم العثور على جذور مطابقة.</div>', unsafe_allow_html=True)
         return
-    html = "".join([f'<span class="sov-chip">{x}</span>' for x in items])
-    st.markdown(html, unsafe_allow_html=True)
 
-# =========================================================
-# 23) UI TITLE
-# =========================================================
-st.title("🛰️ محراب نبراس السيادي v27.0 — 1800 جذر (كسر جمود الرصد)")
-st.write("تحليل حرفي + جذري قرآني (1800 جذر) + ذاكرة + تناغم سياقي + تصدير + تحصين من الالتباس + أنعام المصفوفة")
+    chips = "".join([f'<span class="root-chip">{r}</span>' for r in roots])
+    st.markdown(chips, unsafe_allow_html=True)
 
-# =========================================================
-# 24) SIDEBAR - DIAGNOSTICS
-# =========================================================
-with st.sidebar:
-    st.markdown("## ⚙️ التحكم السيادي")
-    silent_mode = st.toggle("🧪 وضع الرصد الصامت (Silent Observatory)", value=False)
+def render_word_results(analysis: Dict[str, Any], show_table: bool = True):
+    st.markdown("### نتائج الكلمات")
 
-    st.markdown("### 🛠️ لوحة التشخيص السيادي")
-    st.write(f"📁 **ملف الحروف:** {path_l if path_l else '❌ مفقود'}")
-    st.write(f"📁 **ملف المعجم (1800 جذر):** {path_x if path_x else '❌ مفقود'}")
-    st.write(f"📚 **عدد الجذور المحملة:** **{total_roots}** جذراً")
-    st.write(f"📖 **إجمالي المداخل:** {total_entries}")
-    
-    # عرض أول 20 جذراً للتحقق
-    if roots_list:
-        st.markdown("---")
-        st.markdown("**🔍 عينة من الجذور (أول 20):**")
-        sample_roots = roots_list[:20]
-        st.write(", ".join(sample_roots))
-    
-    st.markdown("---")
-    
-    matrix_size_mb = get_file_size_mb(matrix_path)
-    st.write(f"📁 **ملف المصفوفة:** {matrix_path if matrix_path else '❌ مفقود'}")
-    if matrix_path:
-        st.write(f"   - **حجم الملف:** {matrix_size_mb} MB")
-        st.write(f"   - **عدد الآيات:** {total_verses}")
-        st.write(f"   - **الآيات المفهرسة:** {indexed_verses}")
-    
-    st.write(f"🔤 **عدد الحروف المفهرسة:** {len(letters_idx)}")
-    st.write(f"🪐 **عدد الجذور في المصفوفة:** {len(matrix_idx)}")
+    if not show_table:
+        for wr in analysis["word_results"]:
+            root = wr["root"] if wr["root"] else "—"
+            orbit = wr["orbit"] if wr["orbit"] else "—"
+            conf = f"{round(wr['confidence'] * 100, 1)}%"
+            st.markdown(
+                f"**{wr['word']}** → جذر: **{root}** | مدار: **{orbit}** | ثقة: **{conf}** | طريقة: `{wr['method']}`"
+            )
+        return
 
-    if matrix_path:
-        st.success("✅ المصفوفة القرآنية متصلة")
-    else:
-        st.warning("⚠️ لم يتم العثور على matrix_data.json")
+    rows = []
+    for wr in analysis["word_results"]:
+        rows.append({
+            "الكلمة": wr["word"],
+            "الجذر": wr["root"] or "",
+            "المدار": wr["orbit"] or "",
+            "الثقة": round(wr["confidence"] * 100, 1),
+            "الطريقة": wr["method"] or "",
+            "الكتلة": wr["mass"],
+            "السرعة": wr["speed"],
+            "الطاقة": wr["energy"],
+            "ملتبس؟": "نعم" if wr["ambiguous"] else "لا",
+        })
 
-    st.markdown("---")
-    st.markdown("### 🧠 الذاكرة السيادية الموضعية (آخر 5)")
-    if st.session_state.session_history:
-        for idx, item in enumerate(reversed(st.session_state.session_history[-5:]), 1):
-            st.markdown(f"**{idx}. {item['label']}**")
-            st.caption(f"المدار: {item['orbit']} | الإجمالي: {item['total']} | الثقة: {item['confidence']}%")
-            st.text(item["preview"])
-            st.markdown("---")
-    else:
-        st.caption("لا توجد تحليلات محفوظة بعد.")
+    st.dataframe(rows, use_container_width=True)
 
-    st.markdown("---")
-    st.markdown("### 🧪 بروتوكول الختام")
-    st.write("**Mohamed | As-Sajdah [5]**")
-    st.write("**خِت فِت.**")
+def render_ambiguity_flags(analysis: Dict[str, Any]):
+    flags = analysis.get("ambiguity_flags", [])
+    st.markdown("### التحصين من الالتباس")
+    if not flags:
+        st.markdown('<div class="status-ok">✅ لا توجد حالات التباس حرجة في هذه القراءة.</div>', unsafe_allow_html=True)
+        return
 
-# =========================================================
-# 25) LEXICON TOOLS
-# =========================================================
-tool_col1, tool_col2 = st.columns(2)
+    st.markdown('<div class="status-warn">⚠️ توجد كلمات تحتمل أكثر من جذر محتمل. القراءة البشرية مرجّحة هنا.</div>', unsafe_allow_html=True)
 
-with tool_col1:
-    if st.button("📦 عرض عينة من الجذور (أول 50)", use_container_width=True):
-        if roots_list:
-            st.subheader("📘 عينة من الجذور الـ 1800")
-            st.write(", ".join(roots_list[:50]))
-            st.caption(f"إجمالي الجذور المحملة: {total_roots}")
-        else:
-            st.warning("لا توجد جذور متاحة.")
+    for item in flags:
+        with st.expander(f"الكلمة الملتبسة: {item['word']}"):
+            st.write(f"**أفضل جذر حاليًا:** {item['best_root']}")
+            st.write("**بدائل محتملة:**")
+            for alt in item["alternatives"]:
+                st.write(f"- {alt['root']} | المدار: {alt['orbit']} | score: {alt['score']} | via: {alt['method']}")
 
-with tool_col2:
-    if roots_list:
-        # عرض أول 100 جذر كنص قابل للتنزيل
-        roots_text = "\n".join(roots_list)
-        st.download_button(
-            label="📥 تنزيل قائمة الجذور (TXT)",
-            data=roots_text,
-            file_name="nibras_roots_list.txt",
-            mime="text/plain",
-            use_container_width=True
+def render_resonance_refs(analysis: Dict[str, Any]):
+    refs = analysis.get("resonance_refs", [])
+    st.markdown("### مراجع الرنين من المصفوفة")
+    if not refs:
+        st.markdown('<div class="status-warn">⚠️ لا توجد مراجع رنين مسترجعة من المصفوفة لهذه القراءة.</div>', unsafe_allow_html=True)
+        return
+
+    for ref in refs:
+        st.markdown(
+            f'<div class="verse-box"><b>{ref["verse_id"]}</b> — جذر: <b>{ref["root"]}</b><br>{ref["text"]}</div>',
+            unsafe_allow_html=True
         )
 
-st.markdown("---")
+def render_closing_statement(analysis: Dict[str, Any]):
+    st.markdown("### البيان الختامي")
+    st.markdown(f'<div class="glass-card">{analysis["closing_statement"]}</div>', unsafe_allow_html=True)
+
+def render_history(history: List[Dict[str, Any]]):
+    st.markdown("### سجل الجلسة")
+    if not history:
+        st.markdown('<div class="status-warn">⚠️ لا توجد تحليلات محفوظة بعد.</div>', unsafe_allow_html=True)
+        return
+
+    for i, item in enumerate(reversed(history), start=1):
+        with st.expander(f"سجل #{i} — {item.get('input_text', '')[:60]}"):
+            st.write(f"**النص:** {item.get('input_text', '')}")
+            st.write(f"**الجذور الفريدة:** {', '.join(item.get('unique_roots', [])) if item.get('unique_roots') else '—'}")
+            st.write(f"**البيان:** {item.get('closing_statement', '—')}")
+
+def render_export_buttons(export_payload: Dict[str, Any]) -> str:
+    json_text = json.dumps(export_payload, ensure_ascii=False, indent=2)
+
+    st.download_button(
+        label="تحميل الوثيقة الوجودية (JSON)",
+        data=json_text.encode("utf-8"),
+        file_name="nibras_analysis.json",
+        mime="application/json",
+        use_container_width=True,
+    )
+
+    return json_text
 
 # =========================================================
-# 26) THREE TEXT INPUTS
+# ===================== 13) MAIN APP =====================
 # =========================================================
-col1, col2, col3 = st.columns(3)
-with col1:
-    t1 = st.text_area("📍 المسار 1", placeholder="أدخل الآية أو النص...", height=140, key="v1")
-with col2:
-    t2 = st.text_area("📍 المسار 2", placeholder="أدخل الآية أو النص...", height=140, key="v2")
-with col3:
-    t3 = st.text_area("📍 المسار 3", placeholder="أدخل الآية أو النص...", height=140, key="v3")
 
-# =========================================================
-# 27) MAIN ANALYSIS BUTTON
-# =========================================================
-if st.button("🚀 إطلاق الرصد القرآني المقارن", use_container_width=True):
-    inputs = [t1, t2, t3]
-    results = []
-    display_cols = st.columns(3)
+def main():
+    inject_global_css()
+    render_header(APP_VERSION)
 
-    for i, txt in enumerate(inputs):
-        if txt.strip():
-            res = analyze_path(txt, letters_idx, quranic_root_index, use_manual_resolution=True)
-            results.append(res)
+    # Load data
+    try:
+        bootstrap = bootstrap_project()
+    except Exception as e:
+        st.error(f"فشل الإقلاع السيادي: {e}")
+        st.stop()
 
-            st.session_state.session_history.append({
-                "label": f"المسار {i+1}",
-                "orbit": res["orbit"],
-                "total": res["total"],
-                "confidence": res["confidence"],
-                "preview": txt[:60] + ("..." if len(txt) > 60 else ""),
-                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            })
-            st.session_state.session_history = st.session_state.session_history[-5:]
+    render_sidebar_diagnostics(bootstrap)
+    controls = render_sidebar_controls()
 
-            with display_cols[i]:
-                if not silent_mode:
-                    st.markdown(f"""
-                    <div class="comparison-card">
-                        <h3 style='margin:0;'>المسار {i+1}</h3>
-                        <h1 style='color:#8bc34a; font-size:40px;'>{res['total']}</h1>
-                        <p style='text-align:center;'><b>المدار:</b> {res['orbit']}</p>
-                        <p style='text-align:center;'><b>الجذور المطابقة:</b> {len(res['matched_roots'])}</p>
-                        <p style='text-align:center;'><b>الثقة:</b> {res['confidence']}%</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+    # Session state
+    if "nibras_history" not in st.session_state:
+        st.session_state.nibras_history = []
 
-                    show_resonance_waves(res)
-                else:
-                    st.subheader(f"المسار {i+1}")
-                    st.metric("الإجمالي السيادي", res["total"])
-                    st.metric("درجة الثقة", f"{res['confidence']}%")
+    if len(st.session_state.nibras_history) > controls["max_history"]:
+        st.session_state.nibras_history = st.session_state.nibras_history[-controls["max_history"]:]
 
-                st.markdown(f"""
-                <div class="detail-box">
-                    <b>الاتجاه الغالب:</b> {res['direction']}<br>
-                    <b>نوع الطاقة الغالب:</b> {res.get('dominant_energy_type', 'غير محدد')}<br>
-                    <b>عدد الحروف المرصودة:</b> {res['count']}<br>
-                    <b>التناغم:</b> {res['harmony_score']}% — {res['harmony_label']}
-                </div>
-                """, unsafe_allow_html=True)
+    # Main input
+    default_text = "إن مع العسر يسرا"
+    text = st.text_area(
+        "أدخل النص المراد تحليله",
+        value=default_text,
+        height=120,
+        placeholder="اكتب آية أو نصًا عربيًا...",
+    )
 
-                if res["ambiguities"]:
-                    st.markdown("### 🛡️ تنبيهات الالتباس")
-                    for amb_idx, amb in enumerate(res["ambiguities"]):
-                        st.warning(f"الكلمة **{amb['word']}** تحتمل أكثر من جذر.")
-                        options = [f"{o['root']} | {o['orbit']} | وزن {o['weight']}" for o in amb["options"]]
-                        selected = st.selectbox(
-                            f"اختر الجذر الأنسب للكلمة: {amb['word']}",
-                            options,
-                            key=f"amb_{i}_{amb_idx}_{amb['word']}"
-                        )
-                        chosen_root = selected.split(" | ")[0].strip()
-                        st.session_state.ambiguity_choices[normalize_arabic(amb["word"])] = chosen_root
+    analyze_btn = st.button("ابدأ التحليل السيادي", use_container_width=True)
 
-                if res["matched_roots"]:
-                    st.markdown("### 🔍 الجذور المرصودة")
-                    for m in res["matched_roots"]:
-                        render_sovereign_insight(m)
-                else:
-                    st.markdown("""
-                    <div class="status-warn">
-                        ⚠️ لم يتم العثور على جذور مطابقة في هذا المسار.
-                    </div>
-                    """, unsafe_allow_html=True)
+    if analyze_btn:
+        with st.spinner("جاري استنطاق الجذور والمدارات..."):
+            analysis = analyze_text(
+                text=text,
+                roots_index=bootstrap["roots"]["index"],
+                letters_index=bootstrap["letters"]["index"],
+                matrix_root_index=bootstrap["matrix_index"],
+            )
 
-                st.markdown("### 📤 التصدير السيادي")
-                payload = build_export_payload(res, label=f"المسار {i+1}")
-                payload_json = json.dumps(payload, ensure_ascii=False, indent=2)
-                payload_txt = build_export_text(res, label=f"المسار {i+1}")
+        # Save history
+        st.session_state.nibras_history.append({
+            "input_text": analysis["input_text"],
+            "unique_roots": analysis["unique_roots"],
+            "closing_statement": analysis["closing_statement"],
+        })
 
-                exp_col1, exp_col2 = st.columns(2)
-                with exp_col1:
-                    st.download_button(
-                        label=f"⬇️ JSON المسار {i+1}",
-                        data=payload_json,
-                        file_name=f"nibras_path_{i+1}.json",
-                        mime="application/json",
-                        use_container_width=True
-                    )
-                with exp_col2:
-                    st.download_button(
-                        label=f"⬇️ TXT الوثيقة الوجودية {i+1}",
-                        data=payload_txt,
-                        file_name=f"nibras_path_{i+1}_existential_report.txt",
-                        mime="text/plain",
-                        use_container_width=True
-                    )
+        if len(st.session_state.nibras_history) > controls["max_history"]:
+            st.session_state.nibras_history = st.session_state.nibras_history[-controls["max_history"]:]
+
+        if controls["silent_mode"]:
+            st.markdown("## الوضع المختبري")
         else:
-            results.append(None)
+            st.markdown("## القراءة السيادية")
 
-    # =========================================================
-    # 28) FINAL ADVISOR
-    # =========================================================
-    valid_results = [r for r in results if r is not None]
-    if valid_results:
-        st.markdown("<div class='mentor-box'>", unsafe_allow_html=True)
-        st.markdown("### 🧠 المستشار الشخصي السيادي — الإصدار الختامي")
+        render_summary(analysis)
+        render_harmony(analysis)
+        render_roots(analysis)
+        render_word_results(analysis, show_table=controls["show_word_table"])
+        render_ambiguity_flags(analysis)
 
-        best = max(valid_results, key=lambda x: x["total"])
-        most_confident = max(valid_results, key=lambda x: x["confidence"])
-        most_harmonic = max(valid_results, key=lambda x: x["harmony_score"])
+        if controls["show_resonance"]:
+            render_resonance_refs(analysis)
 
-        with st.chat_message("assistant", avatar="🕌"):
-            st.write(f"**أعلى مسار طاقيًا:** المدار **({best['orbit']})** بإجمالي **{best['total']}**")
-            st.write(f"**أعلى مسار ثقة:** المدار **({most_confident['orbit']})** بدرجة **{most_confident['confidence']}%**")
-            st.write(f"**أعلى مسار تناغمًا:** **{most_harmonic['harmony_label']}** ({most_harmonic['harmony_score']}%)")
+        render_closing_statement(analysis)
 
-            st.info(f"**البصيرة الحاكمة:** {best['insight']}")
-            st.success(f"**الاتجاه الغالب:** {best['direction']}")
-            st.write(f"**نوع الطاقة الغالب:** {best.get('dominant_energy_type', 'غير محدد')}")
-            st.write(f"**عدد الجذور المطابقة:** {len(best['matched_roots'])}")
-            st.write(f"**عدد حالات الالتباس:** {len(best['ambiguities'])}")
-            
-            all_roots = [m['root'] for m in best['matched_roots']]
-            matrix_roots = [r for r in all_roots if r in matrix_idx]
-            if matrix_roots:
-                st.markdown("---")
-                st.markdown("#### 🪐 رنين المصفوفة الكلية (من واقع المصحف):")
-                for root in matrix_roots[:2]:
-                    for occ in matrix_idx[root][:2]:
-                        st.write(f"📖 **{occ.get('surah', '?')}:{occ.get('verse', '?')}** — {occ['text'][:100]}...")
+        st.markdown("### التصدير السيادي")
+        export_payload = export_analysis_json_payload(analysis)
+        json_preview = render_export_buttons(export_payload)
 
-            if best["confidence"] >= 80:
-                st.success("🟢 البيان الختامي: هذا المسار ذو ثقة سيادية مرتفعة ويمكن اعتماده كمرجع تحليلي قوي.")
-            elif best["confidence"] >= 55:
-                st.warning("🟡 البيان الختامي: هذا المسار واعد، لكنه يستفيد من مراجعة الالتباسات لتحسين الدقة.")
-            else:
-                st.error("🔴 البيان الختامي: هذا المسار يحتاج تدقيقًا سياقيًا إضافيًا قبل اعتماده.")
+        if controls["show_json_preview"]:
+            st.code(json_preview, language="json")
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    # History
+    render_history(st.session_state.nibras_history)
 
-# =========================================================
-# 29) FOOTER
-# =========================================================
-st.sidebar.markdown("---")
-st.sidebar.markdown("**Blekinge, Sweden | Nibras Sovereign v27.0**")
-st.sidebar.markdown("*Mohamed | As-Sajdah [5]*")
-st.sidebar.markdown("*خِت فِت.*")
+    # Footer in sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("**Blekinge, Sweden | Nibras Sovereign v30.0**")
+    st.sidebar.markdown("*Mohamed | As-Sajdah [5]*")
+    st.sidebar.markdown("*خِت فِت.*")
+
+if __name__ == "__main__":
+    main()
