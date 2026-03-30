@@ -352,17 +352,8 @@ with tabs[5]: # الوعي الفوقي
             <div class="stat-box"><div class="stat-val" style="color:#4fc3f7">{len(state['logs'])}</div><div class="stat-label">أحداث الوعي</div></div>
         </div>
         <div class="adaptive-log">{'<br>'.join(state['logs'])}</div>
-        """, unsafe_allow_html=True))    
+        """, unsafe_allow_html=True)   
 else:
   for i in range(1, 6):
         with tabs[i]: st.info("المحراب في حالة انتظار... أطلق المفاعل لملء الموازين.")
 
-# --- التذييل السيادي (Sovereign Footer) ---
-st.sidebar.markdown(f"""
-**المستخدم:** محمد  
-**الحالة:** استواء سيادي  
-**الإصدار:** v26.2.0 (Grand)  
-**CPU:** السجدة (5)  
----
-**خِت فِت.**
-""")
