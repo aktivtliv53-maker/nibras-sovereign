@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # =========================================================
-# NIBRAS SOVEREIGN v26.6 — THE FINAL ETERNAL MONOLITH
+# NIBRAS SOVEREIGN v26.7 — THE COMPLETED ORBIT
 # =========================================================
 # نسخة سيادية مغلقة معماريًا لتحليل النصوص عبر:
 # - محرك جذور | مستشار قرار | درع الالتباس | تناغم سياقي
 # - ذاكرة موضعية | تصدير موثق | الربط بالمصفوفة الكلية (Matrix)
+# - نظام الأنعام (Expanders) لعرض الرنين القرآني
+# - الميزان الثلاثي (الكتلة + السرعة + الطاقة) بدون عشوائية
 # المرجع: وثيقة العرش - محمد (CPU: As-Sajdah 5)
 # =========================================================
 
@@ -23,7 +25,7 @@ from pathlib import Path
 # 1) PAGE CONFIG
 # =========================================================
 st.set_page_config(
-    page_title="Nibras Sovereign v26.6 ETERNAL MATRIX",
+    page_title="Nibras Sovereign v26.7 COMPLETED ORBIT",
     page_icon="🧿",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -106,6 +108,14 @@ html, body, [data-testid="stAppViewContainer"] {
 .detail-box {
     background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #222;
 }
+.status-warn {
+    background: #2a1f0f; border: 1px solid #a67c00; padding: 10px; border-radius: 10px; margin: 8px 0;
+}
+.an3am-expander {
+    background: rgba(18, 26, 42, 0.6);
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
 </style>
 """
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
@@ -113,7 +123,7 @@ st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 # =========================================================
 # 3) CONSTANTS & RULES
 # =========================================================
-APP_VERSION = "26.6 MATRIX"
+APP_VERSION = "26.7 COMPLETED ORBIT"
 
 NORMALIZATION_POLICY = {
     "strip_diacritics": True,
@@ -341,7 +351,6 @@ def safe_load_json_file(filename):
 
 letters_raw, path_l = safe_load_json_file("sovereign_letters_v1.json")
 lexicon_raw, path_x = safe_load_json_file("nibras_lexicon.json")
-matrix_raw, path_m = safe_load_json_file("matrix_data.json")
 
 # =========================================================
 # 10) BUILD LETTERS INDEX
@@ -463,14 +472,30 @@ if clean_lexicon:
         clean_saved_path = None
 
 # =========================================================
-# 13) BUILD MATRIX INDEX
+# 13) LOAD MATRIX RESONANCE (الأنعام والمصفوفة)
 # =========================================================
-matrix_idx = defaultdict(list)
-if isinstance(matrix_raw, list):
-    for entry in matrix_raw:
-        root_norm = normalize_arabic(entry.get('root', ''))
-        if root_norm:
-            matrix_idx[root_norm].append(entry)
+@st.cache_data
+def load_matrix_resonance():
+    """تحميل مصفوفة الرنين القرآني واستخراج الأنعام"""
+    for path in [Path("."), Path("./data"), Path("./qroot")]:
+        m_path = path / "matrix_data.json"
+        if m_path.exists():
+            try:
+                with open(m_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    idx = defaultdict(list)
+                    for entry in data:
+                        root_raw = entry.get('root', '')
+                        root = "".join(re.findall(r"[\u0621-\u064A]+", str(root_raw)))
+                        if root:
+                            idx[root].append(entry)
+                    return idx, str(m_path)
+            except Exception as e:
+                st.error(f"خطأ في تحميل المصفوفة: {e}")
+                return {}, None
+    return {}, None
+
+matrix_idx, matrix_path = load_matrix_resonance()
 
 # =========================================================
 # 14) ROOT LOOKUP HELPERS
@@ -952,8 +977,43 @@ def set_current_record(record):
     push_history(record)
 
 # =========================================================
-# 22) QURANIC ANALYSIS FUNCTION (مع Matrix)
+# 22) QURANIC ANALYSIS FUNCTION (مع Matrix وأنعام)
 # =========================================================
+def calculate_absolute_total(mass, speed, energy):
+    """ميزان السيادة الثلاثي - لا عشوائية"""
+    return round(float(mass) + float(speed) + float(energy), 2)
+
+def show_resonance_waves(analysis):
+    """عرض موجات الميزان الثلاثي"""
+    st.markdown("### 🌊 موجات الميزان السيادي")
+    col_w1, col_w2, col_w3 = st.columns(3)
+    with col_w1:
+        st.metric("الكتلة", f"{analysis['mass']:.2f}")
+        st.progress(min(analysis["mass"] / 250, 1.0))
+    with col_w2:
+        st.metric("السرعة", f"{analysis['speed']:.2f}")
+        st.progress(min(analysis["speed"] / 250, 1.0))
+    with col_w3:
+        st.metric("الطاقة الجذرية", f"{analysis['energy']:.2f}")
+        st.progress(min(analysis["energy"] / 250, 1.0))
+
+def render_sovereign_insight(match_item):
+    """نافذة أنعام منسدلة تعرض البصيرة ورنين المصفوفة"""
+    root_name = match_item['root']
+    with st.expander(f"🔮 أنعام الجذر: [{root_name}] - المدار: {match_item['orbit']}"):
+        st.markdown(f"**البصيرة:** {match_item['insight']}")
+        st.markdown(f"**الوزن الطاقي:** {match_item['weight']}")
+        
+        # استدعاء الرنين من المصفوفة
+        resonance = matrix_idx.get(root_name, [])
+        if resonance:
+            st.markdown("---")
+            st.markdown(f"**🪐 الرنين الموضعي ({len(resonance)} موضع):**")
+            for occ in resonance[:3]:
+                st.info(f"📖 {occ.get('text', '')[:150]}...\n\n**[{occ.get('surah', '?')}:{occ.get('verse', '?')}]**")
+        else:
+            st.caption("لم يتم رصد رنين إضافي لهذا الجذر في المصفوفة الحالية.")
+
 def analyze_path(text, l_idx, root_index, use_manual_resolution=True):
     norm = normalize_arabic(text)
     res = {
@@ -969,8 +1029,7 @@ def analyze_path(text, l_idx, root_index, use_manual_resolution=True):
         "matched_roots": [],
         "orbit_counter": Counter(),
         "ambiguities": [],
-        "confidence": 0.0,
-        "matrix_occurrences": []
+        "confidence": 0.0
     }
 
     clean_text = norm.replace(" ", "")
@@ -1027,10 +1086,6 @@ def analyze_path(text, l_idx, root_index, use_manual_resolution=True):
                 "weight": best_entry["weight"],
                 "insight": best_entry["insight"]
             })
-            
-            # إضافة مصفوفة الآيات للجذر
-            if matched_root in matrix_idx:
-                res["matrix_occurrences"].extend(matrix_idx[matched_root])
 
     if res["orbit_counter"]:
         best_orbit, _ = res["orbit_counter"].most_common(1)[0]
@@ -1049,7 +1104,9 @@ def analyze_path(text, l_idx, root_index, use_manual_resolution=True):
     confidence = max(0.0, min(1.0, (root_match_ratio * 0.7 + (res["harmony_score"] / 100) * 0.3) - ambiguity_penalty))
     res["confidence"] = round(confidence * 100, 2)
 
-    res["total"] = round(res["mass"] + res["speed"] + res["energy"], 2)
+    # استخدام الميزان الثلاثي الصحيح (لا عشوائية)
+    res["total"] = calculate_absolute_total(res["mass"], res["speed"], res["energy"])
+    
     return res
 
 # =========================================================
@@ -1118,8 +1175,7 @@ def build_export_payload(result, label="مسار"):
         "harmony_score": result.get("harmony_score", 0),
         "harmony_label": result.get("harmony_label", ""),
         "matched_roots": result.get("matched_roots", []),
-        "ambiguities": result.get("ambiguities", []),
-        "matrix_occurrences": result.get("matrix_occurrences", [])
+        "ambiguities": result.get("ambiguities", [])
     }
 
 def build_export_text(result, label="مسار"):
@@ -1152,10 +1208,6 @@ def build_export_text(result, label="مسار"):
     for amb in result.get("ambiguities", []):
         opts = " | ".join([f"{o['root']} ({o['orbit']}, {o['weight']})" for o in amb["options"]])
         lines.append(f"- الكلمة: {amb['word']} => {opts}")
-    lines.append("")
-    lines.append("المصفوفة القرآنية (الآيات المرتبطة):")
-    for occ in result.get("matrix_occurrences", [])[:10]:
-        lines.append(f"- {occ.get('surah', '?')}:{occ.get('verse', '?')} | {occ.get('text', '')[:80]}")
     return "\n".join(lines)
 
 def metric_card(label, value, subtitle=None, tone="normal"):
@@ -1186,28 +1238,34 @@ def chips(items):
 # =========================================================
 # 25) UI TITLE
 # =========================================================
-st.title("🛰️ محراب نبراس السيادي v26.6 ETERNAL MATRIX")
-st.write("تحليل حرفي + جذري قرآني + ذاكرة + تناغم سياقي + تصدير + تحصين من الالتباس + مصفوفة قرآنية")
+st.title("🛰️ محراب نبراس السيادي v26.7 — المدار المكتمل")
+st.write("تحليل حرفي + جذري قرآني + ذاكرة + تناغم سياقي + تصدير + تحصين من الالتباس + أنعام المصفوفة")
 
 # =========================================================
-# 26) SIDEBAR - DIAGNOSTICS
+# 26) SIDEBAR - DIAGNOSTICS (لوحة التشخيص السيادي)
 # =========================================================
 with st.sidebar:
     st.markdown("## ⚙️ التحكم السيادي")
     silent_mode = st.toggle("🧪 وضع الرصد الصامت (Silent Observatory)", value=False)
 
     st.markdown("### 🛠️ لوحة التشخيص السيادي")
-    st.write(f"ملف الحروف: {path_l if path_l else '❌ مفقود'}")
-    st.write(f"ملف المعجم الخام: {path_x if path_x else '❌ مفقود'}")
-    st.write(f"ملف المصفوفة: {path_m if path_m else '❌ مفقود'}")
-    st.write(f"عدد الحروف المفهرسة: {len(letters_idx)}")
-    st.write(f"عدد الجذور القرآنية المقبولة: {len(quranic_root_index)}")
-    st.write(f"عدد كتل المعجم النظيف: {len(clean_lexicon)}")
+    st.write(f"📁 **ملف الحروف:** {path_l if path_l else '❌ مفقود'}")
+    st.write(f"📁 **ملف المعجم الخام:** {path_x if path_x else '❌ مفقود'}")
+    st.write(f"📁 **ملف المصفوفة:** {matrix_path if matrix_path else '❌ مفقود'}")
+    st.write(f"🔤 **عدد الحروف المفهرسة:** {len(letters_idx)}")
+    st.write(f"📚 **عدد الجذور القرآنية المقبولة:** {len(quranic_root_index)}")
+    st.write(f"📖 **عدد كتل المعجم النظيف:** {len(clean_lexicon)}")
+    st.write(f"🪐 **عدد آيات المصفوفة:** {sum(len(v) for v in matrix_idx.values()) if matrix_idx else 0}")
 
     if clean_saved_path:
         st.success("✅ تم إنشاء nibras_lexicon_clean.json تلقائيًا")
     else:
         st.warning("⚠️ تعذر حفظ الملف النظيف تلقائيًا (لكن التحليل يعمل)")
+
+    if matrix_path:
+        st.success("✅ المصفوفة القرآنية متصلة")
+    else:
+        st.warning("⚠️ لم يتم العثور على matrix_data.json")
 
     st.markdown("---")
     st.markdown("### 🧠 الذاكرة السيادية الموضعية (آخر 5)")
@@ -1221,8 +1279,9 @@ with st.sidebar:
         st.caption("لا توجد تحليلات محفوظة بعد.")
 
     st.markdown("---")
-    st.write("Blekinge, Sweden | Nibras Sovereign Final Monolith")
-    st.write("خِت فِت.")
+    st.markdown("### 🧪 بروتوكول الختام")
+    st.write("**Mohamed | As-Sajdah [5]**")
+    st.write("**خِت فِت.**")
 
 # =========================================================
 # 27) LEXICON TOOLS
@@ -1296,12 +1355,8 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
                     </div>
                     """, unsafe_allow_html=True)
 
-                    st.caption("🌊 موجة الكتلة")
-                    st.progress(min(res["mass"] / 250, 1.0))
-                    st.caption("⚡ موجة السرعة")
-                    st.progress(min(res["speed"] / 250, 1.0))
-                    st.caption("🌀 موجة الجذر القرآني")
-                    st.progress(min(res["energy"] / 250, 1.0))
+                    # عرض موجات الميزان الثلاثي
+                    show_resonance_waves(res)
                 else:
                     st.subheader(f"المسار {i+1}")
                     st.metric("الإجمالي السيادي", res["total"])
@@ -1329,34 +1384,17 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
                         chosen_root = selected.split(" | ")[0].strip()
                         st.session_state.ambiguity_choices[normalize_arabic(amb["word"])] = chosen_root
 
+                # عرض الجذور المرصودة مع نافذة أنعام لكل جذر
                 if res["matched_roots"]:
                     st.markdown("### 🔍 الجذور المرصودة")
-                    for m in res["matched_roots"][:8]:
-                        st.markdown(f"""
-                        <div class="detail-box">
-                            <b>الكلمة:</b> {m['word']}<br>
-                            <b>الجذر:</b> {m['root']}<br>
-                            <b>المدار:</b> {m['orbit']}<br>
-                            <b>الوزن:</b> {m['weight']}
-                        </div>
-                        """, unsafe_allow_html=True)
+                    for m in res["matched_roots"]:
+                        render_sovereign_insight(m)
                 else:
                     st.markdown("""
                     <div class="status-warn">
                         ⚠️ لم يتم العثور على جذور قرآنية مطابقة في هذا المسار.
                     </div>
                     """, unsafe_allow_html=True)
-
-                # عرض الآيات من المصفوفة
-                if res.get("matrix_occurrences"):
-                    st.markdown("### 📖 رنين المصفوفة القرآنية")
-                    for occ in res["matrix_occurrences"][:5]:
-                        st.markdown(f"""
-                        <div class="detail-box" style="border-right-color: #00afcc;">
-                            <b>{occ.get('surah', '?')}:{occ.get('verse', '?')}</b><br>
-                            <span style="font-size:0.9rem;">{occ.get('text', '')[:120]}...</span>
-                        </div>
-                        """, unsafe_allow_html=True)
 
                 st.markdown("### 📤 التصدير السيادي")
                 payload = build_export_payload(res, label=f"المسار {i+1}")
@@ -1407,11 +1445,14 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
             st.write(f"**عدد حالات الالتباس:** {len(best['ambiguities'])}")
             
             # عرض المصفوفة في المستشار
-            if best.get("matrix_occurrences"):
+            all_roots = [m['root'] for m in best['matched_roots']]
+            matrix_roots = [r for r in all_roots if r in matrix_idx]
+            if matrix_roots:
                 st.markdown("---")
                 st.markdown("#### 🪐 رنين المصفوفة الكلية (من واقع المصحف):")
-                for occ in best["matrix_occurrences"][:3]:
-                    st.write(f"📖 **{occ.get('surah', '?')}:{occ.get('verse', '?')}** — {occ.get('text', '')[:100]}...")
+                for root in matrix_roots[:2]:
+                    for occ in matrix_idx[root][:2]:
+                        st.write(f"📖 **{occ.get('surah', '?')}:{occ.get('verse', '?')}** — {occ.get('text', '')[:100]}...")
 
             if best["confidence"] >= 80:
                 st.success("🟢 البيان الختامي: هذا المسار ذو ثقة سيادية مرتفعة ويمكن اعتماده كمرجع تحليلي قوي.")
@@ -1421,3 +1462,11 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
                 st.error("🔴 البيان الختامي: هذا المسار يحتاج تدقيقًا سياقيًا إضافيًا قبل اعتماده.")
 
         st.markdown("</div>", unsafe_allow_html=True)
+
+# =========================================================
+# 31) FOOTER
+# =========================================================
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Blekinge, Sweden | Nibras Sovereign v26.7**")
+st.sidebar.markdown("*Mohamed | As-Sajdah [5]*")
+st.sidebar.markdown("*خِت فِت.*")
