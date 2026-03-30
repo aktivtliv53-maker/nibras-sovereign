@@ -1,1 +1,18 @@
-[{"root": "حق", "orbit": "الأزل (Sovereign Origin)", "energy": 1.94, "insight": "ثبات الحقيقة المطلقة"},{"root": "ربب", "orbit": "الأزل (Sovereign Origin)", "energy": 1.92, "insight": "التربية والرعاية المستمرة"},{"root": "اله", "orbit": "الأزل (Sovereign Origin)", "energy": 1.94, "insight": "الوجود المطلق"},{"root": "حيي", "orbit": "الأزل (Sovereign Origin)", "energy": 1.92, "insight": "سر الوجود المتدفق"},{"root": "امر", "orbit": "السيادة (Sovereign Command)", "energy": 1.88, "insight": "الأمر الإلهي ونفاذ الكلمة"}]
+[
+  {
+    "root": "حق",
+    "orbit": "حق",
+    "energy": 1.94,
+    "mass": 1.0,
+    "speed": 1.0,
+    "forms": ["حق", "الحق"]
+  },
+  {
+    "root": "حيي",
+    "orbit": "نور",
+    "energy": 1.92,
+    "mass": 1.0,
+    "speed": 1.0,
+    "forms": ["حي", "الحياة"]
+  }
+]
