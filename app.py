@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.2.1
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.2.2
 # مَبنيٌّ على بروتوكول "لا مَسَاس" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Semantic Activation Patch - التحويل من الأرقام الصامتة إلى القراءة الناطقة
+# الإصدار: Root Integrity & Insight Diagnostics - كشف أسباب سقوط الجذور
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -87,27 +87,32 @@ def normalize_sovereign(text):
     return re.sub(r'[^\u0621-\u064A\s]', '', text).strip()
 
 def match_root_logic(word, index_keys):
-    """بروتوكول الربط المداري لاستخلاص الجذور الثلاثية."""
+    """بروتوكول الربط المداري لاستخلاص الجذور الثلاثية - النسخة التشخيصية v26.2.2"""
     w = normalize_sovereign(word)
     if not w or len(w) < 2: return None
-    if w in index_keys: return w
+    if w in index_keys: return w  # مطابقة تامة
     
+    # بروتوكول الزوائد الصارم
     prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س"]
     suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما", "تم", "هن"]
     
     for p in prefixes:
         if w.startswith(p) and len(w)-len(p) >= 3:
-            if w[len(p):] in index_keys: return w[len(p):]
+            candidate = w[len(p):]
+            if candidate in index_keys: return candidate
+            
     for s in suffixes:
         if w.endswith(s) and len(w)-len(s) >= 3:
-            if w[:-len(s)] in index_keys: return w[:-len(s)]
-            
-    return w[:3] if len(w) >= 3 and w[:3] in index_keys else None
+            candidate = w[:-len(s)]
+            if candidate in index_keys: return candidate
+    
+    # منع w[:3] العشوائي - لا نقبل إلا بمطابقة حقيقية من الفهرس
+    return w if w in index_keys else None
 
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v26.2.1", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v26.2.2", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -323,7 +328,7 @@ with tabs[0]:
         c3.text_area("المسار الوجودي (ج)", key="p_c", height=150)
     ]
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v26.2.1)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v26.2.2)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -427,131 +432,60 @@ if state['active']:
     with tabs[3]: # البيان الختامي
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v26.2.1:</b><br>
+            <b>بيان الاستواء الوجودي v26.2.2:</b><br>
             بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام القراءة الناطقة. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
         </div>
         """, unsafe_allow_html=True)
 
-    with tabs[4]:  # ⚖️ الميزان السيادي v26.2.1 - Semantic Voice Layer
-        st.markdown("### ⚖️ ميزان الجذور والقراءة السيادية الناطقة")
-
-        if not df_data.empty:
-            df_speech = df_data.copy().sort_values('energy', ascending=False).reset_index(drop=True)
-
-            # ------------------------------
-            # محركات التفسير الناطق
-            # ------------------------------
-            def get_energy_level(e):
-                if e >= 2000: return "👑 هيمنة عليا"
-                if e >= 1700: return "🔥 حضور حاكم"
-                if e >= 1450: return "✨ حضور قوي جداً"
-                if e >= 1200: return "⚡ حضور فعّال"
-                return "🌱 حضور تأسيسي"
-
-            def get_motion_sense(vx, vy):
-                h = "اتساع خارجي" if vx > 0.05 else ("انكماش مركزي" if vx < -0.05 else "اتزان أفقي")
-                v = "صعود وانكشاف" if vy > 0.05 else ("تجذير وترسيب" if vy < -0.05 else "ثبات مقامي")
-                return f"{h} | {v}"
-
-            def orbit_message(orbit):
-                MAP = {
-                    "وعي": "هذا الجذر يعمل في طبقة الإدراك والالتقاط الأولي للمعنى.",
-                    "نور": "هذا الجذر يفتح باب الانكشاف والإشراق وإزالة الحجب.",
-                    "رحمة": "هذا الجذر يلطّف المدار ويضخ فيه السكينة والاحتواء.",
-                    "حق": "هذا الجذر يثبت الحقيقة ويقيم العمود الوجودي على اليقين.",
-                    "ميزان": "هذا الجذر يعيد ضبط المقادير ويمنع الميل والاختلال.",
-                    "صبر": "هذا الجذر يثبّت الامتداد الزمني ويمنح المدار قدرة الاحتمال.",
-                    "هداية": "هذا الجذر يوجّه الحركة نحو المسار الصحيح والمعنى الأنقى.",
-                    "قوة": "هذا الجذر يرفع الدفع والحسم والقدرة التنفيذية.",
-                    "بصيرة": "هذا الجذر يمنح كشفًا داخليًا وفهمًا ما وراء الظاهر.",
-                    "توحيد": "هذا الجذر يجمع المتفرق تحت مركز واحد ويمنع التشظي."
-                }
-                return MAP.get(orbit, "هذا الجذر يعمل ضمن طبقة وعي عامة.")
-
-            def sovereign_judgement(row):
-                return (
-                    f"الجذر **{row['root']}** يتحرك ضمن مدار **{row['orbit']}** "
-                    f"بوزن دلالي **{row['weight']:.2f}**، "
-                    f"ودرجة حضور **{get_energy_level(row['energy'])}**. "
-                    f"{orbit_message(row['orbit'])}"
-                )
-
-            # ------------------------------
-            # الأعمدة الناطقة
-            # ------------------------------
-            df_speech['المدار الحقيقي'] = df_speech['orbit']
-            df_speech['الوزن الدلالي'] = df_speech['weight'].apply(lambda x: f"{x:.2f}")
-            df_speech['القطب الوظيفي'] = df_speech['gene'].apply(
-                lambda x: f"{GENE_STYLE.get(x, {}).get('icon', '🧬')} {GENE_STYLE.get(x, {}).get('meaning', 'قطب غير معرّف')}"
-            )
-            df_speech['رتبة الحضور'] = df_speech['energy'].apply(get_energy_level)
-            df_speech['الأثر المداري'] = df_speech.apply(lambda r: get_motion_sense(r['vx'], r['vy']), axis=1)
-            df_speech['البصيرة القرائية'] = df_speech['insight'].fillna("لا توجد بصيرة مفسّرة لهذا الجذر.")
-            df_speech['الحكم السيادي'] = df_speech.apply(sovereign_judgement, axis=1)
-
-            # ------------------------------
-            # ملخص علوي
-            # ------------------------------
-            top_row = df_speech.iloc[0]
-            dominant_orbit = df_speech['orbit'].mode()[0]
-            dominant_gene = df_speech['gene'].mode()[0]
-
-            st.success(
-                f"**الخلاصة السيادية الناطقة:** الجذر المهيمن الآن هو **{top_row['root']}** "
-                f"ضمن مدار **{top_row['orbit']}**، "
-                f"وبصيرة محورية تقول: **{top_row['insight']}**"
-            )
-
-            c1, c2, c3 = st.columns(3)
-            c1.metric("المدار الغالب", dominant_orbit)
-            c2.metric("الجين الغالب", GENE_STYLE.get(dominant_gene, {}).get("name", dominant_gene))
-            c3.metric("عدد الجذور الفعالة", len(df_speech))
-
-            st.markdown("---")
-
-            # ------------------------------
-            # الجدول الناطق الجديد
-            # ------------------------------
+    with tabs[4]:  # ⚖️ الميزان السيادي v26.2.2 - Root Integrity & Insight Diagnostics
+        st.markdown("### ⚖️ ميزان النزاهة الجذرية وتدقيق البصيرة")
+        
+        if state['active']:
+            df_diag = pd.DataFrame(state['bodies'])
+            
+            # محرك كشف حالة البصيرة
+            def diagnose_insight(row):
+                root = row['root']
+                # محاولة جلب البيانات الحقيقية من الفهرس
+                actual_data = r_index.get(root, {})
+                raw_insight = actual_data.get("insight", "")
+                
+                if not actual_data:
+                    return "❌ جذر غير موجود في القاعدة (خارج المدار)"
+                if not raw_insight or len(str(raw_insight)).strip() < 5:
+                    return "⚠️ الجذر موجود ولكن حقل (insight) فارغ أو مفقود"
+                return "✅ بصيرة مكتملة"
+            
+            df_diag['حالة البيانات'] = df_diag.apply(diagnose_insight, axis=1)
+            
+            # عرض جدول التشخيص
             st.dataframe(
-                df_speech[[
-                    'root',
-                    'المدار الحقيقي',
-                    'الوزن الدلالي',
-                    'رتبة الحضور',
-                    'القطب الوظيفي',
-                    'الأثر المداري',
-                    'البصيرة القرائية'
-                ]],
+                df_diag[['root', 'gene', 'energy', 'حالة البيانات']],
                 column_config={
-                    "root": "الجذر المستنطق",
-                    "المدار الحقيقي": "المدار",
-                    "الوزن الدلالي": "الوزن",
-                    "رتبة الحضور": "مستوى التجلي",
-                    "القطب الوظيفي": "الجوهر السيادي",
-                    "الأثر المداري": "الانحياز الحركي",
-                    "البصيرة القرائية": "القراءة المباشرة"
+                    "root": "الجذر",
+                    "gene": "الجين",
+                    "energy": "الطاقة",
+                    "حالة البيانات": "تقرير النزاهة التشخيصي"
                 },
-                use_container_width=True,
-                hide_index=True
+                use_container_width=True
             )
-
-            st.markdown("---")
-            st.markdown("### 🧾 الأحكام السيادية التفصيلية")
-
-            for _, row in df_speech.head(12).iterrows():
-                st.markdown(f"""
-                <div class='story-box' style='font-size:1.15em; border-right: 8px solid {row['color']}; padding:25px;'>
-                    <b>الجذر:</b> {row['root']}<br>
-                    <b>المدار:</b> {row['orbit']}<br>
-                    <b>الوزن:</b> {row['weight']:.2f}<br>
-                    <b>البصيرة:</b> {row['insight']}<br><br>
-                    <b>الحكم السيادي:</b><br>
-                    {row['الحكم السيادي']}
-                </div>
-                """, unsafe_allow_html=True)
-
+            
+            # إحصائية النزاهة
+            match_rate = (df_diag['حالة البيانات'] == "✅ بصيرة مكتملة").mean() * 100
+            st.metric("معدل اكتمال البصيرة المدارية", f"{match_rate:.1f}%")
+            
+            if match_rate < 50:
+                st.warning("⚠️ تنبيه: أكثر من نصف الجذور تفتقر للبصيرة. راجع مطابقة الأسماء بين النص وقاعدة البيانات.")
+            
+            # بصيرة سيد المدار
+            top_root = df_diag.iloc[0]['root']
+            top_info = r_index.get(top_root, {})
+            final_insight = top_info.get("insight", "لا توجد بصيرة مفسرة مسجلة لهذا الجذر في ملفك.")
+            
+            st.info(f"**بصيرة سيد المدار ({top_root}):**\n\n{final_insight}")
+        
         else:
             st.info("بانتظار استنطاق المدار لملء الموازين.")
 
@@ -573,7 +507,7 @@ else:
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
 **الحالة:** استواء سيادي ناطق  
-**الإصدار:** v26.2.1 (Semantic Voice)  
+**الإصدار:** v26.2.2 (Root Integrity)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
