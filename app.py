@@ -494,14 +494,14 @@ if state['active']:
             # ------------------------------
             # ملخص علوي
             # ------------------------------
-            top_root = df_speech.iloc[0]
+            top_row = df_speech.iloc[0]
             dominant_orbit = df_speech['orbit'].mode()[0]
             dominant_gene = df_speech['gene'].mode()[0]
 
             st.success(
-                f"**الخلاصة السيادية الناطقة:** الجذر المهيمن الآن هو **{top_root['root']}** "
-                f"ضمن مدار **{top_root['orbit']}**، "
-                f"وبصيرة محورية تقول: **{top_root['insight']}**"
+                f"**الخلاصة السيادية الناطقة:** الجذر المهيمن الآن هو **{top_row['root']}** "
+                f"ضمن مدار **{top_row['orbit']}**، "
+                f"وبصيرة محورية تقول: **{top_row['insight']}**"
             )
 
             c1, c2, c3 = st.columns(3)
