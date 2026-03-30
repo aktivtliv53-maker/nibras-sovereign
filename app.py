@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # =========================================================
-# NIBRAS SOVEREIGN v26.8 — THE SUPREME ORBIT
+# NIBRAS SOVEREIGN v27.0 — THE 1800 ROOTS AWAKENING
 # =========================================================
 # نسخة سيادية مغلقة معماريًا لتحليل النصوص عبر:
-# - محرك جذور | مستشار قرار | درع الالتباس | تناغم سياقي
-# - ذاكرة موضعية | تصدير موثق | الربط بالمصفوفة الكلية (Matrix)
-# - نظام الأنعام (Expanders) مع استخراج الجذور من نصوص الآيات
+# - محرك جذور (1800 جذر مباشر من nibras_lexicon.json)
+# - مستشار قرار | درع الالتباس | تناغم سياقي
+# - ذاكرة موضعية | تصدير موثق | الربط بالمصفوفة الكلية
+# - نظام الأنعام مع Memory Pruning
 # - الميزان الثلاثي (الكتلة + السرعة + الطاقة) بدون عشوائية
-# - Memory Pruning: 5 نتائج فقط لكل جذر، قص النصوص
 # المرجع: وثيقة العرش - محمد (CPU: As-Sajdah 5)
 # =========================================================
 
@@ -24,10 +24,16 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 # =========================================================
+# 0) FORCE CACHE CLEAR (كسر جمود الرصد)
+# =========================================================
+st.cache_data.clear()
+st.cache_resource.clear()
+
+# =========================================================
 # 1) PAGE CONFIG
 # =========================================================
 st.set_page_config(
-    page_title="Nibras Sovereign v26.8 SUPREME ORBIT",
+    page_title="Nibras Sovereign v27.0 — 1800 ROOTS AWAKENING",
     page_icon="🧿",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -117,7 +123,7 @@ st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 # =========================================================
 # 3) CONSTANTS & RULES
 # =========================================================
-APP_VERSION = "26.8 SUPREME ORBIT"
+APP_VERSION = "27.0 1800 ROOTS AWAKENING"
 
 NORMALIZATION_POLICY = {
     "strip_diacritics": True,
@@ -138,7 +144,7 @@ CONFIDENCE_LABELS = [
 ]
 
 # =========================================================
-# 4) ROOT REGISTRY
+# 4) ROOT REGISTRY (Extended)
 # =========================================================
 ROOT_REGISTRY = {
     "رحم": {"family": "mercy", "domain": "divine_softness", "rank": "central", "tags": ["رحمة", "لطف"]},
@@ -338,7 +344,7 @@ def generate_root_candidates(word: str):
     return candidates
 
 # =========================================================
-# 9) DATA LOADING (Quranic Lexicon)
+# 9) DATA LOADING (FLAT LIST - 1800 ROOTS DIRECT)
 # =========================================================
 def safe_load_json_file(filename):
     search_paths = [Path("."), Path("./data"), Path("./qroot")]
@@ -352,8 +358,8 @@ def safe_load_json_file(filename):
                 st.error(f"خطأ في قراءة {filename}: {e}")
     return None, None
 
+# تحميل ملف الحروف
 letters_raw, path_l = safe_load_json_file("sovereign_letters_v1.json")
-lexicon_raw, path_x = safe_load_json_file("nibras_lexicon.json")
 
 # =========================================================
 # 10) BUILD LETTERS INDEX
@@ -366,128 +372,81 @@ if isinstance(letters_raw, list):
             letters_idx[normalize_arabic(char)] = item
 
 # =========================================================
-# 11) MORPH TAG FILTER
+# 11) LOAD FLAT LEXICON (1800 ROOTS - NO CACHE BLOCK)
 # =========================================================
-MORPH_TAG_PATTERN = re.compile(
-    r'^(?:'
-    r'[123](?:MS|FS|MP|FP|D|P|S)|'
-    r'ACC|GEN|NOM|IMPF|IMPV|PERF|'
-    r'ACT_PCPL|PASS_PCPL|'
-    r'FS|MS|FP|MP|FD|MD|'
-    r'INDEF|DEF|NEG|COND|'
-    r'PRON|REL|DEM|PREP|CONJ|PART|'
-    r'VN|N|V|ADJ'
-    r')$'
-)
-
-def is_valid_arabic_root(root_text):
-    if not root_text:
-        return False
-    root_text = str(root_text).strip()
-    if root_text.startswith("LEM:"):
-        return False
-    if MORPH_TAG_PATTERN.match(root_text):
-        return False
-    pure = normalize_arabic(root_text)
-    if not pure:
-        return False
-    if " " in pure:
-        return False
-    if not (2 <= len(pure) <= 6):
-        return False
-    return True
-
-# =========================================================
-# 12) BUILD QURANIC ROOT INDEX
-# =========================================================
-def clean_lexicon_and_build_index(lexicon_raw):
+@st.cache_data(ttl=0, show_spinner=False)  # ttl=0 لمنع التخزين المؤقت الطويل
+def load_flat_lexicon():
+    """تحميل المعجم المسطح (Flat List) مباشرة بدون فلترة"""
+    lexicon_raw, path_x = safe_load_json_file("nibras_lexicon.json")
+    
     root_index = defaultdict(list)
-    clean_blocks_map = {}
+    roots_list = []
+    
+    if isinstance(lexicon_raw, list):
+        for item in lexicon_raw:
+            if isinstance(item, dict):
+                # استخراج الجذر مباشرة
+                root = item.get("root") or item.get("name") or item.get("lemma") or ""
+                root = normalize_arabic(str(root).strip())
+                
+                if not root or len(root) < 2:
+                    continue
+                
+                # استخراج الوزن (frequency أو weight)
+                weight = item.get("frequency") or item.get("weight") or 1.0
+                try:
+                    weight = float(weight)
+                except:
+                    weight = 1.0
+                
+                # المدار (إذا لم يوجد، نستخدم مدار افتراضي حسب طاقة الحروف)
+                orbit = item.get("orbit") or item.get("orbit_hint") or "وعي"
+                if orbit not in ["سيادة", "فطرة", "تمكين", "يسر", "وعي", "هداية", "تزكية", "أزل"]:
+                    # توزيع تلقائي حسب أول حرف في الجذر
+                    first_char = root[0] if root else ""
+                    if first_char in ["ا", "ع", "ق", "ه", "و", "ل"]:
+                        orbit = "سيادة"
+                    elif first_char in ["ر", "ح", "م", "ن"]:
+                        orbit = "فطرة"
+                    elif first_char in ["ف", "ت", "ك", "س"]:
+                        orbit = "تمكين"
+                    elif first_char in ["ي", "ب", "د"]:
+                        orbit = "يسر"
+                    else:
+                        orbit = "وعي"
+                
+                # البصيرة
+                insight = item.get("insight") or item.get("description") or f"الجذر {root} يحمل طاقة مدار {orbit}"
+                
+                entry = {
+                    "root": root,
+                    "weight": weight,
+                    "orbit": orbit,
+                    "insight": insight
+                }
+                
+                root_index[root].append(entry)
+                roots_list.append(root)
+    
+    # إحصاءات
+    total_roots = len(root_index)
+    total_entries = sum(len(v) for v in root_index.values())
+    
+    return dict(root_index), roots_list, total_roots, total_entries, path_x
 
-    if not isinstance(lexicon_raw, list):
-        return dict(root_index), []
-
-    for block in lexicon_raw:
-        orbit_name = block.get("orbit", "مدار مجهول")
-        block_insight = block.get("insight", f"هذا الجذر ينتسب إلى مدار {orbit_name}")
-        roots = block.get("roots", [])
-
-        if not isinstance(roots, list):
-            continue
-
-        if orbit_name not in clean_blocks_map:
-            clean_blocks_map[orbit_name] = {
-                "orbit": orbit_name,
-                "insight": block_insight,
-                "roots": []
-            }
-
-        seen_in_orbit = set()
-
-        for r in roots:
-            raw_root = r.get("name") or r.get("root") or r.get("lemma") or ""
-            raw_root = str(raw_root).strip()
-
-            if not is_valid_arabic_root(raw_root):
-                continue
-
-            norm_root = normalize_arabic(raw_root)
-
-            weight = (
-                r.get("weight")
-                or r.get("frequency")
-                or block.get("weight")
-                or 1
-            )
-
-            insight = (
-                r.get("insight")
-                or block.get("insight")
-                or f"هذا الجذر ينتسب إلى مدار {orbit_name}"
-            )
-
-            entry = {
-                "root": norm_root,
-                "weight": float(weight),
-                "orbit": orbit_name,
-                "insight": insight
-            }
-
-            root_index[norm_root].append(entry)
-
-            if norm_root not in seen_in_orbit:
-                clean_blocks_map[orbit_name]["roots"].append(entry)
-                seen_in_orbit.add(norm_root)
-
-    clean_lexicon = list(clean_blocks_map.values())
-    return dict(root_index), clean_lexicon
-
-quranic_root_index, clean_lexicon = clean_lexicon_and_build_index(lexicon_raw)
-
-clean_saved_path = None
-if clean_lexicon:
-    try:
-        clean_file = Path("nibras_lexicon_clean.json")
-        with open(clean_file, "w", encoding="utf-8") as f:
-            json.dump(clean_lexicon, f, ensure_ascii=False, indent=2)
-        clean_saved_path = str(clean_file.resolve())
-    except Exception:
-        clean_saved_path = None
+# تحميل المعجم المسطح
+quranic_root_index, roots_list, total_roots, total_entries, path_x = load_flat_lexicon()
 
 # =========================================================
-# 13) LOAD MATRIX RESONANCE (مع Memory Pruning واستخراج الجذور)
+# 12) LOAD MATRIX RESONANCE
 # =========================================================
-@st.cache_data
+@st.cache_data(ttl=0, show_spinner=False)
 def load_matrix_resonance():
-    """
-    تحميل مصفوفة الرنين القرآني مع:
-    - استخراج الجذور من نصوص الآيات (لأن الملف لا يحتوي على مفتاح 'root')
-    - Memory Pruning: 5 نتائج فقط لكل جذر
-    - قص النصوص إلى 150 حرفاً
-    """
+    """تحميل مصفوفة الرنين القرآني"""
     matrix_idx = defaultdict(list)
     matrix_path = None
     total_verses = 0
+    indexed_verses = 0
     
     for path in [Path("."), Path("./data"), Path("./qroot")]:
         m_path = path / "matrix_data.json"
@@ -501,12 +460,10 @@ def load_matrix_resonance():
                     total_verses = len(data)
                     
                     for entry in data:
-                        # استخراج النص
                         verse_text = entry.get('text', '')
                         if not verse_text:
                             continue
                         
-                        # قص النص
                         if len(verse_text) > 150:
                             verse_text = verse_text[:150] + "..."
                         
@@ -517,48 +474,37 @@ def load_matrix_resonance():
                         for word in words:
                             norm_word = normalize_arabic(word)
                             if len(norm_word) >= 2:
-                                # محاولة إيجاد جذر من خلال المعجم
-                                for root_cand in generate_root_candidates(norm_word):
-                                    if root_cand["form"] in quranic_root_index:
-                                        roots_in_verse.add(root_cand["form"])
+                                if norm_word in quranic_root_index:
+                                    roots_in_verse.add(norm_word)
+                                else:
+                                    for root_cand in generate_root_candidates(norm_word):
+                                        if root_cand["form"] in quranic_root_index:
+                                            roots_in_verse.add(root_cand["form"])
                         
-                        # إضافة الآية لكل جذر تم اكتشافه
                         for root in roots_in_verse:
-                            if len(matrix_idx[root]) < 5:  # Memory Pruning: 5 نتائج فقط
+                            if len(matrix_idx[root]) < 5:
                                 matrix_idx[root].append({
                                     "surah": entry.get('surah', entry.get('surah_name', '?')),
                                     "verse": entry.get('verse', entry.get('verse_number', '?')),
                                     "text": verse_text
                                 })
+                                indexed_verses += 1
                     
-                    # ترتيب النتائج
                     for root in matrix_idx:
                         matrix_idx[root] = sorted(matrix_idx[root], key=lambda x: x.get('surah', ''))
-                    
+                        
             except Exception as e:
                 st.error(f"خطأ في تحميل المصفوفة: {e}")
                 return {}, None, 0, 0
             break
     
-    return matrix_idx, matrix_path, total_verses, sum(len(v) for v in matrix_idx.values())
+    return matrix_idx, matrix_path, total_verses, indexed_verses
 
 matrix_idx, matrix_path, total_verses, indexed_verses = load_matrix_resonance()
 
 # =========================================================
-# 14) ROOT LOOKUP HELPERS
+# 13) ROOT LOOKUP HELPERS
 # =========================================================
-def build_reverse_lexicon(lexicon):
-    reverse = defaultdict(set)
-    if isinstance(lexicon, dict):
-        for root, forms in lexicon.items():
-            reverse[normalize_arabic(root)].add(normalize_arabic(root))
-            if isinstance(forms, list):
-                for f in forms:
-                    reverse[normalize_arabic(f)].add(normalize_arabic(root))
-    return {k: sorted(v) for k, v in reverse.items()}
-
-REVERSE_LEXICON = build_reverse_lexicon({})
-
 def get_root_meta(root):
     r = normalize_arabic(root)
     if r in ROOT_REGISTRY:
@@ -570,9 +516,6 @@ def get_root_meta(root):
         "tags": []
     }
 
-# =========================================================
-# 15) SOVEREIGN MATCH ENGINE
-# =========================================================
 def lookup_root_candidates(form: str):
     f = normalize_arabic(form)
     found = set()
@@ -580,10 +523,6 @@ def lookup_root_candidates(form: str):
     if isinstance(quranic_root_index, dict):
         if f in quranic_root_index:
             found.add(f)
-
-    if f in REVERSE_LEXICON:
-        for r in REVERSE_LEXICON[f]:
-            found.add(normalize_arabic(r))
 
     return sorted(x for x in found if x)
 
@@ -627,7 +566,7 @@ def match_quranic_root(word: str):
             "ambiguous": False,
             "requires_human": False,
             "trace": candidates,
-            "advisor_note": "لم يتم العثور على جذر مطابق ضمن الفهارس المتاحة."
+            "advisor_note": "لم يتم العثور على جذر مطابق ضمن الجذور الـ 1800."
         }
 
     best_by_root = {}
@@ -669,7 +608,7 @@ def match_quranic_root(word: str):
     }
 
 # =========================================================
-# 16) AMBIGUITY SHIELD
+# 14) AMBIGUITY SHIELD
 # =========================================================
 def ambiguity_shield(token_index, word, match_result):
     if not match_result["root"]:
@@ -710,7 +649,7 @@ def token_key(token_index, word):
     return f"token_{token_index}_{normalize_arabic(word)}"
 
 # =========================================================
-# 17) CONTEXTUAL HARMONY ENGINE
+# 15) CONTEXTUAL HARMONY ENGINE
 # =========================================================
 def contextual_harmony(tokens):
     matched_roots = [t["match"]["root"] for t in tokens if t["match"]["root"]]
@@ -818,7 +757,7 @@ def contextual_harmony_engine(matched_roots):
     }
 
 # =========================================================
-# 18) RITUAL / REPRESENTATIONAL LAYER
+# 16) RITUAL / REPRESENTATIONAL LAYER
 # =========================================================
 GENE_MAP = {
     "ا": "alpha", "ب": "beta", "ت": "theta", "ث": "theta",
@@ -851,7 +790,7 @@ def ritual_layer(tokens):
     }
 
 # =========================================================
-# 19) FINAL VERDICT ENGINE
+# 17) FINAL VERDICT ENGINE
 # =========================================================
 def final_verdict(summary, harmony, ritual, human_interventions=0):
     matched_count = summary["matched_count"]
@@ -906,7 +845,7 @@ def final_verdict(summary, harmony, ritual, human_interventions=0):
     }
 
 # =========================================================
-# 20) ANALYSIS PIPELINE
+# 18) ANALYSIS PIPELINE
 # =========================================================
 def analyze_text(text: str):
     original_text = str(text or "").strip()
@@ -998,7 +937,7 @@ def analyze_text(text: str):
     return record
 
 # =========================================================
-# 21) MEMORY LEDGER
+# 19) MEMORY LEDGER
 # =========================================================
 def push_history(record):
     preview = record["input"]["original_text"][:60]
@@ -1024,14 +963,12 @@ def set_current_record(record):
     push_history(record)
 
 # =========================================================
-# 22) QURANIC ANALYSIS FUNCTION (مع Matrix وأنعام)
+# 20) QURANIC ANALYSIS FUNCTION
 # =========================================================
 def calculate_absolute_total(mass, speed, energy):
-    """ميزان السيادة الثلاثي - لا عشوائية"""
     return round(float(mass) + float(speed) + float(energy), 2)
 
 def show_resonance_waves(analysis):
-    """عرض موجات الميزان الثلاثي"""
     st.markdown("### 🌊 موجات الميزان السيادي")
     col_w1, col_w2, col_w3 = st.columns(3)
     with col_w1:
@@ -1045,18 +982,16 @@ def show_resonance_waves(analysis):
         st.progress(min(analysis["energy"] / 250, 1.0))
 
 def render_sovereign_insight(match_item):
-    """نافذة أنعام منسدلة تعرض البصيرة ورنين المصفوفة"""
     root_name = match_item['root']
     with st.expander(f"🔮 أنعام الجذر: [{root_name}] - المدار: {match_item['orbit']}"):
         st.markdown(f"**البصيرة:** {match_item['insight']}")
         st.markdown(f"**الوزن الطاقي:** {match_item['weight']}")
         
-        # استدعاء الرنين من المصفوفة
         resonance = matrix_idx.get(root_name, [])
         if resonance:
             st.markdown("---")
             st.markdown(f"**🪐 الرنين الموضعي ({len(resonance)} موضع):**")
-            for occ in resonance[:5]:  # عرض 5 نتائج كحد أقصى
+            for occ in resonance[:5]:
                 st.info(f"📖 {occ['text']}\n\n**[{occ.get('surah', '?')}:{occ.get('verse', '?')}]**")
         else:
             st.caption("لم يتم رصد رنين إضافي لهذا الجذر في المصفوفة الحالية.")
@@ -1151,13 +1086,12 @@ def analyze_path(text, l_idx, root_index, use_manual_resolution=True):
     confidence = max(0.0, min(1.0, (root_match_ratio * 0.7 + (res["harmony_score"] / 100) * 0.3) - ambiguity_penalty))
     res["confidence"] = round(confidence * 100, 2)
 
-    # استخدام الميزان الثلاثي الصحيح (لا عشوائية)
     res["total"] = calculate_absolute_total(res["mass"], res["speed"], res["energy"])
     
     return res
 
 # =========================================================
-# 23) AMBIGUITY RESOLUTION HELPERS
+# 21) AMBIGUITY RESOLUTION HELPERS
 # =========================================================
 def get_all_matching_roots(word, root_index):
     candidates = generate_root_candidates(word)
@@ -1202,7 +1136,7 @@ def resolve_root_with_ambiguity(word, root_index, use_manual_resolution=True):
     return matches[0]["candidate"], matches[0]["entries"], True
 
 # =========================================================
-# 24) EXPORT HELPERS
+# 22) EXPORT HELPERS
 # =========================================================
 def build_export_payload(result, label="مسار"):
     return {
@@ -1283,13 +1217,13 @@ def chips(items):
     st.markdown(html, unsafe_allow_html=True)
 
 # =========================================================
-# 25) UI TITLE
+# 23) UI TITLE
 # =========================================================
-st.title("🛰️ محراب نبراس السيادي v26.8 — المدار الفائق")
-st.write("تحليل حرفي + جذري قرآني + ذاكرة + تناغم سياقي + تصدير + تحصين من الالتباس + أنعام المصفوفة (استخراج الجذور من النصوص)")
+st.title("🛰️ محراب نبراس السيادي v27.0 — 1800 جذر (كسر جمود الرصد)")
+st.write("تحليل حرفي + جذري قرآني (1800 جذر) + ذاكرة + تناغم سياقي + تصدير + تحصين من الالتباس + أنعام المصفوفة")
 
 # =========================================================
-# 26) SIDEBAR - DIAGNOSTICS (لوحة التشخيص السيادي مع حجم الملف)
+# 24) SIDEBAR - DIAGNOSTICS
 # =========================================================
 with st.sidebar:
     st.markdown("## ⚙️ التحكم السيادي")
@@ -1297,28 +1231,31 @@ with st.sidebar:
 
     st.markdown("### 🛠️ لوحة التشخيص السيادي")
     st.write(f"📁 **ملف الحروف:** {path_l if path_l else '❌ مفقود'}")
-    st.write(f"📁 **ملف المعجم الخام:** {path_x if path_x else '❌ مفقود'}")
+    st.write(f"📁 **ملف المعجم (1800 جذر):** {path_x if path_x else '❌ مفقود'}")
+    st.write(f"📚 **عدد الجذور المحملة:** **{total_roots}** جذراً")
+    st.write(f"📖 **إجمالي المداخل:** {total_entries}")
     
-    # عرض معلومات المصفوفة مع الحجم
+    # عرض أول 20 جذراً للتحقق
+    if roots_list:
+        st.markdown("---")
+        st.markdown("**🔍 عينة من الجذور (أول 20):**")
+        sample_roots = roots_list[:20]
+        st.write(", ".join(sample_roots))
+    
+    st.markdown("---")
+    
     matrix_size_mb = get_file_size_mb(matrix_path)
     st.write(f"📁 **ملف المصفوفة:** {matrix_path if matrix_path else '❌ مفقود'}")
     if matrix_path:
         st.write(f"   - **حجم الملف:** {matrix_size_mb} MB")
         st.write(f"   - **عدد الآيات:** {total_verses}")
-        st.write(f"   - **الآيات المفهرسة:** {indexed_verses} (بعد Memory Pruning)")
+        st.write(f"   - **الآيات المفهرسة:** {indexed_verses}")
     
     st.write(f"🔤 **عدد الحروف المفهرسة:** {len(letters_idx)}")
-    st.write(f"📚 **عدد الجذور القرآنية المقبولة:** {len(quranic_root_index)}")
-    st.write(f"📖 **عدد كتل المعجم النظيف:** {len(clean_lexicon)}")
     st.write(f"🪐 **عدد الجذور في المصفوفة:** {len(matrix_idx)}")
 
-    if clean_saved_path:
-        st.success("✅ تم إنشاء nibras_lexicon_clean.json تلقائيًا")
-    else:
-        st.warning("⚠️ تعذر حفظ الملف النظيف تلقائيًا (لكن التحليل يعمل)")
-
     if matrix_path:
-        st.success("✅ المصفوفة القرآنية متصلة (استخراج الجذور من النصوص)")
+        st.success("✅ المصفوفة القرآنية متصلة")
     else:
         st.warning("⚠️ لم يتم العثور على matrix_data.json")
 
@@ -1339,33 +1276,35 @@ with st.sidebar:
     st.write("**خِت فِت.**")
 
 # =========================================================
-# 27) LEXICON TOOLS
+# 25) LEXICON TOOLS
 # =========================================================
 tool_col1, tool_col2 = st.columns(2)
 
 with tool_col1:
-    if st.button("📦 عرض المعجم النظيف (أول 5 كتل)", use_container_width=True):
-        if clean_lexicon:
-            st.subheader("📘 معاينة nibras_lexicon_clean.json")
-            st.json(clean_lexicon[:5])
+    if st.button("📦 عرض عينة من الجذور (أول 50)", use_container_width=True):
+        if roots_list:
+            st.subheader("📘 عينة من الجذور الـ 1800")
+            st.write(", ".join(roots_list[:50]))
+            st.caption(f"إجمالي الجذور المحملة: {total_roots}")
         else:
-            st.warning("لا يوجد معجم نظيف متاح.")
+            st.warning("لا توجد جذور متاحة.")
 
 with tool_col2:
-    if clean_lexicon:
-        clean_json_str = json.dumps(clean_lexicon, ensure_ascii=False, indent=2)
+    if roots_list:
+        # عرض أول 100 جذر كنص قابل للتنزيل
+        roots_text = "\n".join(roots_list)
         st.download_button(
-            label="📥 تنزيل nibras_lexicon_clean.json",
-            data=clean_json_str,
-            file_name="nibras_lexicon_clean.json",
-            mime="application/json",
+            label="📥 تنزيل قائمة الجذور (TXT)",
+            data=roots_text,
+            file_name="nibras_roots_list.txt",
+            mime="text/plain",
             use_container_width=True
         )
 
 st.markdown("---")
 
 # =========================================================
-# 28) THREE TEXT INPUTS
+# 26) THREE TEXT INPUTS
 # =========================================================
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -1376,7 +1315,7 @@ with col3:
     t3 = st.text_area("📍 المسار 3", placeholder="أدخل الآية أو النص...", height=140, key="v3")
 
 # =========================================================
-# 29) MAIN ANALYSIS BUTTON
+# 27) MAIN ANALYSIS BUTTON
 # =========================================================
 if st.button("🚀 إطلاق الرصد القرآني المقارن", use_container_width=True):
     inputs = [t1, t2, t3]
@@ -1410,7 +1349,6 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
                     </div>
                     """, unsafe_allow_html=True)
 
-                    # عرض موجات الميزان الثلاثي
                     show_resonance_waves(res)
                 else:
                     st.subheader(f"المسار {i+1}")
@@ -1439,7 +1377,6 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
                         chosen_root = selected.split(" | ")[0].strip()
                         st.session_state.ambiguity_choices[normalize_arabic(amb["word"])] = chosen_root
 
-                # عرض الجذور المرصودة مع نافذة أنعام لكل جذر
                 if res["matched_roots"]:
                     st.markdown("### 🔍 الجذور المرصودة")
                     for m in res["matched_roots"]:
@@ -1447,7 +1384,7 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
                 else:
                     st.markdown("""
                     <div class="status-warn">
-                        ⚠️ لم يتم العثور على جذور قرآنية مطابقة في هذا المسار.
+                        ⚠️ لم يتم العثور على جذور مطابقة في هذا المسار.
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -1477,7 +1414,7 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
             results.append(None)
 
     # =========================================================
-    # 30) FINAL ADVISOR (مع Matrix)
+    # 28) FINAL ADVISOR
     # =========================================================
     valid_results = [r for r in results if r is not None]
     if valid_results:
@@ -1496,10 +1433,9 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
             st.info(f"**البصيرة الحاكمة:** {best['insight']}")
             st.success(f"**الاتجاه الغالب:** {best['direction']}")
             st.write(f"**نوع الطاقة الغالب:** {best.get('dominant_energy_type', 'غير محدد')}")
-            st.write(f"**عدد الجذور القرآنية المطابقة:** {len(best['matched_roots'])}")
+            st.write(f"**عدد الجذور المطابقة:** {len(best['matched_roots'])}")
             st.write(f"**عدد حالات الالتباس:** {len(best['ambiguities'])}")
             
-            # عرض المصفوفة في المستشار
             all_roots = [m['root'] for m in best['matched_roots']]
             matrix_roots = [r for r in all_roots if r in matrix_idx]
             if matrix_roots:
@@ -1519,9 +1455,9 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
         st.markdown("</div>", unsafe_allow_html=True)
 
 # =========================================================
-# 31) FOOTER
+# 29) FOOTER
 # =========================================================
 st.sidebar.markdown("---")
-st.sidebar.markdown("**Blekinge, Sweden | Nibras Sovereign v26.8**")
+st.sidebar.markdown("**Blekinge, Sweden | Nibras Sovereign v27.0**")
 st.sidebar.markdown("*Mohamed | As-Sajdah [5]*")
 st.sidebar.markdown("*خِت فِت.*")
