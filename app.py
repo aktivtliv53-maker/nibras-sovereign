@@ -343,7 +343,7 @@ with tabs[4]: # ⚖️ الميزان السيادي v26.2.1 - طبقة النط
         else:
             st.info("بانتظار استنطاق المدار لملء الموازين.")
 
-    with tabs[5]: # الوعي الفوقي
+with tabs[5]: # الوعي الفوقي
         st.markdown("### 🧠 سجل الوعي المداري المستقر")
         st.markdown(f"""
         <div class="stat-container">
