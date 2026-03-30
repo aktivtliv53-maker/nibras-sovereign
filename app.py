@@ -454,7 +454,7 @@ if state['active']:
                 
                 if not actual_data:
                     return "❌ جذر غير موجود في القاعدة (خارج المدار)"
-                if not raw_insight or len(str(raw_insight)).strip() < 5:
+                if not raw_insight or len(str(raw_insight).strip()) < 5:
                     return "⚠️ الجذر موجود ولكن حقل (insight) فارغ أو مفقود"
                 return "✅ بصيرة مكتملة"
             
