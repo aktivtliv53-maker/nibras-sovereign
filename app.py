@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.2.2
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.2.3
 # مَبنيٌّ على بروتوكول "لا مَسَاس" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Root Integrity & Insight Diagnostics - كشف أسباب سقوط الجذور
+# الإصدار: Root Integrity & Insight Diagnostics (المُحسّن) - كشف حقيقي للبصائر
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -112,7 +112,7 @@ def match_root_logic(word, index_keys):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v26.2.2", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v26.2.3", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -328,7 +328,7 @@ with tabs[0]:
         c3.text_area("المسار الوجودي (ج)", key="p_c", height=150)
     ]
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v26.2.2)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v26.2.3)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -432,35 +432,62 @@ if state['active']:
     with tabs[3]: # البيان الختامي
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v26.2.2:</b><br>
+            <b>بيان الاستواء الوجودي v26.2.3:</b><br>
             بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام القراءة الناطقة. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
         </div>
         """, unsafe_allow_html=True)
 
-    with tabs[4]:  # ⚖️ الميزان السيادي v26.2.2 - Root Integrity & Insight Diagnostics
+    with tabs[4]:  # ⚖️ الميزان السيادي v26.2.3 - Root Integrity & Insight Diagnostics (المُحسّن)
         st.markdown("### ⚖️ ميزان النزاهة الجذرية وتدقيق البصيرة")
         
         if state['active']:
             df_diag = pd.DataFrame(state['bodies'])
             
-            # محرك كشف حالة البصيرة
+            # محرك كشف حالة البصيرة - نسخة أكثر دقة
             def diagnose_insight(row):
                 root = row['root']
                 # محاولة جلب البيانات الحقيقية من الفهرس
                 actual_data = r_index.get(root, {})
                 raw_insight = actual_data.get("insight", "")
                 
+                # فحص وجود الجذر في القاعدة
                 if not actual_data:
                     return "❌ جذر غير موجود في القاعدة (خارج المدار)"
-                if not raw_insight or len(str(raw_insight).strip()) < 5:
-                    return "⚠️ الجذر موجود ولكن حقل (insight) فارغ أو مفقود"
-                return "✅ بصيرة مكتملة"
+                
+                # تحويل إلى نص وتنظيفه
+                insight_str = str(raw_insight).strip()
+                
+                # قائمة العبارات التي تشير إلى عدم وجود بصيرة حقيقية
+                empty_indicators = [
+                    "لا توجد بصيرة مفسّرة",
+                    "لا توجد بصيرة مفسرة",
+                    "لا توجد دلالة",
+                    "لا توجد",
+                    "غير موجود",
+                    "فارغ",
+                    "insight",
+                    "meaning",
+                    "",
+                    "None",
+                    "null"
+                ]
+                
+                # التحقق من أن البصيرة حقيقية وليست افتراضية
+                is_valid = len(insight_str) >= 15  # بصيرة حقيقية تحتاج على الأقل 15 حرفاً
+                is_not_empty_indicator = not any(ind in insight_str for ind in empty_indicators)
+                
+                if is_valid and is_not_empty_indicator:
+                    return f"✅ بصيرة مكتملة ({len(insight_str)} حرفاً)"
+                elif insight_str and len(insight_str) > 0:
+                    return f"⚠️ بصيرة غير مكتملة ({len(insight_str)} حرفاً فقط)"
+                else:
+                    return "❌ بصيرة مفقودة تماماً (حقل insight فارغ)"
             
             df_diag['حالة البيانات'] = df_diag.apply(diagnose_insight, axis=1)
             
-            # عرض جدول التشخيص
+            # عرض جدول التشخيص التفصيلي
             st.dataframe(
                 df_diag[['root', 'gene', 'energy', 'حالة البيانات']],
                 column_config={
@@ -472,19 +499,41 @@ if state['active']:
                 use_container_width=True
             )
             
-            # إحصائية النزاهة
-            match_rate = (df_diag['حالة البيانات'] == "✅ بصيرة مكتملة").mean() * 100
-            st.metric("معدل اكتمال البصيرة المدارية", f"{match_rate:.1f}%")
+            # إحصائيات النزاهة التفصيلية
+            complete_count = df_diag['حالة البيانات'].str.contains("✅ بصيرة مكتملة").sum()
+            incomplete_count = df_diag['حالة البيانات'].str.contains("⚠️").sum()
+            missing_count = df_diag['حالة البيانات'].str.contains("❌").sum()
             
-            if match_rate < 50:
-                st.warning("⚠️ تنبيه: أكثر من نصف الجذور تفتقر للبصيرة. راجع مطابقة الأسماء بين النص وقاعدة البيانات.")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("بصيرة مكتملة", f"{complete_count}", delta=f"{complete_count/len(df_diag)*100:.0f}%")
+            with col2:
+                st.metric("بصيرة غير مكتملة", f"{incomplete_count}")
+            with col3:
+                st.metric("بصيرة مفقودة", f"{missing_count}")
             
-            # بصيرة سيد المدار
-            top_root = df_diag.iloc[0]['root']
-            top_info = r_index.get(top_root, {})
-            final_insight = top_info.get("insight", "لا توجد بصيرة مفسرة مسجلة لهذا الجذر في ملفك.")
+            # عرض تفاصيل الجذور التي تعاني مشاكل
+            problem_roots = df_diag[df_diag['حالة البيانات'].str.contains("⚠️|❌")]
+            if not problem_roots.empty:
+                st.warning(f"⚠️ هناك {len(problem_roots)} جذراً تحتاج إلى مراجعة:")
+                for _, row in problem_roots.iterrows():
+                    actual_data = r_index.get(row['root'], {})
+                    insight_value = actual_data.get("insight", "غير موجود")
+                    st.markdown(f"- **{row['root']}**: {row['حالة البيانات']}")
+                    if insight_value:
+                        preview = insight_value[:50] + "..." if len(insight_value) > 50 else insight_value
+                        st.markdown(f"  - القيمة الحالية: `{preview}`")
             
-            st.info(f"**بصيرة سيد المدار ({top_root}):**\n\n{final_insight}")
+            # بصيرة سيد المدار - مع تحقق إضافي
+            if not df_diag.empty:
+                top_root = df_diag.iloc[0]['root']
+                top_info = r_index.get(top_root, {})
+                final_insight = top_info.get("insight", "")
+                
+                if final_insight and len(str(final_insight).strip()) >= 15:
+                    st.success(f"**بصيرة سيد المدار ({top_root}):**\n\n{final_insight}")
+                else:
+                    st.info(f"**بصيرة سيد المدار ({top_root}):**\n\n⚠️ لا توجد بصيرة كافية مسجلة لهذا الجذر في ملفك.")
         
         else:
             st.info("بانتظار استنطاق المدار لملء الموازين.")
@@ -507,7 +556,7 @@ else:
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
 **الحالة:** استواء سيادي ناطق  
-**الإصدار:** v26.2.2 (Root Integrity)  
+**الإصدار:** v26.2.3 (Root Integrity - المُحسّن)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
