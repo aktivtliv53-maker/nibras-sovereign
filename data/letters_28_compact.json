@@ -1,254 +1,30 @@
-[
-  {
-    "letter": "ا",
-    "group": "gravity",
-    "mass": 0.9,
-    "speed": 0.4,
-    "direction": "inward",
-    "orbit_weight": 0.80,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ب",
-    "group": "gravity",
-    "mass": 1.0,
-    "speed": 0.3,
-    "direction": "inward",
-    "orbit_weight": 0.90,
-    "friction_type": "F_a"
-  },
-  {
-    "letter": "ل",
-    "group": "gravity",
-    "mass": 0.9,
-    "speed": 0.5,
-    "direction": "binding",
-    "orbit_weight": 0.80,
-    "friction_type": "none"
-  },
-  {
-    "letter": "م",
-    "group": "gravity",
-    "mass": 1.0,
-    "speed": 0.4,
-    "direction": "gathering",
-    "orbit_weight": 0.85,
-    "friction_type": "F_a"
-  },
-  {
-    "letter": "ق",
-    "group": "compression",
-    "mass": 1.0,
-    "speed": 0.3,
-    "direction": "inward",
-    "orbit_weight": 0.85,
-    "friction_type": "F_c"
-  },
-  {
-    "letter": "ط",
-    "group": "gravity_compression",
-    "mass": 1.0,
-    "speed": 0.4,
-    "direction": "impact",
-    "orbit_weight": 0.85,
-    "friction_type": "F_c"
-  },
-  {
-    "letter": "ص",
-    "group": "gravity",
-    "mass": 0.9,
-    "speed": 0.4,
-    "direction": "rigid",
-    "orbit_weight": 0.80,
-    "friction_type": "none"
-  },
-  {
-    "letter": "و",
-    "group": "flow",
-    "mass": 0.6,
-    "speed": 0.8,
-    "direction": "outward",
-    "orbit_weight": 0.60,
-    "friction_type": "F_r"
-  },
-  {
-    "letter": "ي",
-    "group": "flow",
-    "mass": 0.6,
-    "speed": 0.8,
-    "direction": "outward",
-    "orbit_weight": 0.60,
-    "friction_type": "F_r"
-  },
-  {
-    "letter": "ن",
-    "group": "flow",
-    "mass": 0.7,
-    "speed": 0.7,
-    "direction": "circulating",
-    "orbit_weight": 0.65,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ر",
-    "group": "flow",
-    "mass": 0.8,
-    "speed": 0.9,
-    "direction": "vibrational",
-    "orbit_weight": 0.75,
-    "friction_type": "F_A"
-  },
-  {
-    "letter": "س",
-    "group": "flow",
-    "mass": 0.6,
-    "speed": 0.8,
-    "direction": "linear_flow",
-    "orbit_weight": 0.65,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ف",
-    "group": "flow_manifestation",
-    "mass": 0.6,
-    "speed": 0.9,
-    "direction": "outward_breath",
-    "orbit_weight": 0.55,
-    "friction_type": "F_r"
-  },
-  {
-    "letter": "ك",
-    "group": "flow",
-    "mass": 0.7,
-    "speed": 0.7,
-    "direction": "cutting_flow",
-    "orbit_weight": 0.65,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ث",
-    "group": "expansion",
-    "mass": 0.5,
-    "speed": 0.8,
-    "direction": "soft_spread",
-    "orbit_weight": 0.50,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ش",
-    "group": "expansion",
-    "mass": 0.6,
-    "speed": 0.9,
-    "direction": "scattered_spread",
-    "orbit_weight": 0.70,
-    "friction_type": "F_A"
-  },
-  {
-    "letter": "ز",
-    "group": "expansion",
-    "mass": 0.6,
-    "speed": 0.9,
-    "direction": "sharp_spread",
-    "orbit_weight": 0.70,
-    "friction_type": "F_A"
-  },
-  {
-    "letter": "ظ",
-    "group": "expansion",
-    "mass": 0.7,
-    "speed": 0.8,
-    "direction": "dominant_spread",
-    "orbit_weight": 0.75,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ذ",
-    "group": "expansion",
-    "mass": 0.6,
-    "speed": 0.8,
-    "direction": "edge_spread",
-    "orbit_weight": 0.65,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ج",
-    "group": "expansion",
-    "mass": 0.8,
-    "speed": 0.9,
-    "direction": "burst_spread",
-    "orbit_weight": 0.75,
-    "friction_type": "F_A"
-  },
-  {
-    "letter": "ح",
-    "group": "expansion_manifestation",
-    "mass": 0.6,
-    "speed": 0.7,
-    "direction": "pure_breath",
-    "orbit_weight": 0.50,
-    "friction_type": "none"
-  },
-  {
-    "letter": "خ",
-    "group": "expansion",
-    "mass": 0.7,
-    "speed": 0.7,
-    "direction": "rough_spread",
-    "orbit_weight": 0.70,
-    "friction_type": "none"
-  },
-  {
-    "letter": "د",
-    "group": "compression",
-    "mass": 0.9,
-    "speed": 0.5,
-    "direction": "impact_compression",
-    "orbit_weight": 0.80,
-    "friction_type": "F_c"
-  },
-  {
-    "letter": "ت",
-    "group": "compression",
-    "mass": 0.8,
-    "speed": 0.6,
-    "direction": "light_compression",
-    "orbit_weight": 0.75,
-    "friction_type": "F_c"
-  },
-  {
-    "letter": "ض",
-    "group": "compression",
-    "mass": 1.0,
-    "speed": 0.4,
-    "direction": "heavy_compression",
-    "orbit_weight": 0.85,
-    "friction_type": "F_c"
-  },
-  {
-    "letter": "ه",
-    "group": "manifestation",
-    "mass": 0.5,
-    "speed": 0.9,
-    "direction": "inner_breath",
-    "orbit_weight": 0.30,
-    "friction_type": "none"
-  },
-  {
-    "letter": "ع",
-    "group": "manifestation",
-    "mass": 0.9,
-    "speed": 0.7,
-    "direction": "depth_to_clarity",
-    "orbit_weight": 0.70,
-    "friction_type": "none"
-  },
-  {
-    "letter": "غ",
-    "group": "manifestation",
-    "mass": 1.0,
-    "speed": 0.6,
-    "direction": "overwhelming_cover",
-    "orbit_weight": 0.80,
-    "friction_type": "none"
-  }
-]
+{
+  "ا": {"mass": 1.5, "speed": 1.0},
+  "ب": {"mass": -0.8, "speed": 0.5},
+  "ت": {"mass": -0.7, "speed": 0.4},
+  "ث": {"mass": 0.3, "speed": 0.6},
+  "ج": {"mass": 0.4, "speed": 0.7},
+  "ح": {"mass": 0.9, "speed": 0.8},
+  "خ": {"mass": 0.7, "speed": 0.5},
+  "د": {"mass": -0.9, "speed": 0.3},
+  "ذ": {"mass": 0.3, "speed": 0.4},
+  "ر": {"mass": 0.5, "speed": 0.9},
+  "ز": {"mass": 0.3, "speed": 0.8},
+  "س": {"mass": 0.4, "speed": 0.7},
+  "ش": {"mass": 0.5, "speed": 0.6},
+  "ص": {"mass": 0.7, "speed": 0.5},
+  "ض": {"mass": 0.6, "speed": 0.4},
+  "ط": {"mass": 0.8, "speed": 0.9},
+  "ظ": {"mass": 0.8, "speed": 0.7},
+  "ع": {"mass": 1.2, "speed": 0.8},
+  "غ": {"mass": 0.7, "speed": 0.6},
+  "ف": {"mass": 0.2, "speed": 0.9},
+  "ق": {"mass": 1.8, "speed": 0.7},
+  "ك": {"mass": 0.6, "speed": 0.8},
+  "ل": {"mass": 0.6, "speed": 1.0},
+  "م": {"mass": 0.7, "speed": 0.7},
+  "ن": {"mass": -0.5, "speed": 0.6},
+  "ه": {"mass": 1.0, "speed": 0.9},
+  "و": {"mass": 0.8, "speed": 0.8},
+  "ي": {"mass": -1.0, "speed": 1.0}
+}
