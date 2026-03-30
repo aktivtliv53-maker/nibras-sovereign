@@ -284,9 +284,64 @@ if state['active']:
         </div>
         """, unsafe_allow_html=True)
 
-    with tabs[4]: # الميزان السيادي
-        st.markdown("### ⚖️ ميزان الجذور والطاقة المودعة")
-        st.dataframe(df_data[['root', 'gene', 'energy', 'vx', 'vy']].sort_values('energy', ascending=False), use_container_width=True)
+with tabs[4]: # ⚖️ الميزان السيادي v26.2.1 - طبقة النطق والقراءة
+        st.markdown("### ⚖️ ميزان الجذور والقراءة السيادية")
+        
+        if not df_data.empty:
+            # 1. تثبيت وترتيب البيانات (قاعدة الاستحقاق)
+            df_speech = df_data.copy().sort_values('energy', ascending=False).reset_index(drop=True)
+
+            # 2. محركات الترجمة الفورية (Translation Engines)
+            def get_energy_level(e):
+                if e >= 1200: return "🔝 هيمنة تأسيسية"
+                if e >= 1000: return "🔥 حضور قوي جداً"
+                if e >= 900:  return "✨ حضور قوي"
+                if e >= 750:  return "⚡ حضور متوسط راجح"
+                return "🌱 حضور تأسيسي"
+
+            def get_motion_sense(vx, vy):
+                h = "اتساع خارجي" if vx > 0.05 else ("انكماش مركزي" if vx < -0.05 else "اتزان أفقي")
+                v = "صعود وانكشاف" if vy > 0.05 else ("تجذير وترسيب" if vy < -0.05 else "ثبات مقامي")
+                return f"{h} | {v}"
+
+            # 3. صياغة الأعمدة السيادية
+            df_speech['القطب الوظيفي'] = df_speech['gene'].apply(
+                lambda x: f"{GENE_STYLE.get(x, {}).get('icon', '🧬')} {GENE_STYLE.get(x, {}).get('meaning', 'قطب غير معرّف')}"
+            )
+            df_speech['رتبة الحضور'] = df_speech['energy'].apply(get_energy_level)
+            df_speech['الأثر المداري'] = df_speech.apply(
+                lambda r: get_motion_sense(r['vx'], r['vy']), axis=1
+            )
+
+            # 4. عرض الجدول "الناطق"
+            st.dataframe(
+                df_speech[['root', 'القطب الوظيفي', 'energy', 'رتبة الحضور', 'الأثر المداري']],
+                column_config={
+                    "root": "الجذر المستنطق",
+                    "energy": "الكثافة الخام",
+                    "القطب الوظيفي": "الجوهر السيادي",
+                    "رتبة الحضور": "مستوى التجلي",
+                    "الأثر المداري": "الانحياز الحركي"
+                },
+                use_container_width=True,
+                hide_index=True
+            )
+
+            # 5. الخلاصة السيادية (The Sovereign Verdict)
+            top_root = df_speech.iloc[0]['root']
+            top_gene = df_speech.iloc[0]['gene']
+            top_energy = df_speech.iloc[0]['energy']
+            top_vx = df_speech.iloc[0]['vx']
+            top_vy = df_speech.iloc[0]['vy']
+
+            st.success(
+                f"**الخلاصة السيادية:** المدار يهيمن عليه الجذر **({top_root})** "
+                f"بقطب **{GENE_STYLE.get(top_gene, {}).get('meaning', 'غير معرّف')}**، "
+                f"ضمن رتبة **{get_energy_level(top_energy)}**، "
+                f"ويتجه أثره نحو **{get_motion_sense(top_vx, top_vy)}**."
+            )
+        else:
+            st.info("بانتظار استنطاق المدار لملء الموازين.")
 
     with tabs[5]: # الوعي الفوقي
         st.markdown("### 🧠 سجل الوعي المداري المستقر")
