@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # =========================================================
-# NIBRAS SOVEREIGN v26.7 — THE COMPLETED ORBIT
+# NIBRAS SOVEREIGN v26.8 — THE SUPREME ORBIT
 # =========================================================
 # نسخة سيادية مغلقة معماريًا لتحليل النصوص عبر:
 # - محرك جذور | مستشار قرار | درع الالتباس | تناغم سياقي
 # - ذاكرة موضعية | تصدير موثق | الربط بالمصفوفة الكلية (Matrix)
-# - نظام الأنعام (Expanders) لعرض الرنين القرآني
+# - نظام الأنعام (Expanders) مع استخراج الجذور من نصوص الآيات
 # - الميزان الثلاثي (الكتلة + السرعة + الطاقة) بدون عشوائية
+# - Memory Pruning: 5 نتائج فقط لكل جذر، قص النصوص
 # المرجع: وثيقة العرش - محمد (CPU: As-Sajdah 5)
 # =========================================================
 
@@ -17,6 +18,7 @@ import math
 import time
 import hashlib
 import io
+import os
 from datetime import datetime
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -25,7 +27,7 @@ from pathlib import Path
 # 1) PAGE CONFIG
 # =========================================================
 st.set_page_config(
-    page_title="Nibras Sovereign v26.7 COMPLETED ORBIT",
+    page_title="Nibras Sovereign v26.8 SUPREME ORBIT",
     page_icon="🧿",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -68,14 +70,6 @@ html, body, [data-testid="stAppViewContainer"] {
 .block-container {
     padding-top: 1.2rem;
     padding-bottom: 2rem;
-}
-
-.sov-title {
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: 0.4px;
-    color: var(--text-main);
-    margin-bottom: 0.2rem;
 }
 
 .sov-card {
@@ -123,7 +117,7 @@ st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 # =========================================================
 # 3) CONSTANTS & RULES
 # =========================================================
-APP_VERSION = "26.7 COMPLETED ORBIT"
+APP_VERSION = "26.8 SUPREME ORBIT"
 
 NORMALIZATION_POLICY = {
     "strip_diacritics": True,
@@ -215,6 +209,15 @@ def sha256_text(text: str):
 
 def arabic_word_tokenize(text: str):
     return re.findall(r"[\u0621-\u064A\u0660-\u0669]+", text)
+
+def get_file_size_mb(path):
+    """إرجاع حجم الملف بالميجابايت"""
+    try:
+        if path and os.path.exists(path):
+            return round(os.path.getsize(path) / (1024 * 1024), 2)
+    except:
+        pass
+    return 0.0
 
 # =========================================================
 # 7) NORMALIZATION ENGINE
@@ -472,30 +475,74 @@ if clean_lexicon:
         clean_saved_path = None
 
 # =========================================================
-# 13) LOAD MATRIX RESONANCE (الأنعام والمصفوفة)
+# 13) LOAD MATRIX RESONANCE (مع Memory Pruning واستخراج الجذور)
 # =========================================================
 @st.cache_data
 def load_matrix_resonance():
-    """تحميل مصفوفة الرنين القرآني واستخراج الأنعام"""
+    """
+    تحميل مصفوفة الرنين القرآني مع:
+    - استخراج الجذور من نصوص الآيات (لأن الملف لا يحتوي على مفتاح 'root')
+    - Memory Pruning: 5 نتائج فقط لكل جذر
+    - قص النصوص إلى 150 حرفاً
+    """
+    matrix_idx = defaultdict(list)
+    matrix_path = None
+    total_verses = 0
+    
     for path in [Path("."), Path("./data"), Path("./qroot")]:
         m_path = path / "matrix_data.json"
         if m_path.exists():
+            matrix_path = str(m_path)
             try:
                 with open(m_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                    idx = defaultdict(list)
+                
+                if isinstance(data, list):
+                    total_verses = len(data)
+                    
                     for entry in data:
-                        root_raw = entry.get('root', '')
-                        root = "".join(re.findall(r"[\u0621-\u064A]+", str(root_raw)))
-                        if root:
-                            idx[root].append(entry)
-                    return idx, str(m_path)
+                        # استخراج النص
+                        verse_text = entry.get('text', '')
+                        if not verse_text:
+                            continue
+                        
+                        # قص النص
+                        if len(verse_text) > 150:
+                            verse_text = verse_text[:150] + "..."
+                        
+                        # استخراج الجذور المحتملة من النص
+                        words = arabic_word_tokenize(verse_text)
+                        roots_in_verse = set()
+                        
+                        for word in words:
+                            norm_word = normalize_arabic(word)
+                            if len(norm_word) >= 2:
+                                # محاولة إيجاد جذر من خلال المعجم
+                                for root_cand in generate_root_candidates(norm_word):
+                                    if root_cand["form"] in quranic_root_index:
+                                        roots_in_verse.add(root_cand["form"])
+                        
+                        # إضافة الآية لكل جذر تم اكتشافه
+                        for root in roots_in_verse:
+                            if len(matrix_idx[root]) < 5:  # Memory Pruning: 5 نتائج فقط
+                                matrix_idx[root].append({
+                                    "surah": entry.get('surah', entry.get('surah_name', '?')),
+                                    "verse": entry.get('verse', entry.get('verse_number', '?')),
+                                    "text": verse_text
+                                })
+                    
+                    # ترتيب النتائج
+                    for root in matrix_idx:
+                        matrix_idx[root] = sorted(matrix_idx[root], key=lambda x: x.get('surah', ''))
+                    
             except Exception as e:
                 st.error(f"خطأ في تحميل المصفوفة: {e}")
-                return {}, None
-    return {}, None
+                return {}, None, 0, 0
+            break
+    
+    return matrix_idx, matrix_path, total_verses, sum(len(v) for v in matrix_idx.values())
 
-matrix_idx, matrix_path = load_matrix_resonance()
+matrix_idx, matrix_path, total_verses, indexed_verses = load_matrix_resonance()
 
 # =========================================================
 # 14) ROOT LOOKUP HELPERS
@@ -1009,8 +1056,8 @@ def render_sovereign_insight(match_item):
         if resonance:
             st.markdown("---")
             st.markdown(f"**🪐 الرنين الموضعي ({len(resonance)} موضع):**")
-            for occ in resonance[:3]:
-                st.info(f"📖 {occ.get('text', '')[:150]}...\n\n**[{occ.get('surah', '?')}:{occ.get('verse', '?')}]**")
+            for occ in resonance[:5]:  # عرض 5 نتائج كحد أقصى
+                st.info(f"📖 {occ['text']}\n\n**[{occ.get('surah', '?')}:{occ.get('verse', '?')}]**")
         else:
             st.caption("لم يتم رصد رنين إضافي لهذا الجذر في المصفوفة الحالية.")
 
@@ -1238,11 +1285,11 @@ def chips(items):
 # =========================================================
 # 25) UI TITLE
 # =========================================================
-st.title("🛰️ محراب نبراس السيادي v26.7 — المدار المكتمل")
-st.write("تحليل حرفي + جذري قرآني + ذاكرة + تناغم سياقي + تصدير + تحصين من الالتباس + أنعام المصفوفة")
+st.title("🛰️ محراب نبراس السيادي v26.8 — المدار الفائق")
+st.write("تحليل حرفي + جذري قرآني + ذاكرة + تناغم سياقي + تصدير + تحصين من الالتباس + أنعام المصفوفة (استخراج الجذور من النصوص)")
 
 # =========================================================
-# 26) SIDEBAR - DIAGNOSTICS (لوحة التشخيص السيادي)
+# 26) SIDEBAR - DIAGNOSTICS (لوحة التشخيص السيادي مع حجم الملف)
 # =========================================================
 with st.sidebar:
     st.markdown("## ⚙️ التحكم السيادي")
@@ -1251,11 +1298,19 @@ with st.sidebar:
     st.markdown("### 🛠️ لوحة التشخيص السيادي")
     st.write(f"📁 **ملف الحروف:** {path_l if path_l else '❌ مفقود'}")
     st.write(f"📁 **ملف المعجم الخام:** {path_x if path_x else '❌ مفقود'}")
+    
+    # عرض معلومات المصفوفة مع الحجم
+    matrix_size_mb = get_file_size_mb(matrix_path)
     st.write(f"📁 **ملف المصفوفة:** {matrix_path if matrix_path else '❌ مفقود'}")
+    if matrix_path:
+        st.write(f"   - **حجم الملف:** {matrix_size_mb} MB")
+        st.write(f"   - **عدد الآيات:** {total_verses}")
+        st.write(f"   - **الآيات المفهرسة:** {indexed_verses} (بعد Memory Pruning)")
+    
     st.write(f"🔤 **عدد الحروف المفهرسة:** {len(letters_idx)}")
     st.write(f"📚 **عدد الجذور القرآنية المقبولة:** {len(quranic_root_index)}")
     st.write(f"📖 **عدد كتل المعجم النظيف:** {len(clean_lexicon)}")
-    st.write(f"🪐 **عدد آيات المصفوفة:** {sum(len(v) for v in matrix_idx.values()) if matrix_idx else 0}")
+    st.write(f"🪐 **عدد الجذور في المصفوفة:** {len(matrix_idx)}")
 
     if clean_saved_path:
         st.success("✅ تم إنشاء nibras_lexicon_clean.json تلقائيًا")
@@ -1263,7 +1318,7 @@ with st.sidebar:
         st.warning("⚠️ تعذر حفظ الملف النظيف تلقائيًا (لكن التحليل يعمل)")
 
     if matrix_path:
-        st.success("✅ المصفوفة القرآنية متصلة")
+        st.success("✅ المصفوفة القرآنية متصلة (استخراج الجذور من النصوص)")
     else:
         st.warning("⚠️ لم يتم العثور على matrix_data.json")
 
@@ -1452,7 +1507,7 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
                 st.markdown("#### 🪐 رنين المصفوفة الكلية (من واقع المصحف):")
                 for root in matrix_roots[:2]:
                     for occ in matrix_idx[root][:2]:
-                        st.write(f"📖 **{occ.get('surah', '?')}:{occ.get('verse', '?')}** — {occ.get('text', '')[:100]}...")
+                        st.write(f"📖 **{occ.get('surah', '?')}:{occ.get('verse', '?')}** — {occ['text'][:100]}...")
 
             if best["confidence"] >= 80:
                 st.success("🟢 البيان الختامي: هذا المسار ذو ثقة سيادية مرتفعة ويمكن اعتماده كمرجع تحليلي قوي.")
@@ -1467,6 +1522,6 @@ if st.button("🚀 إطلاق الرصد القرآني المقارن", use_con
 # 31) FOOTER
 # =========================================================
 st.sidebar.markdown("---")
-st.sidebar.markdown("**Blekinge, Sweden | Nibras Sovereign v26.7**")
+st.sidebar.markdown("**Blekinge, Sweden | Nibras Sovereign v26.8**")
 st.sidebar.markdown("*Mohamed | As-Sajdah [5]*")
 st.sidebar.markdown("*خِت فِت.*")
