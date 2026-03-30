@@ -1,11 +1,14 @@
+nibras_v26_3_1.py
+
 # -*- coding: utf-8 -*
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.3.0
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.3.1
 # مَبنيٌّ على بروتوكول "لا مَسَاس" و "الاستحقاق الجيني الحتمي"
-# تحسينات هذه النسخة:
-# - استقرار مداري حي (جاذبية + احتكاك + عمر للجسم)
-# - رنين جيني ديناميكي مرتبط فعليًا بالنص
-# - وعي فوقي نابض (منحنيات زمنية + إحصاءات حية)
+# هذه النسخة:
+# - تحافظ على نفس البنية السداسية بالكامل
+# - تحل مشكلة الحروف العمودية في المدار (باستخدام Annotations)
+# - تحسّن الاستقرار المداري (جاذبية + احتكاك + عمر أطول)
+# - تُبقي الرنين الجيني والوعي الفوقي حيَّين وديناميكيين
 # ==============================================================================
 
 import streamlit as st
@@ -120,7 +123,7 @@ def match_root_logic(word: str, index_keys):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (CSS + Mobile Shield)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v26.3.0", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v26.3.1", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -180,8 +183,8 @@ if 'grand_monolith' not in st.session_state:
         'logs': [],
         'metrics': {},
         'active': False,
-        'timeline': [],        # تطور الزمن
-        'gene_counts_seq': []  # تطور توزيع الجينات
+        'timeline': [],
+        'gene_counts_seq': []
     }
 
 roots_path = "quran_roots_complete.json"
@@ -208,7 +211,7 @@ tabs = st.tabs([
 ])
 
 # ==============================================================================
-# [6] الاستنطاق المداري (مع استقرار حي)
+# [6] الاستنطاق المداري (مع استقرار حي + إصلاح الحروف)
 # ==============================================================================
 with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية (استقرار حي)")
@@ -219,7 +222,7 @@ with tabs[0]:
         c3.text_area("المسار الوجودي (ج)", key="p_c", height=150)
     ]
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v26.3.0)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v26.3.1)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         timeline = []
         gene_counts_seq = []
@@ -242,13 +245,13 @@ with tabs[0]:
                             "vx": sig['vector_x'],
                             "vy": sig['vector_y'],
                             "color": GENE_STYLE[gene_key]['color'],
-                            "life": 120  # عمر الجسم (إطارات)
+                            "life": 200  # عمر أطول للأجسام
                         })
                         word_pool.append(root)
 
         if active_bodies:
             motion_ui = st.empty()
-            for frame in range(120):
+            for frame in range(200):
                 # فيزياء الاستقرار الحي: جاذبية + احتكاك + منطقة استقرار
                 for i in range(len(active_bodies)):
                     for j in range(i+1, len(active_bodies)):
@@ -261,25 +264,25 @@ with tabs[0]:
                             )
 
                 for b in active_bodies:
-                    # جاذبية نحو المركز
-                    b['vx'] += -b['x'] * 0.01
-                    b['vy'] += -b['y'] * 0.01
+                    # جاذبية نحو المركز (أخف من النسخة السابقة)
+                    b['vx'] += -b['x'] * 0.005
+                    b['vy'] += -b['y'] * 0.005
 
-                    # احتكاك (تباطؤ)
-                    b['vx'] *= 0.97
-                    b['vy'] *= 0.97
+                    # احتكاك (تباطؤ ناعم)
+                    b['vx'] *= 0.985
+                    b['vy'] *= 0.985
 
                     # تحديث الموقع
                     b['x'] += b['vx']
                     b['y'] += b['vy']
 
-                    # منطقة استقرار: إذا اقترب من المركز، الحركة تصبح بطيئة جدًا
+                    # منطقة استقرار: إذا اقترب من المركز، الحركة تصبح أهدأ
                     if abs(b['x']) < 3 and abs(b['y']) < 3:
                         b['vx'] *= 0.9
                         b['vy'] *= 0.9
 
                     # حدود المدار
-                    if abs(b['x']) > 30 or abs(b['y']) > 30:
+                    if abs(b['x']) > 32 or abs(b['y']) > 32:
                         b['vx'] *= -0.8
                         b['vy'] *= -0.8
 
@@ -297,20 +300,49 @@ with tabs[0]:
                 if not active_bodies:
                     break
 
-                fig_motion = px.scatter(
-                    pd.DataFrame(active_bodies),
-                    x="x", y="y", text="root", size="energy", color="gene",
-                    color_discrete_map={g: s['color'] for g, s in GENE_STYLE.items()},
-                    range_x=[-35, 35], range_y=[-35, 35]
-                )
+                df_frame = pd.DataFrame(active_bodies)
+
+                # استخدام scatter بدون text، ثم إضافة Annotations لدعم العربية
+                fig_motion = go.Figure()
+                if not df_frame.empty:
+                    fig_motion.add_trace(go.Scatter(
+                        x=df_frame['x'],
+                        y=df_frame['y'],
+                        mode='markers',
+                        marker=dict(
+                            size=(df_frame['energy'] / df_frame['energy'].max() * 40).clip(8, 40),
+                            color=[GENE_STYLE[g]['color'] for g in df_frame['gene']],
+                            opacity=0.9
+                        ),
+                        hoverinfo='none'
+                    ))
+
+                    # إضافة النصوص كـ Annotations (حل مشكلة الحروف العمودية)
+                    for _, row in df_frame.iterrows():
+                        fig_motion.add_annotation(
+                            x=row['x'],
+                            y=row['y'],
+                            text=row['root'],
+                            showarrow=False,
+                            font=dict(
+                                family="Amiri, Arial, sans-serif",
+                                size=14,
+                                color=row['color']
+                            ),
+                            xanchor="center",
+                            yanchor="bottom"
+                        )
+
                 fig_motion.update_layout(
                     height=750,
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
                     showlegend=False,
-                    xaxis_visible=False,
-                    yaxis_visible=False
+                    xaxis=dict(visible=False, range=[-35, 35]),
+                    yaxis=dict(visible=False, range=[-35, 35]),
+                    font=dict(family="Amiri, Arial, sans-serif")
                 )
+
                 motion_ui.plotly_chart(fig_motion, use_container_width=True)
                 time.sleep(0.01)
 
@@ -347,7 +379,6 @@ with tabs[1]:
         """, unsafe_allow_html=True)
 
     if state['active'] and state['gene_counts_seq']:
-        # بناء منحنى تطور الجينات عبر الزمن
         timeline = state['timeline']
         gene_counts_seq = state['gene_counts_seq']
 
@@ -369,6 +400,7 @@ with tabs[1]:
             labels={'frame': 'الإطار الزمني', 'count': 'عدد الأجسام'},
             title="تطور قوة كل جين أثناء الاستنطاق"
         )
+        fig_gene_time.update_layout(font=dict(family="Amiri, Arial, sans-serif"))
         st.plotly_chart(fig_gene_time, use_container_width=True)
     else:
         st.info("لم يتم تفعيل المفاعل بعد أو لا توجد بيانات زمنية كافية للرنين.")
@@ -391,7 +423,7 @@ if state['active'] and state['bodies']:
                 color_discrete_map={g: s['color'] for g, s in GENE_STYLE.items()},
                 hole=0.5,
                 title="توزيع الهيمنة الجينية في اللحظة النهائية"
-            ),
+            ).update_layout(font=dict(family="Amiri, Arial, sans-serif")),
             use_container_width=True
         )
 
@@ -402,7 +434,7 @@ if state['active'] and state['bodies']:
                 color='gene',
                 color_discrete_map={g: s['color'] for g, s in GENE_STYLE.items()},
                 title="تعداد الأجسام المدارية لكل جين"
-            ),
+            ).update_layout(font=dict(family="Amiri, Arial, sans-serif")),
             use_container_width=True
         )
 
@@ -413,7 +445,7 @@ if state['active'] and state['bodies']:
                 color='gene', size='energy',
                 color_discrete_map={g: s['color'] for g, s in GENE_STYLE.items()},
                 title="خارطة طاقة الجذور المستنطقة"
-            ),
+            ).update_layout(font=dict(family="Amiri, Arial, sans-serif")),
             use_container_width=True
         )
 else:
@@ -433,11 +465,11 @@ with tabs[3]:
 
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v26.3.0:</b><br>
+            <b>بيان الاستواء الوجودي v26.3.1:</b><br>
             بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الحتمية السيادية الحيّة. 
             المسار الحالي يعكس اتزاناً في جينات <b>{dom_name}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. 
-            الأجسام لم تعد تومض وتختفي، بل دخلت في مدار استقرار حيّ يعبّر عن بنية النص.
+            الأجسام دخلت في مدار استقرار حيّ، والنص لم يعد عموداً ساقطاً بل بناءً أفقياً مقروءاً.
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -467,7 +499,7 @@ with tabs[5]:
         <div class="stat-container">
             <div class="stat-box">
                 <div class="stat-val">{state['metrics'].get('count', 0)}</div>
-                <div class="stat-label">أجسام مستنطقة</div>
+                <div class="stat-label">أجسام مستنطقة (نهائية)</div>
             </div>
             <div class="stat-box">
                 <div class="stat-val" style="color:#ffaa00">{state['metrics'].get('duration', 0)}s</div>
@@ -479,6 +511,24 @@ with tabs[5]:
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+        if state['timeline'] and state['gene_counts_seq']:
+            rows_aw = []
+            for t, gc in zip(state['timeline'], state['gene_counts_seq']):
+                rows_aw.append({
+                    'frame': t,
+                    'total': sum(gc.values())
+                })
+            df_aw = pd.DataFrame(rows_aw)
+
+            fig_aw = px.line(
+                df_aw,
+                x='frame', y='total',
+                labels={'frame': 'الإطار الزمني', 'total': 'شدة الوعي'},
+                title="نبض الوعي المداري عبر الزمن"
+            )
+            fig_aw.update_layout(font=dict(family="Amiri, Arial, sans-serif"))
+            st.plotly_chart(fig_aw, use_container_width=True)
 
         if state['logs']:
             st.markdown("#### آخر نبضات الوعي:")
@@ -499,7 +549,7 @@ with tabs[5]:
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
 **الحالة:** استواء سيادي حيّ  
-**الإصدار:** v26.3.0 (Grand Alive)  
+**الإصدار:** v26.3.1 (Grand Alive)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
