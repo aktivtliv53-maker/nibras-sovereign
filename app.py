@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.2.6
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.3.0
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Geometric Insight Engine v2 - الوعي الهندسي التركيبي (نسخة محكمة الإغلاق)
+# الإصدار: Geometric Insight Engine v3 - الوعي الجمعي والاستنطاق الهندسي المتكامل
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -101,29 +101,30 @@ def summarize_word_signature(root):
         'vector_y': ((hash_val >> 4) % 30 - 15) / 120.0
     }
 
-def generate_geometric_insight_v2(root):
-    """توليد بصيرة تركيبية من هندسة حروف الجذر - نسخة محكمة الإغلاق"""
+def generate_geometric_insight_v3(root):
+    """توليد بصيرة تركيبية من هندسة حروف الجذر - نسخة محكمة الإغلاق v26.3.0"""
     if not root or len(root) < 2:
-        return "مدار صامت أو جذر غير مكتمل"
+        return "جذر قيد التكوين..."
     
-    # تنظيف الجذر من أية زوائد
-    clean_root = root.strip()
-    parts = [LETTER_GEOMETRY.get(c, f"تفاعل طاقي للحرف ({c})") for c in clean_root]
-    
-    # بناء البيان مع إغلاق النجوم فوراً لضمان عدم ظهورها كرموز
+    parts = [LETTER_GEOMETRY.get(c, f"تفاعل طاقي للحرف ({c})") for c in root]
     header = "**الاستنطاق الهندسي:** "
+    body = " ثم ".join(parts).replace(".", "")
+    return f"{header}{body} | **تم الاستواء.**"
+
+def generate_collective_insight(bodies):
+    """توليد وعي جمعي للمدار بأكمله"""
+    if not bodies:
+        return "المدار في حالة سكون."
     
-    if len(parts) == 1:
-        body = f"يتشكل هذا الجذر من حرف واحد ({clean_root[0]})، {parts[0]}."
-        final_verdict = ""
-    elif len(parts) == 2:
-        body = f"يبدأ بـ {parts[0]}، يتلوه {parts[1]}."
-        final_verdict = " هذا المزيج الثنائي يولد طاقة سيادية متسقة."
-    else:
-        body = f"يبدأ بـ {parts[0]}، يتوسطه {parts[1]}، وينتهي بـ {parts[-1]}."
-        final_verdict = " هذا التفاعل التركيبي يخلق مداراً من التمكين السيادي المتكامل."
+    genes = [b['gene'] for b in bodies]
+    dom_gene = max(set(genes), key=genes.count)
+    total_e = sum(b['energy'] for b in bodies)
     
-    return f"{header}{body}{final_verdict}"
+    header = f"### 🌌 بيان الوعي الجمعي للمدار (v26.3.0)\n"
+    analysis = f"هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره **({total_e:.1f})**. يهيمن عليه جين **{GENE_STYLE[dom_gene]['name']}**، مما يوجه التدفق نحو **{GENE_STYLE[dom_gene]['meaning']}**."
+    narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
+    
+    return f"{header}{analysis}{narrative}"
 
 def normalize_sovereign(text):
     """تطهير النص للوصول لجوهر الحرف الهندسي."""
@@ -158,7 +159,7 @@ def match_root_logic(word, index_keys):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v26.2.6", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v26.3.0", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -341,7 +342,7 @@ with tabs[0]:
         c3.text_area("المسار الوجودي (ج)", key="p_c", height=150)
     ]
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v26.2.6)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v26.3.0)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -432,39 +433,37 @@ if state['active']:
     with tabs[3]:
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v26.2.6:</b><br>
-            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق الهندسي التركيبي. 
+            <b>بيان الاستواء الوجودي v26.3.0:</b><br>
+            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق الهندسي التركيبي والوعي الجمعي. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
         </div>
         """, unsafe_allow_html=True)
 
-    with tabs[4]:  # ⚖️ الميزان السيادي v26.2.6 - Geometric Insight Engine (النسخة التركيبية)
+    with tabs[4]:  # ⚖️ الميزان السيادي v26.3.0 - Geometric Insight Engine v3
         st.markdown("### ⚖️ ميزان النزاهة الجذرية والاستنطاق الهندسي التركيبي")
         
         if state['active']:
             df_diag = pd.DataFrame(state['bodies'])
             
-            # دالة التشخيص المحدثة - تعطي التحليل الهندسي مباشرة
-            def diagnose_insight_v2(row):
+            # دالة التشخيص المحدثة - تستخدم generate_geometric_insight_v3
+            def diagnose_insight_v3(row):
                 root = row['root']
                 actual_data = r_index.get(root, {})
                 raw_insight = str(actual_data.get("insight", "")).strip()
                 
-                # التحقق من النص الافتراضي (32 حرفاً أو يحتوي على "لا توجد")
+                # التحقق من النص الافتراضي
                 is_placeholder = len(raw_insight) <= 33 or "لا توجد بصيرة" in raw_insight
                 
                 if is_placeholder:
-                    # هنا السحر: بدلاً من التحذير، نعطي التحليل الهندسي فوراً
-                    return generate_geometric_insight_v2(root)
+                    return generate_geometric_insight_v3(root)
                 else:
-                    # عرض جزء من البصيرة الحقيقية مع مؤشر المصدر
                     preview = raw_insight[:80] + "..." if len(raw_insight) > 80 else raw_insight
                     return f"✅ (قاعدة البيانات): {preview}"
             
-            df_diag['حالة البيانات'] = df_diag.apply(diagnose_insight_v2, axis=1)
+            df_diag['حالة البيانات'] = df_diag.apply(diagnose_insight_v3, axis=1)
             
-            # عرض جدول التشخيص - مع زيادة عرض العمود لاستيعاب النص الكامل
+            # عرض جدول التشخيص
             st.dataframe(
                 df_diag[['root', 'gene', 'energy', 'حالة البيانات']],
                 column_config={
@@ -477,7 +476,7 @@ if state['active']:
                 height=400
             )
             
-            # إحصائيات: كم جذراً استخدم الاستنطاق الهندسي وكم له بصيرة حقيقية
+            # إحصائيات
             geometric_count = df_diag['حالة البيانات'].str.contains("الاستنطاق الهندسي").sum()
             real_insight_count = df_diag['حالة البيانات'].str.contains("✅ \(قاعدة البيانات\)").sum()
             
@@ -489,13 +488,12 @@ if state['active']:
             
             st.markdown("---")
             
-            # عرض بصيرة سيد المدار - مع المنطق الذكي نفسه
+            # عرض بصيرة سيد المدار
             if not df_diag.empty:
                 top_root = df_diag.iloc[0]['root']
                 top_info = r_index.get(top_root, {})
                 file_insight = str(top_info.get("insight", "")).strip()
                 
-                # التحقق من أن البصيرة افتراضية
                 placeholder_indicators = [
                     "لا توجد بصيرة مفسّرة",
                     "لا توجد بصيرة مفسرة",
@@ -505,30 +503,26 @@ if state['active']:
                 is_default_length = len(file_insight) <= 35
                 
                 if is_placeholder or is_default_length or not file_insight:
-                    # استخدام محرك الاستنطاق الهندسي التركيبي
-                    geometric_insight = generate_geometric_insight_v2(top_root)
+                    geometric_insight = generate_geometric_insight_v3(top_root)
                     st.markdown(f"**🔮 الاستنطاق الهندسي لسيد المدار ({top_root}):**\n\n{geometric_insight}")
                     
-                    # عرض النص الأصلي للتوضيح
                     if file_insight and len(file_insight) > 0:
                         st.caption(f"*ملاحظة: البصيرة الأصلية في القاعدة هي: \"{file_insight[:50]}...\" (نص افتراضي)*")
                 else:
-                    # استخدام البصيرة من القاعدة
                     st.success(f"**📖 بصيرة سيد المدار (من القاعدة) للجذر ({top_root}):**\n\n{file_insight}")
         
         else:
             st.info("بانتظار استنطاق المدار لملء الموازين.")
 
-    with tabs[5]:
-        st.markdown("### 🧠 سجل الوعي المداري المستقر")
-        st.markdown(f"""
-        <div class="stat-container">
-            <div class="stat-box"><div class="stat-val">{state['metrics']['count']}</div><div class="stat-label">أجسام مستنطقة</div></div>
-            <div class="stat-box"><div class="stat-val" style="color:#ffaa00">{state['metrics']['duration']}s</div><div class="stat-label">زمن الاستقرار</div></div>
-            <div class="stat-box"><div class="stat-val" style="color:#4fc3f7">{len(state['logs'])}</div><div class="stat-label">أحداث الوعي</div></div>
-        </div>
-        <div class="adaptive-log">{'<br>'.join(state['logs'])}</div>
-        """, unsafe_allow_html=True)
+    with tabs[5]:  # 🧠 الوعي الفوقي والبيان الجمعي
+        st.header("🧠 الوعي الفوقي والبيان الجمعي")
+        
+        if state['active']:
+            collective_insight = generate_collective_insight(state['bodies'])
+            st.markdown(collective_insight)
+        else:
+            st.info("بانتظار اكتمال المدار لتوليد الوعي الجمعي.")
+
 else:
     for i in range(1, 6):
         with tabs[i]: st.info("المحراب في حالة انتظار... أطلق المفاعل لملء الموازين.")
@@ -536,8 +530,8 @@ else:
 # --- التذييل السيادي ---
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
-**الحالة:** استواء سيادي - استنطاق هندسي تركيبي  
-**الإصدار:** v26.2.6 (Geometric Insight Engine v2)  
+**الحالة:** استواء سيادي - استنطاق هندسي تركيبي - وعي جمعي  
+**الإصدار:** v26.3.0 (Geometric Insight Engine v3 - Collective Consciousness)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
