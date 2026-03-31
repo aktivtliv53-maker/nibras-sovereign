@@ -98,7 +98,7 @@ def match_root_logic(word, index_keys):
     if not w or len(w) < 2: return None
     if w in index_keys: return w
     
-    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "وال", "فال", "بال"]
+    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "بال", "وال", "فال"]
     suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما", "تم", "هن"]
     
     for p in prefixes:
@@ -158,6 +158,17 @@ def generate_collective_insight(bodies):
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
     return f"{header}{analysis}{narrative}"
+
+def assign_gene_from_weight(weight):
+    """تعيين الجين بناءً على الوزن الدلالي"""
+    if weight >= 1.7:
+        return 'C'
+    elif weight >= 1.4:
+        return 'A'
+    elif weight >= 1.1:
+        return 'G'
+    else:
+        return 'T'
 
 def is_placeholder_insight(insight_text):
     """التحقق مما إذا كانت البصيرة نصاً افتراضياً"""
@@ -237,107 +248,57 @@ if 'grand_monolith' not in st.session_state:
         'bodies': [], 'pool': [], 'logs': [], 'metrics': {}, 'active': False
     }
 
-# مسار الملف الجديد - بروتوكول صارم
+# مسار الملف - هيكل المدارات
 roots_path = "data/nibras_lexicon.json"
-if not os.path.exists(roots_path):
-    st.error(f"⚠️ فشل الاتصال بالقاعدة السيادية: {roots_path}")
-    st.stop()
-
-# ترتيب المدارات المعتمد
-KNOWN_ORBITS = {"الأزل", "الأمر", "الخلق", "الإنسان", "الامتحان", "المصير", "الوعي"}
-
-ORBIT_ALIAS = {
-    "الأزل": "الأزل",
-    "الازل": "الأزل",
-    "Sovereign Origin": "الأزل",
-    "sovereign origin": "الأزل",
-    "الاصل": "الأزل",
-    "الأصل": "الأزل"
-}
-
-ORBIT_TO_GENE = {
-    "الأزل": "C",
-    "الأمر": "A",
-    "الخلق": "G",
-    "الإنسان": "N",
-    "الامتحان": "T",
-    "المصير": "C",
-    "الوعي": "N"
-}
-
-def canonical_orbit(orbit_name: str) -> str:
-    if not orbit_name:
-        return "الوعي"
-    raw = str(orbit_name).strip()
-    if "(" in raw:
-        raw = raw.split("(")[0].strip()
-    raw_norm = normalize_sovereign(raw)
-    if raw_norm in KNOWN_ORBITS:
-        return raw_norm
-    if raw in ORBIT_ALIAS:
-        return ORBIT_ALIAS[raw]
-    if raw_norm in ORBIT_ALIAS:
-        return ORBIT_ALIAS[raw_norm]
-    return "الوعي"
 
 def load_semantic_roots_db(path):
+    """تحميل قاعدة الجذور من هيكل المدارات (Orbit-based Structure)"""
     if not os.path.exists(path):
-        st.error("⚠️ فشل الاتصال بالقاعدة السيادية.")
+        st.error(f"⚠️ المدار غير مراقب: الملف مفقود في {path}")
         st.stop()
-
+    
     with open(path, 'r', encoding='utf-8') as f:
-        raw_db = json.load(f)
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError as e:
+            st.error(f"❌ خطأ في بنية ملف JSON: {e}")
+            st.stop()
 
     r_index = {}
     all_roots_flat = []
     orbit_counter = Counter()
 
-    if isinstance(raw_db, list):
-        for orbit_block in raw_db:
-            orbit_raw = orbit_block.get("orbit", "الوعي")
-            orbit_canonical = canonical_orbit(orbit_raw)
-            for item in orbit_block.get("roots", []):
-                root_name = normalize_sovereign(item.get("name", item.get("root", "")))
-                if not root_name:
-                    continue
-                record = {
-                    "root": root_name,
-                    "orbit": orbit_canonical,
-                    "orbit_raw": orbit_raw,
-                    "weight": float(item.get("weight", 1.0)),
-                    "insight": item.get("insight", item.get("meaning", "لا توجد بصيرة مفسّرة لهذا الجذر.")),
-                    "meaning": item.get("meaning", item.get("insight", "لا توجد دلالة موصوفة.")),
-                }
-                if root_name not in r_index or record["weight"] > r_index[root_name]["weight"]:
-                    r_index[root_name] = record
-                all_roots_flat.append(record)
-                orbit_counter[orbit_canonical] += 1
-
-    elif isinstance(raw_db, dict) and "roots" in raw_db:
-        for item in raw_db.get("roots", []):
-            root_name = normalize_sovereign(item.get("root", item.get("name", "")))
+    # معالجة الهيكل الجديد (قائمة مدارات تحتوي على جذور)
+    for orbit_block in data:
+        orbit_raw = orbit_block.get("orbit", "وعي")
+        # تنظيف اسم المدار من الأقواس اللاتينية
+        orbit_canonical = orbit_raw.split('(')[0].strip() if '(' in orbit_raw else orbit_raw
+        
+        for item in orbit_block.get("roots", []):
+            root_name = normalize_sovereign(item.get("name", item.get("root", "")))
             if not root_name:
                 continue
-            orbit_raw = item.get("orbit", "الوعي")
-            orbit_canonical = canonical_orbit(orbit_raw)
+            
+            weight_val = float(item.get("weight", 1.0))
+            insight_text = item.get("insight", item.get("meaning", ""))
+            
             record = {
                 "root": root_name,
                 "orbit": orbit_canonical,
                 "orbit_raw": orbit_raw,
-                "weight": float(item.get("weight", 1.0)),
-                "insight": item.get("insight", item.get("meaning", "لا توجد بصيرة مفسّرة لهذا الجذر.")),
-                "meaning": item.get("meaning", item.get("insight", "لا توجد دلالة موصوفة.")),
+                "weight": weight_val,
+                "insight": insight_text,
+                "meaning": item.get("meaning", insight_text),
+                "gene": assign_gene_from_weight(weight_val)
             }
-            if root_name not in r_index or record["weight"] > r_index[root_name]["weight"]:
-                r_index[root_name] = record
+            
+            r_index[root_name] = record
             all_roots_flat.append(record)
             orbit_counter[orbit_canonical] += 1
-    else:
-        st.error("⚠️ بنية ملف الجذور غير مدعومة.")
-        st.stop()
-
+    
     return r_index, all_roots_flat, orbit_counter
 
+# تحميل قاعدة البيانات
 r_index, all_roots_flat, orbit_counter = load_semantic_roots_db(roots_path)
 
 # ==============================================================================
@@ -357,7 +318,7 @@ with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية - الاستنطاق النصي المتقدم")
     st.markdown("أدخل النص الكامل لتحليله واستنطاق جذوره:")
     
-    # مربع نص واحد كبير بدلاً من ثلاثة
+    # مربع نص واحد كبير
     full_text = st.text_area(
         "النص المداري", 
         height=200, 
@@ -380,11 +341,11 @@ with tabs[0]:
                     if not root_data:
                         continue
                     sig = summarize_word_signature(root)
-                    orbit_name = root_data.get("orbit", "الوعي")
+                    orbit_name = root_data.get("orbit", "وعي")
                     orbit_raw = root_data.get("orbit_raw", orbit_name)
                     weight = float(root_data.get("weight", 1.0))
-                    insight = root_data.get("insight", "لا توجد بصيرة مفسّرة لهذا الجذر.")
-                    gene_key = ORBIT_TO_GENE.get(orbit_name, sig['dominant_gene'])
+                    insight = root_data.get("insight", "")
+                    gene_key = root_data.get("gene", sig['dominant_gene'])
                     semantic_energy = weight * 1000.0
                     total_energy = round(semantic_energy + (sig['total_energy'] * 0.15), 2)
                     active_bodies.append({
@@ -464,19 +425,17 @@ if state['active']:
         </div>
         """, unsafe_allow_html=True)
 
-    with tabs[4]:  # ⚖️ الميزان السيادي v27.5-Hybrid - Hybrid Insight Engine
+    with tabs[4]:
         st.markdown("### ⚖️ ميزان النزاهة الجذرية والاستنطاق الهجين")
         
         if state['active']:
             df_diag = pd.DataFrame(state['bodies'])
             
-            # دالة التشخيص الهجين - تستخدم البصيرة الهندسية إذا كان النص افتراضياً
             def diagnose_insight_hybrid(row):
                 root = row['root']
                 actual_data = r_index.get(root, {})
                 raw_insight = str(actual_data.get("insight", "")).strip()
                 
-                # التحقق من النص الافتراضي باستخدام الدالة المخصصة
                 if is_placeholder_insight(raw_insight):
                     return generate_geometric_insight_v3(root)
                 else:
@@ -485,7 +444,6 @@ if state['active']:
             
             df_diag['حالة البيانات'] = df_diag.apply(diagnose_insight_hybrid, axis=1)
             
-            # عرض جدول التشخيص
             st.dataframe(
                 df_diag[['root', 'gene', 'energy', 'حالة البيانات']],
                 column_config={
@@ -498,7 +456,6 @@ if state['active']:
                 height=400
             )
             
-            # إحصائيات
             geometric_count = df_diag['حالة البيانات'].str.contains("الاستنطاق الهندسي").sum()
             real_insight_count = df_diag['حالة البيانات'].str.contains("✅ \(قاعدة البيانات\)").sum()
             
@@ -510,7 +467,6 @@ if state['active']:
             
             st.markdown("---")
             
-            # عرض بصيرة سيد المدار - مع المنطق الهجين
             if not df_diag.empty:
                 top_root = df_diag.iloc[0]['root']
                 top_info = r_index.get(top_root, {})
@@ -528,7 +484,7 @@ if state['active']:
         else:
             st.info("بانتظار استنطاق المدار لملء الموازين.")
 
-    with tabs[5]:  # 🧠 الوعي الفوقي والبيان الجمعي
+    with tabs[5]:
         st.header("🧠 الوعي الفوقي والبيان الجمعي")
         
         if state['active']:
