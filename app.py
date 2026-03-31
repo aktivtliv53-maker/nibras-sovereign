@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v26.3.0
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.5-Hybrid
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Geometric Insight Engine v3 - الوعي الجمعي والاستنطاق الهندسي المتكامل
+# الإصدار: Hybrid Insight Engine - الاستنطاق النصي المتقدم + الوعي الجمعي
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -80,6 +80,39 @@ LETTER_GEOMETRY = {
 # ==============================================================================
 # [2] المحركات الفوقية للاستنطاق (Sovereign Meta-Engines)
 # ==============================================================================
+# أنماط التطهير المتقدمة
+ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]')
+NON_ARABIC_KEEP_SPACES_PATTERN = re.compile(r'[^\u0621-\u063A\u0641-\u064A\s]')
+
+def normalize_sovereign(text: str):
+    """تطهير النص للوصول لجوهر الحرف الهندسي - نسخة متقدمة"""
+    if not text: return ""
+    text = ARABIC_DIACRITICS_PATTERN.sub('', text)
+    text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ى", "ي").replace("ة", "ه")
+    text = NON_ARABIC_KEEP_SPACES_PATTERN.sub(' ', text)
+    return re.sub(r'\s+', ' ', text).strip()
+
+def match_root_logic(word, index_keys):
+    """بروتوكول الربط المداري لاستخلاص الجذور الثلاثية - نسخة متقدمة"""
+    w = normalize_sovereign(word)
+    if not w or len(w) < 2: return None
+    if w in index_keys: return w
+    
+    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "وال", "فال", "بال"]
+    suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما", "تم", "هن"]
+    
+    for p in prefixes:
+        if w.startswith(p) and len(w)-len(p) >= 3:
+            candidate = w[len(p):]
+            if candidate in index_keys: return candidate
+            
+    for s in suffixes:
+        if w.endswith(s) and len(w)-len(s) >= 3:
+            candidate = w[:-len(s)]
+            if candidate in index_keys: return candidate
+    
+    return None
+
 def summarize_word_signature(root):
     """تحويل الجذر إلى توقيع جيني ثابت (Deterministic Signature)."""
     if not root: return {'dominant_gene': 'N', 'total_energy': 300.0}
@@ -102,7 +135,7 @@ def summarize_word_signature(root):
     }
 
 def generate_geometric_insight_v3(root):
-    """توليد بصيرة تركيبية من هندسة حروف الجذر - نسخة محكمة الإغلاق v26.3.0"""
+    """توليد بصيرة تركيبية من هندسة حروف الجذر - نسخة محكمة الإغلاق"""
     if not root or len(root) < 2:
         return "جذر قيد التكوين..."
     
@@ -120,46 +153,33 @@ def generate_collective_insight(bodies):
     dom_gene = max(set(genes), key=genes.count)
     total_e = sum(b['energy'] for b in bodies)
     
-    header = f"### 🌌 بيان الوعي الجمعي للمدار (v26.3.0)\n"
+    header = f"### 🌌 بيان الوعي الجمعي للمدار (v27.5-Hybrid)\n"
     analysis = f"هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره **({total_e:.1f})**. يهيمن عليه جين **{GENE_STYLE[dom_gene]['name']}**، مما يوجه التدفق نحو **{GENE_STYLE[dom_gene]['meaning']}**."
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
     return f"{header}{analysis}{narrative}"
 
-def normalize_sovereign(text):
-    """تطهير النص للوصول لجوهر الحرف الهندسي."""
-    if not text: return ""
-    text = re.sub(r'[\u064B-\u0652]', '', text)
-    replacements = {"أ": "ا", "إ": "ا", "آ": "ا", "ة": "ه", "ى": "ي"}
-    for k, v in replacements.items():
-        text = text.replace(k, v)
-    return re.sub(r'[^\u0621-\u064A\s]', '', text).strip()
-
-def match_root_logic(word, index_keys):
-    """بروتوكول الربط المداري لاستخلاص الجذور الثلاثية."""
-    w = normalize_sovereign(word)
-    if not w or len(w) < 2: return None
-    if w in index_keys: return w
-    
-    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س"]
-    suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما", "تم", "هن"]
-    
-    for p in prefixes:
-        if w.startswith(p) and len(w)-len(p) >= 3:
-            candidate = w[len(p):]
-            if candidate in index_keys: return candidate
-            
-    for s in suffixes:
-        if w.endswith(s) and len(w)-len(s) >= 3:
-            candidate = w[:-len(s)]
-            if candidate in index_keys: return candidate
-    
-    return w if w in index_keys else None
+def is_placeholder_insight(insight_text):
+    """التحقق مما إذا كانت البصيرة نصاً افتراضياً"""
+    if not insight_text:
+        return True
+    insight_str = str(insight_text).strip()
+    placeholder_indicators = [
+        "لا توجد بصيرة مفسّرة",
+        "لا توجد بصيرة مفسرة",
+        "لا توجد دلالة موصوفة",
+        "لا توجد",
+        "غير موجود",
+        "فارغ"
+    ]
+    is_placeholder = any(ind in insight_str for ind in placeholder_indicators)
+    is_default_length = len(insight_str) <= 35
+    return is_placeholder or is_default_length
 
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v26.3.0", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v27.5-Hybrid", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -217,37 +237,37 @@ if 'grand_monolith' not in st.session_state:
         'bodies': [], 'pool': [], 'logs': [], 'metrics': {}, 'active': False
     }
 
-roots_path = "quran_roots_complete.json"
+# مسار الملف الجديد - بروتوكول صارم
+roots_path = "data/nibras_lexicon.json"
 if not os.path.exists(roots_path):
-    roots_path = "data/quran_roots_complete.json"
+    st.error(f"⚠️ فشل الاتصال بالقاعدة السيادية: {roots_path}")
+    st.stop()
 
-KNOWN_ORBITS = {"وعي", "نور", "رحمة", "حق", "ميزان", "صبر", "هداية", "قوة", "بصيرة", "توحيد"}
+# ترتيب المدارات المعتمد
+KNOWN_ORBITS = {"الأزل", "الأمر", "الخلق", "الإنسان", "الامتحان", "المصير", "الوعي"}
 
 ORBIT_ALIAS = {
-    "الأزل": "حق",
-    "الازل": "حق",
-    "Sovereign Origin": "حق",
-    "sovereign origin": "حق",
-    "الاصل": "حق",
-    "الأصل": "حق"
+    "الأزل": "الأزل",
+    "الازل": "الأزل",
+    "Sovereign Origin": "الأزل",
+    "sovereign origin": "الأزل",
+    "الاصل": "الأزل",
+    "الأصل": "الأزل"
 }
 
 ORBIT_TO_GENE = {
-    "وعي": "N",
-    "نور": "A",
-    "رحمة": "T",
-    "حق": "C",
-    "ميزان": "G",
-    "صبر": "T",
-    "هداية": "A",
-    "قوة": "C",
-    "بصيرة": "N",
-    "توحيد": "G"
+    "الأزل": "C",
+    "الأمر": "A",
+    "الخلق": "G",
+    "الإنسان": "N",
+    "الامتحان": "T",
+    "المصير": "C",
+    "الوعي": "N"
 }
 
 def canonical_orbit(orbit_name: str) -> str:
     if not orbit_name:
-        return "وعي"
+        return "الوعي"
     raw = str(orbit_name).strip()
     if "(" in raw:
         raw = raw.split("(")[0].strip()
@@ -258,7 +278,7 @@ def canonical_orbit(orbit_name: str) -> str:
         return ORBIT_ALIAS[raw]
     if raw_norm in ORBIT_ALIAS:
         return ORBIT_ALIAS[raw_norm]
-    return "وعي"
+    return "الوعي"
 
 def load_semantic_roots_db(path):
     if not os.path.exists(path):
@@ -274,7 +294,7 @@ def load_semantic_roots_db(path):
 
     if isinstance(raw_db, list):
         for orbit_block in raw_db:
-            orbit_raw = orbit_block.get("orbit", "وعي")
+            orbit_raw = orbit_block.get("orbit", "الوعي")
             orbit_canonical = canonical_orbit(orbit_raw)
             for item in orbit_block.get("roots", []):
                 root_name = normalize_sovereign(item.get("name", item.get("root", "")))
@@ -298,7 +318,7 @@ def load_semantic_roots_db(path):
             root_name = normalize_sovereign(item.get("root", item.get("name", "")))
             if not root_name:
                 continue
-            orbit_raw = item.get("orbit", "وعي")
+            orbit_raw = item.get("orbit", "الوعي")
             orbit_canonical = canonical_orbit(orbit_raw)
             record = {
                 "root": root_name,
@@ -332,53 +352,57 @@ tabs = st.tabs([
     "🧠 الوعي الفوقي"
 ])
 
-# --- التبويب 1: الاستنطاق ---
+# --- التبويب 1: الاستنطاق - نسخة مطورة بمربع نص واحد ---
 with tabs[0]:
-    st.markdown("### 📍 هندسة المسارات المدارية")
-    c1, c2, c3 = st.columns(3)
-    p_in = [
-        c1.text_area("المسار الوجودي (أ)", key="p_a", height=150, placeholder="أدخل النص هنا..."),
-        c2.text_area("المسار الوجودي (ب)", key="p_b", height=150),
-        c3.text_area("المسار الوجودي (ج)", key="p_c", height=150)
-    ]
+    st.markdown("### 📍 هندسة المسارات المدارية - الاستنطاق النصي المتقدم")
+    st.markdown("أدخل النص الكامل لتحليله واستنطاق جذوره:")
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v26.3.0)", use_container_width=True):
+    # مربع نص واحد كبير بدلاً من ثلاثة
+    full_text = st.text_area(
+        "النص المداري", 
+        height=200, 
+        placeholder="أدخل النص هنا... سيقوم النظام باستخراج الجذور وتحليلها فوراً.",
+        key="full_text_input"
+    )
+    
+    if st.button("🚀 تفعيل المفاعل السيادي (v27.5-Hybrid)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
-        for idx, text in enumerate(p_in):
-            if text.strip():
-                clean_text = normalize_sovereign(text)
-                for word in clean_text.split():
-                    root = match_root_logic(word, r_index.keys())
-                    if root:
-                        root_data = r_index.get(root)
-                        if not root_data:
-                            continue
-                        sig = summarize_word_signature(root)
-                        orbit_name = root_data.get("orbit", "وعي")
-                        orbit_raw = root_data.get("orbit_raw", orbit_name)
-                        weight = float(root_data.get("weight", 1.0))
-                        insight = root_data.get("insight", "لا توجد بصيرة مفسّرة لهذا الجذر.")
-                        gene_key = ORBIT_TO_GENE.get(orbit_name, sig['dominant_gene'])
-                        semantic_energy = weight * 1000.0
-                        total_energy = round(semantic_energy + (sig['total_energy'] * 0.15), 2)
-                        active_bodies.append({
-                            "root": root,
-                            "orbit": orbit_name,
-                            "orbit_raw": orbit_raw,
-                            "insight": insight,
-                            "weight": weight,
-                            "meaning": root_data.get("meaning", insight),
-                            "gene": gene_key,
-                            "energy": total_energy,
-                            "x": random.uniform(-10, 10),
-                            "y": random.uniform(-10, 10),
-                            "vx": sig['vector_x'],
-                            "vy": sig['vector_y'],
-                            "color": GENE_STYLE[gene_key]['color']
-                        })
-                        word_pool.append(root)
+        if full_text.strip():
+            clean_text = normalize_sovereign(full_text)
+            words = clean_text.split()
+            
+            for word in words:
+                root = match_root_logic(word, r_index.keys())
+                if root:
+                    root_data = r_index.get(root)
+                    if not root_data:
+                        continue
+                    sig = summarize_word_signature(root)
+                    orbit_name = root_data.get("orbit", "الوعي")
+                    orbit_raw = root_data.get("orbit_raw", orbit_name)
+                    weight = float(root_data.get("weight", 1.0))
+                    insight = root_data.get("insight", "لا توجد بصيرة مفسّرة لهذا الجذر.")
+                    gene_key = ORBIT_TO_GENE.get(orbit_name, sig['dominant_gene'])
+                    semantic_energy = weight * 1000.0
+                    total_energy = round(semantic_energy + (sig['total_energy'] * 0.15), 2)
+                    active_bodies.append({
+                        "root": root,
+                        "orbit": orbit_name,
+                        "orbit_raw": orbit_raw,
+                        "insight": insight,
+                        "weight": weight,
+                        "meaning": root_data.get("meaning", insight),
+                        "gene": gene_key,
+                        "energy": total_energy,
+                        "x": random.uniform(-10, 10),
+                        "y": random.uniform(-10, 10),
+                        "vx": sig['vector_x'],
+                        "vy": sig['vector_y'],
+                        "color": GENE_STYLE[gene_key]['color']
+                    })
+                    word_pool.append(root)
 
         if active_bodies:
             motion_ui = st.empty()
@@ -433,35 +457,33 @@ if state['active']:
     with tabs[3]:
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v26.3.0:</b><br>
-            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق الهندسي التركيبي والوعي الجمعي. 
+            <b>بيان الاستواء الوجودي v27.5-Hybrid:</b><br>
+            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق النصي المتقدم والوعي الجمعي. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
         </div>
         """, unsafe_allow_html=True)
 
-    with tabs[4]:  # ⚖️ الميزان السيادي v26.3.0 - Geometric Insight Engine v3
-        st.markdown("### ⚖️ ميزان النزاهة الجذرية والاستنطاق الهندسي التركيبي")
+    with tabs[4]:  # ⚖️ الميزان السيادي v27.5-Hybrid - Hybrid Insight Engine
+        st.markdown("### ⚖️ ميزان النزاهة الجذرية والاستنطاق الهجين")
         
         if state['active']:
             df_diag = pd.DataFrame(state['bodies'])
             
-            # دالة التشخيص المحدثة - تستخدم generate_geometric_insight_v3
-            def diagnose_insight_v3(row):
+            # دالة التشخيص الهجين - تستخدم البصيرة الهندسية إذا كان النص افتراضياً
+            def diagnose_insight_hybrid(row):
                 root = row['root']
                 actual_data = r_index.get(root, {})
                 raw_insight = str(actual_data.get("insight", "")).strip()
                 
-                # التحقق من النص الافتراضي
-                is_placeholder = len(raw_insight) <= 33 or "لا توجد بصيرة" in raw_insight
-                
-                if is_placeholder:
+                # التحقق من النص الافتراضي باستخدام الدالة المخصصة
+                if is_placeholder_insight(raw_insight):
                     return generate_geometric_insight_v3(root)
                 else:
                     preview = raw_insight[:80] + "..." if len(raw_insight) > 80 else raw_insight
                     return f"✅ (قاعدة البيانات): {preview}"
             
-            df_diag['حالة البيانات'] = df_diag.apply(diagnose_insight_v3, axis=1)
+            df_diag['حالة البيانات'] = df_diag.apply(diagnose_insight_hybrid, axis=1)
             
             # عرض جدول التشخيص
             st.dataframe(
@@ -488,21 +510,13 @@ if state['active']:
             
             st.markdown("---")
             
-            # عرض بصيرة سيد المدار
+            # عرض بصيرة سيد المدار - مع المنطق الهجين
             if not df_diag.empty:
                 top_root = df_diag.iloc[0]['root']
                 top_info = r_index.get(top_root, {})
                 file_insight = str(top_info.get("insight", "")).strip()
                 
-                placeholder_indicators = [
-                    "لا توجد بصيرة مفسّرة",
-                    "لا توجد بصيرة مفسرة",
-                    "لا توجد دلالة موصوفة"
-                ]
-                is_placeholder = any(ind in file_insight for ind in placeholder_indicators)
-                is_default_length = len(file_insight) <= 35
-                
-                if is_placeholder or is_default_length or not file_insight:
+                if is_placeholder_insight(file_insight):
                     geometric_insight = generate_geometric_insight_v3(top_root)
                     st.markdown(f"**🔮 الاستنطاق الهندسي لسيد المدار ({top_root}):**\n\n{geometric_insight}")
                     
@@ -530,8 +544,8 @@ else:
 # --- التذييل السيادي ---
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
-**الحالة:** استواء سيادي - استنطاق هندسي تركيبي - وعي جمعي  
-**الإصدار:** v26.3.0 (Geometric Insight Engine v3 - Collective Consciousness)  
+**الحالة:** استواء سيادي - استنطاق نصي متقدم - وعي جمعي هجين  
+**الإصدار:** v27.5-Hybrid (Hybrid Insight Engine)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
