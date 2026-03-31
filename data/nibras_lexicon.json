@@ -736,9 +736,7 @@
     ]
   },
   {
-    [
-  {
-    "orbit": "الأزل (Sovereign Origin)",
+   "orbit": "الأزل (Sovereign Origin)",
     "roots": [
       {"name": "مجد", "weight": 1.80, "insight": "المجد والعظمة، جلال الأزل"},
       {"name": "ماجد", "weight": 1.82, "insight": "الماجد والمجيد، مجد الأزل"},
