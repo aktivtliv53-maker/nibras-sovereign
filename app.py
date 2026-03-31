@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.6-Final
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.8-Final
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Sovereign Separation Patch - الفصل التام بين الهوية والرقم
+# الإصدار: Precision Calibration - المعايرة الدقيقة لنطاق الأزل (1.7-2.0)
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -98,7 +98,7 @@ def match_root_logic(word, index_keys):
     if not w or len(w) < 2: return None
     if w in index_keys: return w
     
-    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "بال", "وال", "فal"]
+    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "بال", "وال", "فال"]
     suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما", "تم", "هن"]
     
     for p in prefixes:
@@ -115,45 +115,39 @@ def match_root_logic(word, index_keys):
 
 def get_sovereign_gene(root_name, original_weight):
     """
-    بروتوكول الفصل السيادي (The Sovereign Separation Patch)
-    فصل الهوية عن الرقم تماماً - الأولوية القصوى للمصفوفات الصلبة
+    محرك المعايرة الدقيقة لنطاق الأزل (1.7 - 2.0) - v27.8 Precision Calibration
+    إعادة توزيع الأوزان العالية على الأنعام الأربعة وفق عتبات حساسة
     """
-    # 1. تطهير الاسم
     r = normalize_sovereign(root_name).strip()
-    
-    # 2. مصفوفات الهوية الصلبة (Hard-coded Identity)
-    # أضفنا كل مشتقات الرزق هنا لضمان البقر
-    cow_set = ["رزق", "رزاق", "ارض", "ثبت", "زرع", "نبت", "طعم", "بني", "مكث", "كنز", "حيي"]
-    sheep_set = ["يسر", "سلم", "رحم", "لين", "رفق", "امن", "هدي", "نور", "سكن"]
-    camel_set = ["سفر", "صبر", "بعث", "سعي", "جمل", "روح", "وجه", "طلع", "سير"]
-    goat_set = ["علو", "قدر", "قهر", "ملك", "حكم", "امر", "سما", "رفع", "حسم"]
-
-    # 3. القاعدة الذهبية: الهوية فوق الرقم
-    if r in cow_set:
-        return "B", 52.0
-    if r in sheep_set:
-        return "S", 35.0
-    if r in camel_set:
-        return "C", 72.0
-    if r in goat_set:
-        return "G", 95.0
-
-    # 4. معالجة الأوزان الخارجية (Normalization)
-    # إذا لم يكن الجذر في القوائم، نعالج الرقم الضخم
     w = float(original_weight)
-    if w > 100:
-        # تحجيم الرقم الضخم ليقع في نطاق المعز المنطقي
-        normalized_w = 80 + (w % 19)
-        return "G", normalized_w
+
+    # 1. نظام الحوكمة بالهوية (الأولوية القصوى)
+    cow_roots = ["رزق", "رزاق", "ارض", "ثبت", "زرع", "نبت", "طعم", "بني", "مكث", "كنز"]
+    if r in cow_roots:
+        return "B", 55.0
+
+    # 2. إعادة معايرة "العتبات الحرجة" (Critical Thresholds)
+    # نحول الرقم من (1.84) إلى (184) لسهولة الحساب
+    val = w * 100 if w < 10 else w
+
+    # الميزان الجديد المتكيف مع أرقام "الأزل" في معجمك:
+    if val >= 190:
+        return "G", val  # المعز: للقيم الفائقة (حق، حيي، قدوس)
+    if val >= 185:
+        return "C", val  # الإبل: للقيم العالية (قدر، ملك، عظم)
+    if val >= 180:
+        return "B", val  # البقر: للقيم المتوسطة في الأزل (رزاق، غفور، سميع)
+    if val >= 170:
+        return "S", val  # الضأن: للقيم اللطيفة (شكور، تواب، لطيف)
     
-    # التوزيع الطبيعي للأرقام الصغيرة
-    if w > 80:
-        return "G", w
-    if w > 60:
-        return "C", w
-    if w > 40:
-        return "B", w
-    return "S", w
+    # للمدارات الأخرى التي قد تحمل أوزاناً طبيعية
+    if val > 80:
+        return "G", val
+    if val > 60:
+        return "C", val
+    if val > 40:
+        return "B", val
+    return "S", val
 
 def summarize_word_signature(root):
     """تحويل الجذر إلى توقيع جيني ثابت (Deterministic Signature)."""
@@ -195,7 +189,7 @@ def generate_collective_insight(bodies):
     dom_gene = max(set(genes), key=genes.count)
     total_e = sum(b['energy'] for b in bodies)
     
-    header = f"### 🌌 بيان الوعي الجمعي للمدار (v27.6-Final)\n"
+    header = f"### 🌌 بيان الوعي الجمعي للمدار (v27.8-Final)\n"
     analysis = f"هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره **({total_e:.1f})**. يهيمن عليه جين **{GENE_STYLE[dom_gene]['name']}**، مما يوجه التدفق نحو **{GENE_STYLE[dom_gene]['meaning']}**."
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
@@ -221,7 +215,7 @@ def is_placeholder_insight(insight_text):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v27.6-Final", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v27.8-Final", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -311,14 +305,14 @@ def load_semantic_roots_db(path):
             weight_val = float(item.get("weight", 1.0))
             insight_text = item.get("insight", item.get("meaning", ""))
             
-            # استخدام بروتوكول الفصل السيادي
-            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val * 100)
+            # استخدام محرك المعايرة الدقيقة v27.8
+            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val)
             
             record = {
                 "root": root_name,
                 "orbit": orbit_canonical,
                 "orbit_raw": orbit_raw,
-                "weight": calibrated_weight / 100,
+                "weight": calibrated_weight / 100 if calibrated_weight > 10 else calibrated_weight,
                 "insight": insight_text,
                 "meaning": item.get("meaning", insight_text),
                 "gene": gene_key
@@ -357,7 +351,7 @@ with tabs[0]:
         key="full_text_input"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v27.6-Final)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v27.8-Final)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -449,8 +443,8 @@ if state['active']:
     with tabs[3]:
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v27.6-Final:</b><br>
-            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق النصي المتقدم والوعي الجمعي. 
+            <b>بيان الاستواء الوجودي v27.8-Final:</b><br>
+            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام المعايرة الدقيقة لنطاق الأزل. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
         </div>
@@ -531,8 +525,8 @@ else:
 # --- التذييل السيادي ---
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
-**الحالة:** استواء سيادي - استنطاق نصي متقدم - وعي جمعي هجين  
-**الإصدار:** v27.6-Final (Sovereign Separation Patch)  
+**الحالة:** استواء سيادي - معايرة دقيقة لنطاق الأزل  
+**الإصدار:** v27.8-Final (Precision Calibration)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
