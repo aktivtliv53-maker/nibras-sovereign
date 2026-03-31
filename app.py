@@ -23,24 +23,24 @@ import numpy as np
 # [1] مصفوفة الجينات والرموز السيادية (The Absolute Gene Matrix)
 # ==============================================================================
 GENE_STYLE = {
-    'A': {
+    'C': {
         'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 
-        'meaning': 'اليسر والفتح المداري',
+        'meaning': 'طاقة المسير والتمكين البعيد',
         'desc': 'طاقة الانطلاق والمبادرة، تمثل الحركة نحو الفتح المبين واليسر المطلق.'
     },
-    'G': {
+    'B': {
         'name': 'البقر', 'color': '#FFD700', 'icon': '🐄', 
-        'meaning': 'الخير والتأسيس الراسخ',
+        'meaning': 'طاقة التثبيت والوفرة المادية',
         'desc': 'طاقة التجذر والبناء الصبور لحقائق التمكين، تمثل الخير الوفير المستقر.'
     },
-    'T': {
+    'S': {
         'name': 'الضأن', 'color': '#4CAF50', 'icon': '🐑', 
-        'meaning': 'السكينة والمقام الآمن',
+        'meaning': 'طاقة السكينة واللين والرحمة',
         'desc': 'طاقة السكينة والجمع والاحتواء، حيث يستقر المعنى في محراب السيادة.'
     },
-    'C': {
+    'G': {
         'name': 'المعز', 'color': '#ff5252', 'icon': '🐐', 
-        'meaning': 'السمو والتمكين الصاعد',
+        'meaning': 'طاقة السيادة والحدّة والصعود',
         'desc': 'طاقة الارتفاع والحدّة في طلب الحق والسيادة، تمثل قوة الإرادة الصاعدة.'
     },
     'N': {
@@ -113,6 +113,56 @@ def match_root_logic(word, index_keys):
     
     return None
 
+def get_sovereign_gene(root_name, original_weight):
+    """
+    محرك إعادة معايرة الجينات بناءً على الهوية الطاقية للجذر (v27.5-Hybrid)
+    """
+    # 🐪 مصفوفة الإبل (طاقة المسير، الصبر، التمكين البعيد، والارتقاء)
+    camel_set = [
+        "سفر", "صبر", "بعث", "سعي", "جمل", "روح", "وجه", "طلع", "سير", "نشر", 
+        "ارتق", "علا", "ركب", "فلك", "هجر", "جسر", "مدد", "قصد", "سبل", "طرق"
+    ]
+    
+    # 🐄 مصفوفة البقر (طاقة التثبيت، الوفرة المادية، الرزق، والظهور)
+    cow_set = [
+        "رزق", "ارض", "ثبت", "زرع", "نبت", "طعم", "بني", "مكث", "كنز", "مال", 
+        "حيا", "انعم", "فجر", "سقي", "نهر", "جنت", "ثمر", "قوم", "رسي", "خرج"
+    ]
+    
+    # 🐑 مصفوفة الضأن (طاقة السكينة، اللين، الرحمة، واليسر الوجودي)
+    sheep_set = [
+        "يسر", "سلم", "رحم", "لين", "رفق", "امن", "خمد", "هدي", "نور", "ستر", 
+        "غفر", "ودد", "انس", "سكن", "وضع", "خفض", "قرب", "شرح", "طمن", "برد"
+    ]
+    
+    # 🐐 مصفوفة المعز (طاقة السيادة، الحِدّة، الصعود، والأمر القاطع)
+    goat_set = [
+        "علو", "قدر", "قهر", "ملك", "حكم", "امر", "سما", "رفع", "عزز", "سلط", 
+        "نفذ", "قوي", "حق", "فصل", "حسم", "قطع", "شدد", "غلب", "صمد", "وحد"
+    ]
+
+    # --- بروتوكول التعيين والحقن ---
+    r = root_name.strip()
+
+    if r in camel_set:
+        return "C", 75.0  # جين الإبل (تمكين بعيد)
+    if r in cow_set:
+        return "B", 55.0  # جين البقر (ثبات ووفرة)
+    if r in sheep_set:
+        return "S", 35.0  # جين الضأن (سكينة ولين)
+    if r in goat_set:
+        return "G", 95.0  # جين المعز (سيادة مطلقة)
+
+    # المنطق الرقمي التلقائي (Fall-back) إذا لم يوجد الجذر في القوائم
+    w = float(original_weight)
+    if w > 80: 
+        return "G", w
+    if w > 60: 
+        return "C", w
+    if w > 40: 
+        return "B", w
+    return "S", w
+
 def summarize_word_signature(root):
     """تحويل الجذر إلى توقيع جيني ثابت (Deterministic Signature)."""
     if not root: return {'dominant_gene': 'N', 'total_energy': 300.0}
@@ -120,7 +170,7 @@ def summarize_word_signature(root):
     hash_object = hashlib.md5(root.encode())
     hash_val = int(hash_object.hexdigest(), 16)
     
-    genes_list = ['A', 'G', 'T', 'C']
+    genes_list = ['G', 'C', 'B', 'S']
     dominant_gene = genes_list[hash_val % 4]
     
     base_energy = len(root) * 285.0
@@ -158,17 +208,6 @@ def generate_collective_insight(bodies):
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
     return f"{header}{analysis}{narrative}"
-
-def assign_gene_from_weight(weight):
-    """تعيين الجين بناءً على الوزن الدلالي"""
-    if weight >= 1.7:
-        return 'C'
-    elif weight >= 1.4:
-        return 'A'
-    elif weight >= 1.1:
-        return 'G'
-    else:
-        return 'T'
 
 def is_placeholder_insight(insight_text):
     """التحقق مما إذا كانت البصيرة نصاً افتراضياً"""
@@ -268,10 +307,8 @@ def load_semantic_roots_db(path):
     all_roots_flat = []
     orbit_counter = Counter()
 
-    # معالجة الهيكل الجديد (قائمة مدارات تحتوي على جذور)
     for orbit_block in data:
         orbit_raw = orbit_block.get("orbit", "وعي")
-        # تنظيف اسم المدار من الأقواس اللاتينية
         orbit_canonical = orbit_raw.split('(')[0].strip() if '(' in orbit_raw else orbit_raw
         
         for item in orbit_block.get("roots", []):
@@ -282,14 +319,17 @@ def load_semantic_roots_db(path):
             weight_val = float(item.get("weight", 1.0))
             insight_text = item.get("insight", item.get("meaning", ""))
             
+            # استخدام محرك الجينات السيادي
+            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val * 100)
+            
             record = {
                 "root": root_name,
                 "orbit": orbit_canonical,
                 "orbit_raw": orbit_raw,
-                "weight": weight_val,
+                "weight": calibrated_weight / 100,
                 "insight": insight_text,
                 "meaning": item.get("meaning", insight_text),
-                "gene": assign_gene_from_weight(weight_val)
+                "gene": gene_key
             }
             
             r_index[root_name] = record
@@ -318,7 +358,6 @@ with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية - الاستنطاق النصي المتقدم")
     st.markdown("أدخل النص الكامل لتحليله واستنطاق جذوره:")
     
-    # مربع نص واحد كبير
     full_text = st.text_area(
         "النص المداري", 
         height=200, 
@@ -501,7 +540,7 @@ else:
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
 **الحالة:** استواء سيادي - استنطاق نصي متقدم - وعي جمعي هجين  
-**الإصدار:** v27.5-Hybrid (Hybrid Insight Engine)  
+**الإصدار:** v27.5-Hybrid (Sovereign Gene Expansion)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
