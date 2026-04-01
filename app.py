@@ -350,7 +350,7 @@ with tabs[0]:
             words = clean_text.split()
             
             for word in words:
-                root = match_root_logic(word, r_index.keys())
+                root = match_root_logic(word, r_index)
                 if root:
                     root_data = r_index.get(root)
                     if not root_data:
