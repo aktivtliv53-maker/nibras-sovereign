@@ -480,8 +480,84 @@ with tabs[1]:
                     </div>
                 """, unsafe_allow_html=True)
     else:
-        st.info(f"🔍 لم يتم العثور على بيانات للجذر '{target_root}' في قاعدة البيانات. تأكد من وجوده في ملف nibras_lexicon.json")
+        st.info(f"🔍 لم يتم العثور على بيانات للجذر '{target_root}' في قاعدة البيانات")
 
+# ==============================================================================
+# التبويب 5: الوعي الفوقي - مستقل عن حالة المفاعل
+# ==============================================================================
+with tabs[5]:
+    st.header("🧠 الوعي الفوقي والبيان الجمعي")
+    
+    # البحث عن الجذر والمدار التابع له في all_roots
+    target_root = st.session_state.get('active_root', 'أبد').strip()
+    root_data = None
+    orbit_name = None
+    gene_info = None
+    
+    for orbit_item in all_roots:
+        current_roots = orbit_item.get('roots', [])
+        for r in current_roots:
+            if r.get('root', '').strip() == target_root:
+                root_data = r
+                orbit_name = orbit_item.get('orbit', 'مدار غير مسمى')
+                gene_key = r.get('gene', 'N')
+                gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
+                break
+        if root_data:
+            break
+    
+    # إذا لم يتم العثور على الجذر، حاول البحث في all_roots_flat
+    if not root_data:
+        for r in all_roots_flat:
+            if r.get('root', '').strip() == target_root:
+                root_data = r
+                orbit_name = r.get('orbit', 'مدار غير مسمى')
+                gene_key = r.get('gene', 'N')
+                gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
+                break
+    
+    # حساب التردد الطاقي - من الجذور النشطة إذا وجدت
+    total_energy = 0.0
+    
+    if state.get('active') and state.get('bodies'):
+        for body in state.get('bodies', []):
+            total_energy += body.get('energy', 0)
+    elif root_data:
+        # استخدام الوزن من قاعدة البيانات كطاقة افتراضية
+        total_energy = float(root_data.get('weight', 1.0)) * 1000
+    
+    # عرض البيان
+    if root_data and orbit_name:
+        st.markdown(f"""
+        <div class='story-box' style='padding:20px; border:1px solid #333; border-radius:15px; background:#050505;'>
+            <h3 style='margin:0; color:#FFD700;'>🧠 الوعي الفوقي والبيان الجمعي</h3>
+            <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_name})</h4>
+            <p style='color:#ccc;'>هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره <b>({total_energy:.1f})</b>. 
+            يهيمن عليه جين <b>{orbit_name}</b> من خلال رمز <b>{gene_info['icon']} {gene_info['name']}</b>، 
+            مما يوجه التدفق نحو <b>{root_data.get('insight', 'التمكين السيادي')}</b>.</p>
+            <p style='font-size:0.9em; border-top:1px dashed #444; padding-top:10px; color:#888;'>
+            <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{target_root}</b> ليخلق استواءً وجودياً.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # إضافة معلومات عن حالة المفاعل
+        if not state.get('active'):
+            st.info("⚡ المفاعل في حالة انتظار. قم بتفعيل الاستنطاق المداري لرؤية التأثير الفيزيائي للجذر.")
+        elif state.get('active') and len(state.get('bodies', [])) > 0:
+            st.success(f"✅ المفاعل نشط مع {len(state.get('bodies', []))} جذراً مستنطقاً.")
+    else:
+        # إذا لم يتم العثور على الجذر في قاعدة البيانات
+        st.warning(f"🔍 الجذر '{target_root}' غير موجود في قاعدة البيانات.")
+        
+        # عرض قائمة بالجذور المتاحة في قاعدة البيانات كمرجع
+        available_roots = [r.get('root', '') for r in all_roots_flat[:20]]
+        if available_roots:
+            st.caption(f"📚 أمثلة على الجذور المتاحة: {', '.join(available_roots)}...")
+
+# ==============================================================================
+# باقي التبويبات تعتمد على حالة المفاعل
+# ==============================================================================
 if state['active']:
     df_data = pd.DataFrame(state['bodies'])
     
@@ -557,48 +633,8 @@ if state['active']:
             else:
                 st.success(f"**📖 بصيرة سيد المدار (من القاعدة) للجذر ({top_root}):**\n\n{file_insight}")
 
-    with tabs[5]:
-        st.header("🧠 الوعي الفوقي والبيان الجمعي")
-        
-        # البحث عن الجذر والمدار التابع له في all_roots
-        target_root = st.session_state.get('active_root', 'أبد').strip()
-        root_data = None
-        orbit_name = "جين المعز"  # القيمة الافتراضية في حال عدم المطابقة
-        
-        for orbit_item in all_roots:
-            current_roots = orbit_item.get('roots', [])
-            for r in current_roots:
-                if r.get('root', '').strip() == target_root:
-                    root_data = r
-                    orbit_name = orbit_item.get('orbit', 'مدار غير مسمى')
-                    break
-            if root_data:
-                break
-        
-        # حساب التردد الطاقي
-        total_energy = 0.0
-        if state.get('active') and state.get('pool'):
-            for root_name in state.get('pool', []):
-                root_info = r_index.get(root_name, {})
-                total_energy += float(root_info.get('weight', 1.0)) * 1000
-        
-        if root_data:
-            st.markdown(f"""
-            <div class='story-box' style='padding:20px; border:1px solid #333; border-radius:15px; background:#050505;'>
-                <h3 style='margin:0; color:#FFD700;'>🧠 الوعي الفوقي والبيان الجمعي</h3>
-                <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_name})</h4>
-                <p style='color:#ccc;'>هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره (<b>{total_energy:.1f}</b>). 
-                يهيمن عليه جين <b>{orbit_name}</b>، مما يوجه التدفق نحو <b>{root_data.get('insight', 'التمكين السيادي')}</b>.</p>
-                <p style='font-size:0.9em; border-top:1px dashed #444; padding-top:10px; color:#888;'>
-                <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{target_root}</b> ليخلق استواءً وجودياً.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.info(f"🔍 بانتظار استنطاق الجذر '{target_root}' أو لم يتم العثور عليه في قاعدة البيانات.")
-
 else:
-    for i in range(1, 6):
+    for i in range(2, 5):
         with tabs[i]: 
             st.info("المحراب في حالة انتظار... أطلق المفاعل لملء الموازين.")
 
