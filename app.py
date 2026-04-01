@@ -290,27 +290,37 @@ def load_semantic_roots_db(path):
             st.stop()
 
     r_index = {}
-    all_roots_flat = {}
+    all_roots_flat = []
     orbit_counter = Counter()
 
-    for batch in data.values():
-            if isinstance(batch, list):
-                for item in batch:
-                    root_name = item.get("الجذر", item.get("root", ""))
-                    if root_name: all_roots_flat[root_name] = item
-            elif isinstance(batch, dict):
-                all_roots_flat.update(batch)
-
-    r_index = list(all_roots_flat.keys())
-    orbit_counter = len(all_roots_flat)
-    return r_index, all_roots_flat, orbit_counter
-    r_index = list(all_roots_flat.keys())
-    orbit_counter = len(all_roots_flat)
-    return r_index, all_roots_flat, orbit_counter
+    for orbit_block in data:
+        orbit_raw = orbit_block.get("orbit", "وعي")
+        orbit_canonical = orbit_raw.split('(')[0].strip() if '(' in orbit_raw else orbit_raw
+        
+        for item in orbit_block.get("roots", []):
+            root_name = normalize_sovereign(item.get("name", item.get("root", "")))
+            if not root_name:
+                continue
             
-    r_index[root_name] = record
-    all_roots_flat.append(record)
-    orbit_counter[orbit_canonical] += 1
+            weight_val = float(item.get("weight", 1.0))
+            insight_text = item.get("insight", item.get("meaning", ""))
+            
+            # استخدام محرك المعايرة الدقيقة v27.8
+            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val)
+            
+            record = {
+                "root": root_name,
+                "orbit": orbit_canonical,
+                "orbit_raw": orbit_raw,
+                "weight": calibrated_weight / 100 if calibrated_weight > 10 else calibrated_weight,
+                "insight": insight_text,
+                "meaning": item.get("meaning", insight_text),
+                "gene": gene_key
+            }
+            
+            r_index[root_name] = record
+            all_roots_flat.append(record)
+            orbit_counter[orbit_canonical] += 1
     
     return r_index, all_roots_flat, orbit_counter
 
@@ -350,7 +360,7 @@ with tabs[0]:
             words = clean_text.split()
             
             for word in words:
-                root = match_root_logic(word, r_index)
+                root = match_root_logic(word, r_index.keys())
                 if root:
                     root_data = r_index.get(root)
                     if not root_data:
@@ -405,44 +415,20 @@ with tabs[0]:
             }
             st.rerun()
 
-    state = st.session_state.grand_monolith
-    with tabs[1]:
+state = st.session_state.grand_monolith
+
+with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
     cols_genes = st.columns(5)
-    # استخراج الجذر النشط من حالة النظام
-    with tabs[1]:
-        st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
-        
-        # تأكد من أن الأسطر التالية تبدأ بعد 8 مسافات من بداية السطر
-       active_root = state.get('active_root', None)
-       if active_root and active_root in all_roots_flat:
-         root_info = all_roots_flat[active_root]
-            
-            features = {
-                "🌌 المدار": root_info.get("المدار_الثماني", "وعي"),
-                "⚖️ المقام": root_info.get("المقام_السباعي", "تمكين"),
-                "⚡ الطاقة": root_info.get("طاقة_التشاكل", "سريان"),
-                "📍 القرار": root_info.get("نقطة_القرار", "ثبات"),
-                "📜 الخلاصة": root_info.get("الخلاصة_السيادية", "بصيرة")
-            }
-
-            cols_genes = st.columns(len(features))
-            for i, (label, value) in enumerate(features.items()):
-                cols_genes[i].markdown(f"""
-                    <div style='border:1px solid #444; padding:10px; border-radius:10px; text-align:center; background:#111;'>
-                        <p style='color:#888; font-size:0.8em; margin:0;'>{label}</p>
-                        <h4 style='margin:5px 0; color:#ddd;'>{value}</h4>
-                    </div>
-                """, unsafe_allow_html=True)
-
-            cols_genes = st.columns(len(features))
-            for i, (label, value) in enumerate(features.items()):
-                cols_genes[i].markdown(f"""
-                    <div style='border:1px solid #444; padding:10px; border-radius:10px; text-align:center; background:#111;'>
-                        <p style='color:#888; font-size:0.8em; margin:0;'>{label}</p>
-                        <h4 style='margin:5px 0; color:#ddd;'>{value}</h4>
-                    </div>
-                """, unsafe_allow_html=True)
+    for i, (gk, gi) in enumerate(GENE_STYLE.items()):
+        cols_genes[i].markdown(f"""
+        <div class='ultra-card' style='border-top-color:{gi['color']}'>
+            <h2 style='margin:0'>{gi['icon']}</h2>
+            <h3 style='margin:10px 0'>{gi['name']}</h3>
+            <p style='font-size:0.9em; color:#888;'>{gi['meaning']}</p>
+            <small style='display:block; margin-top:10px;'>{gi['desc']}</small>
+        </div>
+        """, unsafe_allow_html=True)
 
 if state['active']:
     df_data = pd.DataFrame(state['bodies'])
