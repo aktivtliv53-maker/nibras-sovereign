@@ -290,7 +290,7 @@ def load_semantic_roots_db(path):
             st.stop()
 
     r_index = {}
-    all_roots_flat = []
+    all_roots_flat = {}
     orbit_counter = Counter()
 
     for batch in data.values():
