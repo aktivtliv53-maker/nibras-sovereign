@@ -305,7 +305,7 @@ def load_semantic_roots_db(path):
     orbit_counter = len(all_roots_flat)
     return r_index, all_roots_flat, orbit_counter
     r_index = list(all_roots_flat.keys())
-        orbit_counter = len(all_roots_flat)
+    orbit_counter = len(all_roots_flat)
     return r_index, all_roots_flat, orbit_counter
             
             r_index[root_name] = record
