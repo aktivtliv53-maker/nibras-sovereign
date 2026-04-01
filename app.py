@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.5-Hybrid
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.8-Final
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Hybrid Insight Engine - الاستنطاق النصي المتقدم + الوعي الجمعي
+# الإصدار: Precision Calibration - المعايرة الدقيقة لنطاق الأزل (1.7-2.0)
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -23,24 +23,24 @@ import numpy as np
 # [1] مصفوفة الجينات والرموز السيادية (The Absolute Gene Matrix)
 # ==============================================================================
 GENE_STYLE = {
-    'A': {
+    'C': {
         'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 
-        'meaning': 'اليسر والفتح المداري',
+        'meaning': 'طاقة المسير والتمكين البعيد',
         'desc': 'طاقة الانطلاق والمبادرة، تمثل الحركة نحو الفتح المبين واليسر المطلق.'
     },
-    'G': {
+    'B': {
         'name': 'البقر', 'color': '#FFD700', 'icon': '🐄', 
-        'meaning': 'الخير والتأسيس الراسخ',
+        'meaning': 'طاقة التثبيت والوفرة المادية',
         'desc': 'طاقة التجذر والبناء الصبور لحقائق التمكين، تمثل الخير الوفير المستقر.'
     },
-    'T': {
+    'S': {
         'name': 'الضأن', 'color': '#4CAF50', 'icon': '🐑', 
-        'meaning': 'السكينة والمقام الآمن',
+        'meaning': 'طاقة السكينة واللين والرحمة',
         'desc': 'طاقة السكينة والجمع والاحتواء، حيث يستقر المعنى في محراب السيادة.'
     },
-    'C': {
+    'G': {
         'name': 'المعز', 'color': '#ff5252', 'icon': '🐐', 
-        'meaning': 'السمو والتمكين الصاعد',
+        'meaning': 'طاقة السيادة والحدّة والصعود',
         'desc': 'طاقة الارتفاع والحدّة في طلب الحق والسيادة، تمثل قوة الإرادة الصاعدة.'
     },
     'N': {
@@ -113,6 +113,42 @@ def match_root_logic(word, index_keys):
     
     return None
 
+def get_sovereign_gene(root_name, original_weight):
+    """
+    محرك المعايرة الدقيقة لنطاق الأزل (1.7 - 2.0) - v27.8 Precision Calibration
+    إعادة توزيع الأوزان العالية على الأنعام الأربعة وفق عتبات حساسة
+    """
+    r = normalize_sovereign(root_name).strip()
+    w = float(original_weight)
+
+    # 1. نظام الحوكمة بالهوية (الأولوية القصوى)
+    cow_roots = ["رزق", "رزاق", "ارض", "ثبت", "زرع", "نبت", "طعم", "بني", "مكث", "كنز"]
+    if r in cow_roots:
+        return "B", 55.0
+
+    # 2. إعادة معايرة "العتبات الحرجة" (Critical Thresholds)
+    # نحول الرقم من (1.84) إلى (184) لسهولة الحساب
+    val = w * 100 if w < 10 else w
+
+    # الميزان الجديد المتكيف مع أرقام "الأزل" في معجمك:
+    if val >= 190:
+        return "G", val  # المعز: للقيم الفائقة (حق، حيي، قدوس)
+    if val >= 185:
+        return "C", val  # الإبل: للقيم العالية (قدر، ملك، عظم)
+    if val >= 180:
+        return "B", val  # البقر: للقيم المتوسطة في الأزل (رزاق، غفور، سميع)
+    if val >= 170:
+        return "S", val  # الضأن: للقيم اللطيفة (شكور، تواب، لطيف)
+    
+    # للمدارات الأخرى التي قد تحمل أوزاناً طبيعية
+    if val > 80:
+        return "G", val
+    if val > 60:
+        return "C", val
+    if val > 40:
+        return "B", val
+    return "S", val
+
 def summarize_word_signature(root):
     """تحويل الجذر إلى توقيع جيني ثابت (Deterministic Signature)."""
     if not root: return {'dominant_gene': 'N', 'total_energy': 300.0}
@@ -120,7 +156,7 @@ def summarize_word_signature(root):
     hash_object = hashlib.md5(root.encode())
     hash_val = int(hash_object.hexdigest(), 16)
     
-    genes_list = ['A', 'G', 'T', 'C']
+    genes_list = ['G', 'C', 'B', 'S']
     dominant_gene = genes_list[hash_val % 4]
     
     base_energy = len(root) * 285.0
@@ -153,22 +189,11 @@ def generate_collective_insight(bodies):
     dom_gene = max(set(genes), key=genes.count)
     total_e = sum(b['energy'] for b in bodies)
     
-    header = f"### 🌌 بيان الوعي الجمعي للمدار (v27.5-Hybrid)\n"
+    header = f"### 🌌 بيان الوعي الجمعي للمدار (v27.8-Final)\n"
     analysis = f"هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره **({total_e:.1f})**. يهيمن عليه جين **{GENE_STYLE[dom_gene]['name']}**، مما يوجه التدفق نحو **{GENE_STYLE[dom_gene]['meaning']}**."
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
     return f"{header}{analysis}{narrative}"
-
-def assign_gene_from_weight(weight):
-    """تعيين الجين بناءً على الوزن الدلالي"""
-    if weight >= 1.7:
-        return 'C'
-    elif weight >= 1.4:
-        return 'A'
-    elif weight >= 1.1:
-        return 'G'
-    else:
-        return 'T'
 
 def is_placeholder_insight(insight_text):
     """التحقق مما إذا كانت البصيرة نصاً افتراضياً"""
@@ -190,7 +215,7 @@ def is_placeholder_insight(insight_text):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v27.5-Hybrid", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v27.8-Final", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -268,10 +293,8 @@ def load_semantic_roots_db(path):
     all_roots_flat = []
     orbit_counter = Counter()
 
-    # معالجة الهيكل الجديد (قائمة مدارات تحتوي على جذور)
     for orbit_block in data:
         orbit_raw = orbit_block.get("orbit", "وعي")
-        # تنظيف اسم المدار من الأقواس اللاتينية
         orbit_canonical = orbit_raw.split('(')[0].strip() if '(' in orbit_raw else orbit_raw
         
         for item in orbit_block.get("roots", []):
@@ -282,14 +305,17 @@ def load_semantic_roots_db(path):
             weight_val = float(item.get("weight", 1.0))
             insight_text = item.get("insight", item.get("meaning", ""))
             
+            # استخدام محرك المعايرة الدقيقة v27.8
+            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val)
+            
             record = {
                 "root": root_name,
                 "orbit": orbit_canonical,
                 "orbit_raw": orbit_raw,
-                "weight": weight_val,
+                "weight": calibrated_weight / 100 if calibrated_weight > 10 else calibrated_weight,
                 "insight": insight_text,
                 "meaning": item.get("meaning", insight_text),
-                "gene": assign_gene_from_weight(weight_val)
+                "gene": gene_key
             }
             
             r_index[root_name] = record
@@ -318,7 +344,6 @@ with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية - الاستنطاق النصي المتقدم")
     st.markdown("أدخل النص الكامل لتحليله واستنطاق جذوره:")
     
-    # مربع نص واحد كبير
     full_text = st.text_area(
         "النص المداري", 
         height=200, 
@@ -326,7 +351,7 @@ with tabs[0]:
         key="full_text_input"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v27.5-Hybrid)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v27.8-Final)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -392,8 +417,13 @@ with tabs[0]:
 
 state = st.session_state.grand_monolith
 
+# ==============================================================================
+# التبويب 1: الرنين الجيني - نسخة ديناميكية تقرأ من ملف JSON
+# ==============================================================================
 with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
+    
+    # عرض بطاقات الأنعام الأربعة
     cols_genes = st.columns(5)
     for i, (gk, gi) in enumerate(GENE_STYLE.items()):
         cols_genes[i].markdown(f"""
@@ -404,41 +434,53 @@ with tabs[1]:
             <small style='display:block; margin-top:10px;'>{gi['desc']}</small>
         </div>
         """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    st.markdown("### 📖 استنطاق الجذر النشط")
+    
+    # جلب الجذر النشط والبحث عنه في قائمة المدارات المحملة
+    active_root_name = st.session_state.get('active_root', 'أبد')
+    
+    # البحث عن بيانات الجذر في r_index
+    root_data = r_index.get(active_root_name, None)
+    
+    if root_data:
+        display_items = [
+            {"icon": "🌌", "label": "المدار الوجودي", "val": root_data.get('meaning', 'جاري الرصد')},
+            {"icon": "⚖️", "label": "المقام السيادي", "val": root_data.get('insight', 'جاري الضبط')}
+        ]
+        c1, c2 = st.columns(2)
+        for i, item in enumerate(display_items):
+            with [c1, c2][i]:
+                st.markdown(f"""
+                    <div style='border:1px solid #444; padding:15px; border-radius:15px; text-align:center; background:#111; min-height:150px;'>
+                        <h2 style='margin:0;'>{item['icon']}</h2>
+                        <p style='color:#888; font-size:0.8em; margin:5px 0;'>{item['label']}</p>
+                        <h4 style='color:#fff; margin:0;'>{item['val']}</h4>
+                    </div>
+                """, unsafe_allow_html=True)
+    else:
+        st.info(f"🔍 لم يتم العثور على بيانات للجذر '{active_root_name}' في قاعدة البيانات")
 
 if state['active']:
     df_data = pd.DataFrame(state['bodies'])
     
     with tabs[2]:
         st.markdown("### 📈 التحليل الكمي للمدار")
-   # جلب بيانات الجذر المختار من الذاكرة
-        active_root = state.get('active_root', 'أبد') 
-        root_data = all_roots_flat.get(active_root, {})
-if root_data:
-            # تحويل البيانات إلى مصفوفة عرض
-            display_items = [
-                {"icon": "🌌", "name": "المدار", "meaning": root_data.get("meaning", "وعي")},
-                {"icon": "⚖️", "name": "المقام", "insight": root_data.get("insight", "تمكين")}
-            ]
-            
-            cols_genes = st.columns(len(display_items))
-for i, item in enumerate(display_items):
-    with cols_genes[i]:
-                    st.markdown(f"""
-                        <div style='border:1px solid #444; padding:10px; border-radius:10px; text-align:center;'>
-                            <h2>{item['icon']}</h2>
-                            <h4>{item['name']}</h4>
-                            <p style='color:#888;'>{item.get('meaning', item.get('insight', ''))}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-            بفضل الله تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق النصي المتقدم والوعي الجمعي. 
-    st.markdown(f"""
-                <div class='story-box'>
-                    <b>v27.5-Hybrid: بيان الاستواء الوجودي</b><br>
-                    بفضل الله تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق النصي المتقدم والوعي الجمعي, 
-                    المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>, 
-                    مما يؤكد مقام الخير واليسر في هذا المدار. كل حرف هنا هو وتد في صرح التمكين.
-                </div>
-            """, unsafe_allow_html=True)
+        cl, cr = st.columns(2)
+        cl.plotly_chart(px.pie(df_data, names='gene', color='gene', color_discrete_map={g:s['color'] for g,s in GENE_STYLE.items()}, hole=0.5, title="توزيع الهيمنة الجينية"))
+        cr.plotly_chart(px.bar(df_data.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g:s['color'] for g,s in GENE_STYLE.items()}, title="تعداد الأجسام المدارية"))
+        st.plotly_chart(px.scatter(df_data, x='root', y='energy', color='gene', size='energy', color_discrete_map={g:s['color'] for g,s in GENE_STYLE.items()}, title="خارطة طاقة الجذور"))
+
+    with tabs[3]:
+        st.markdown(f"""
+        <div class="story-box">
+            <b>بيان الاستواء الوجودي v27.8-Final:</b><br>
+            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام المعايرة الدقيقة لنطاق الأزل. 
+            المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
+            مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
+        </div>
+        """, unsafe_allow_html=True)
 
     with tabs[4]:
         st.markdown("### ⚖️ ميزان النزاهة الجذرية والاستنطاق الهجين")
@@ -515,8 +557,8 @@ else:
 # --- التذييل السيادي ---
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
-**الحالة:** استواء سيادي - استنطاق نصي متقدم - وعي جمعي هجين  
-**الإصدار:** v27.5-Hybrid (Hybrid Insight Engine)  
+**الحالة:** استواء سيادي - معايرة دقيقة لنطاق الأزل  
+**الإصدار:** v27.8-Final (Precision Calibration)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
