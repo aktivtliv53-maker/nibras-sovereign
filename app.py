@@ -301,9 +301,9 @@ def load_semantic_roots_db(path):
             elif isinstance(batch, dict):
                 all_roots_flat.update(batch)
 
-        r_index = list(all_roots_flat.keys())
-        orbit_counter = len(all_roots_flat)
-        return r_index, all_roots_flat, orbit_counter
+    r_index = list(all_roots_flat.keys())
+    orbit_counter = len(all_roots_flat)
+    return r_index, all_roots_flat, orbit_counter
             record = {
                 "root": root_name,
                 "orbit": orbit_canonical,
