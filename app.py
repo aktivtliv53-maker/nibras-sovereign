@@ -405,13 +405,13 @@ with tabs[0]:
             }
             st.rerun()
 
-state = st.session_state.grand_monolith
-with tabs[1]:
+    state = st.session_state.grand_monolith
+    with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
     cols_genes = st.columns(5)
     # استخراج الجذر النشط من حالة النظام
     with tabs[1]:
-    st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
+        st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
         
         # تأكد من أن الأسطر التالية تبدأ بعد 8 مسافات من بداية السطر
        active_root = state.get('active_root', None)
