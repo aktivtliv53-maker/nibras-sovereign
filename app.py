@@ -304,15 +304,9 @@ def load_semantic_roots_db(path):
     r_index = list(all_roots_flat.keys())
     orbit_counter = len(all_roots_flat)
     return r_index, all_roots_flat, orbit_counter
-            record = {
-                "root": root_name,
-                "orbit": orbit_canonical,
-                "orbit_raw": orbit_raw,
-                "weight": calibrated_weight / 100 if calibrated_weight > 10 else calibrated_weight,
-                "insight": insight_text,
-                "meaning": item.get("meaning", insight_text),
-                "gene": gene_key
-            }
+    r_index = list(all_roots_flat.keys())
+        orbit_counter = len(all_roots_flat)
+    return r_index, all_roots_flat, orbit_counter
             
             r_index[root_name] = record
             all_roots_flat.append(record)
