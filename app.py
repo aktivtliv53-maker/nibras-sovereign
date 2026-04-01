@@ -411,7 +411,7 @@ with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
     cols_genes = st.columns(5)
     # استخراج الجذر النشط من حالة النظام
-        active_root = state.get('active_root', None)
+      active_root = state.get('active_root', None)
         if active_root and active_root in all_roots_flat:
             root_info = all_roots_flat[active_root]
             
