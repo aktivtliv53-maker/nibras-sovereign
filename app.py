@@ -422,7 +422,7 @@ if root_data:
             
             cols_genes = st.columns(len(display_items))
             for i, item in enumerate(display_items):
-    with cols_genes[1]:
+    with cols_genes[i]:
                     st.markdown(f"""
                         <div style='border:1px solid #444; padding:10px; border-radius:10px; text-align:center;'>
                             <h2>{item['icon']}</h2>
