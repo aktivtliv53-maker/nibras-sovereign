@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.8-Final
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.9-Final
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
 # الإصدار: Precision Calibration - المعايرة الدقيقة لنطاق الأزل (1.7-2.0)
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
@@ -215,7 +215,7 @@ def is_placeholder_insight(insight_text):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v27.8-Final", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v27.9-Final", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -351,7 +351,7 @@ with tabs[0]:
         key="full_text_input"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v27.8-Final)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v27.9-Final)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -475,7 +475,7 @@ if state['active']:
     with tabs[3]:
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v27.8-Final:</b><br>
+            <b>بيان الاستواء الوجودي v27.9-Final:</b><br>
             بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام المعايرة الدقيقة لنطاق الأزل. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
@@ -544,9 +544,32 @@ if state['active']:
     with tabs[5]:
         st.header("🧠 الوعي الفوقي والبيان الجمعي")
         
-        if state['active']:
-            collective_insight = generate_collective_insight(state['bodies'])
-            st.markdown(collective_insight)
+        # البحث عن الجذر والمدار التابع له في all_roots
+        active_root_name = st.session_state.get('active_root', 'أبد')
+        root_data = None
+        orbit_name = "غير معرف"
+
+        for orbit_item in all_roots_flat:
+            if orbit_item.get('root') == active_root_name:
+                root_data = orbit_item
+                orbit_name = orbit_item.get('orbit', 'مدار غير مسمى')
+                break
+
+        # حساب التردد الطاقي
+        total_energy = sum([float(r.get('weight', 1.0)) for r in all_roots_flat if r.get('root') in state.get('pool', [])])
+        
+        if root_data:
+            st.markdown(f"""
+            <div class='story-box' style='padding:20px; border:1px solid #333; border-radius:15px; background:#050505;'>
+                <h3 style='margin:0; color:#FFD700;'>🧠 الوعي الفوقي والبيان الجمعي</h3>
+                <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_name})</h4>
+                <p style='color:#ccc;'>هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره (<b>{total_energy:.1f}</b>). 
+                يهيمن عليه جين <b>{orbit_name}</b>، مما يوجه التدفق نحو <b>{root_data.get('insight', 'التمكين السيادي')}</b>.</p>
+                <p style='font-size:0.9em; border-top:1px dashed #444; padding-top:10px; color:#888;'>
+                <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{active_root_name}</b> ليخلق استواءً وجودياً.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
             st.info("بانتظار اكتمال المدار لتوليد الوعي الجمعي.")
 
@@ -558,7 +581,7 @@ else:
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
 **الحالة:** استواء سيادي - معايرة دقيقة لنطاق الأزل  
-**الإصدار:** v27.8-Final (Precision Calibration)  
+**الإصدار:** v27.9-Final (Precision Calibration - Dynamic Collective Insight)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
