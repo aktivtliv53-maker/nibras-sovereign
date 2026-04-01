@@ -410,15 +410,26 @@ if state['active']:
     
     with tabs[2]:
         st.markdown("### 📈 التحليل الكمي للمدار")
-        cl, cr = st.columns(2)
-        cl.plotly_chart(px.pie(df_data, names='gene', color='gene', color_discrete_map={g:s['color'] for g,s in GENE_STYLE.items()}, hole=0.5, title="توزيع الهيمنة الجينية"))
-        cr.plotly_chart(px.bar(df_data.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g:s['color'] for g,s in GENE_STYLE.items()}, title="تعداد الأجسام المدارية"))
-        st.plotly_chart(px.scatter(df_data, x='root', y='energy', color='gene', size='energy', color_discrete_map={g:s['color'] for g,s in GENE_STYLE.items()}, title="خارطة طاقة الجذور"))
-
-    with tabs[3]:
-        st.markdown(f"""
-        <div class="story-box">
-            <b>بيان الاستواء الوجودي v27.5-Hybrid:</b><br>
+   # جلب بيانات الجذر المختار من الذاكرة
+        active_root = state.get('active_root', 'أبد') 
+        root_data = all_roots_flat.get(active_root, {})
+if root_data:
+            # تحويل البيانات إلى مصفوفة عرض
+            display_items = [
+                {"icon": "🌌", "name": "المدار", "meaning": root_data.get("meaning", "وعي")},
+                {"icon": "⚖️", "name": "المقام", "insight": root_data.get("insight", "تمكين")}
+            ]
+            
+            cols_genes = st.columns(len(display_items))
+            for i, item in enumerate(display_items):
+    with cols_genes[i]:
+                    st.markdown(f"""
+                        <div style='border:1px solid #444; padding:10px; border-radius:10px; text-align:center;'>
+                            <h2>{item['icon']}</h2>
+                            <h4>{item['name']}</h4>
+                            <p style='color:#888;'>{item.get('meaning', item.get('insight', ''))}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
             بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق النصي المتقدم والوعي الجمعي. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
