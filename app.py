@@ -411,11 +411,14 @@ with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
     cols_genes = st.columns(5)
     # استخراج الجذر النشط من حالة النظام
+       with tabs[1]:
+    st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
+        
+        # تأكد من أن الأسطر التالية تبدأ بعد 8 مسافات من بداية السطر
        active_root = state.get('active_root', None)
-        if active_root and active_root in all_roots_flat:
-            root_info = all_roots_flat[active_root]
+       if active_root and active_root in all_roots_flat:
+         root_info = all_roots_flat[active_root]
             
-            # ملامح الهندسة الجديدة (توافق الـ JSON)
             features = {
                 "🌌 المدار": root_info.get("المدار_الثماني", "وعي"),
                 "⚖️ المقام": root_info.get("المقام_السباعي", "تمكين"),
@@ -423,6 +426,15 @@ with tabs[1]:
                 "📍 القرار": root_info.get("نقطة_القرار", "ثبات"),
                 "📜 الخلاصة": root_info.get("الخلاصة_السيادية", "بصيرة")
             }
+
+            cols_genes = st.columns(len(features))
+            for i, (label, value) in enumerate(features.items()):
+                cols_genes[i].markdown(f"""
+                    <div style='border:1px solid #444; padding:10px; border-radius:10px; text-align:center; background:#111;'>
+                        <p style='color:#888; font-size:0.8em; margin:0;'>{label}</p>
+                        <h4 style='margin:5px 0; color:#ddd;'>{value}</h4>
+                    </div>
+                """, unsafe_allow_html=True)
 
             cols_genes = st.columns(len(features))
             for i, (label, value) in enumerate(features.items()):
