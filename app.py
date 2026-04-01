@@ -406,7 +406,6 @@ with tabs[0]:
             st.rerun()
 
 state = st.session_state.grand_monolith
-
 with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
     cols_genes = st.columns(5)
