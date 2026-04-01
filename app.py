@@ -276,6 +276,22 @@ if 'grand_monolith' not in st.session_state:
 # مسار الملف - هيكل المدارات
 roots_path = "data/nibras_lexicon.json"
 
+# ==============================================================================
+# التأكد من تحميل البيانات في حالة الجلسة
+# ==============================================================================
+if 'all_roots_data' not in st.session_state or not st.session_state['all_roots_data']:
+    try:
+        with open(roots_path, 'r', encoding='utf-8') as f:
+            st.session_state['all_roots_data'] = json.load(f)
+    except FileNotFoundError:
+        st.error(f"⚠️ الملف غير موجود: {roots_path}")
+        st.stop()
+    except json.JSONDecodeError as e:
+        st.error(f"❌ خطأ في بنية ملف JSON: {e}")
+        st.stop()
+
+all_roots_data = st.session_state['all_roots_data']
+
 def load_semantic_roots_db(path):
     """تحميل قاعدة الجذور من هيكل المدارات (Orbit-based Structure)"""
     if not os.path.exists(path):
@@ -449,25 +465,31 @@ with tabs[1]:
     st.markdown("---")
     st.markdown("### 📖 استنطاق الجذر النشط")
     
-    # البحث عن الجذر والمدار التابع له في all_roots
+    # البحث عن الجذر والمدار التابع له في all_roots_data
     target_root = st.session_state.get('active_root', 'أبد').strip()
-    root_data = None
-    orbit_name = "جين المعز"  # القيمة الافتراضية في حال عدم المطابقة
+    root_found = None
+    orbit_found = "مدار الوعي العام"
     
-    for orbit_item in all_roots:
-        current_roots = orbit_item.get('roots', [])
-        for r in current_roots:
-            if r.get('root', '').strip() == target_root:
-                root_data = r
-                orbit_name = orbit_item.get('orbit', 'مدار غير مسمى')
+    if target_root:
+        for orbit_item in all_roots_data:
+            for r in orbit_item.get('roots', []):
+                # مطابقة دقيقة بعد تنظيف المسافات
+                if r.get('name', '').strip() == target_root:
+                    root_found = r
+                    orbit_found = orbit_item.get('orbit', 'مدار السيادة')
+                    break
+            if root_found:
                 break
-        if root_data:
-            break
     
-    if root_data:
+    # كود تصحيح يظهر فقط إذا فشل البحث (للديبيجر)
+    if not root_found and target_root:
+        st.warning(f"⚠️ تنبيه: لم يتم رصد {target_root} في الـ {len(all_roots_data)} مدارات المتاحة.")
+        st.info(f"📚 الجذور المتاحة في قاعدة البيانات: {', '.join([r.get('name', '') for orbit in all_roots_data for r in orbit.get('roots', [])][:20])}...")
+    
+    if root_found:
         display_items = [
-            {"icon": "🌌", "label": "المدار الوجودي", "val": root_data.get('meaning', 'جاري الرصد')},
-            {"icon": "⚖️", "label": "المقام السيادي", "val": root_data.get('insight', 'جاري الضبط')}
+            {"icon": "🌌", "label": "المدار الوجودي", "val": root_found.get('meaning', 'جاري الرصد')},
+            {"icon": "⚖️", "label": "المقام السيادي", "val": root_found.get('insight', 'جاري الضبط')}
         ]
         c1, c2 = st.columns(2)
         for i, item in enumerate(display_items):
@@ -488,33 +510,29 @@ with tabs[1]:
 with tabs[5]:
     st.header("🧠 الوعي الفوقي والبيان الجمعي")
     
-    # البحث عن الجذر والمدار التابع له في all_roots
+    # البحث عن الجذر والمدار التابع له في all_roots_data
     target_root = st.session_state.get('active_root', 'أبد').strip()
-    root_data = None
-    orbit_name = None
+    root_found = None
+    orbit_found = "مدار الوعي العام"
     gene_info = None
     
-    for orbit_item in all_roots:
-        current_roots = orbit_item.get('roots', [])
-        for r in current_roots:
-            if r.get('root', '').strip() == target_root:
-                root_data = r
-                orbit_name = orbit_item.get('orbit', 'مدار غير مسمى')
-                gene_key = r.get('gene', 'N')
-                gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
+    if target_root:
+        for orbit_item in all_roots_data:
+            for r in orbit_item.get('roots', []):
+                # مطابقة دقيقة بعد تنظيف المسافات
+                if r.get('name', '').strip() == target_root:
+                    root_found = r
+                    orbit_found = orbit_item.get('orbit', 'مدار السيادة')
+                    gene_key = r.get('gene', 'N')
+                    gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
+                    break
+            if root_found:
                 break
-        if root_data:
-            break
     
-    # إذا لم يتم العثور على الجذر، حاول البحث في all_roots_flat
-    if not root_data:
-        for r in all_roots_flat:
-            if r.get('root', '').strip() == target_root:
-                root_data = r
-                orbit_name = r.get('orbit', 'مدار غير مسمى')
-                gene_key = r.get('gene', 'N')
-                gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
-                break
+    # كود تصحيح يظهر فقط إذا فشل البحث (للديبيجر)
+    if not root_found and target_root:
+        st.warning(f"⚠️ تنبيه: لم يتم رصد {target_root} في الـ {len(all_roots_data)} مدارات المتاحة.")
+        st.info(f"📚 الجذور المتاحة في قاعدة البيانات: {', '.join([r.get('name', '') for orbit in all_roots_data for r in orbit.get('roots', [])][:20])}...")
     
     # حساب التردد الطاقي - من الجذور النشطة إذا وجدت
     total_energy = 0.0
@@ -522,19 +540,19 @@ with tabs[5]:
     if state.get('active') and state.get('bodies'):
         for body in state.get('bodies', []):
             total_energy += body.get('energy', 0)
-    elif root_data:
+    elif root_found:
         # استخدام الوزن من قاعدة البيانات كطاقة افتراضية
-        total_energy = float(root_data.get('weight', 1.0)) * 1000
+        total_energy = float(root_found.get('weight', 1.0)) * 1000
     
     # عرض البيان
-    if root_data and orbit_name:
+    if root_found and orbit_found:
         st.markdown(f"""
         <div class='story-box' style='padding:20px; border:1px solid #333; border-radius:15px; background:#050505;'>
             <h3 style='margin:0; color:#FFD700;'>🧠 الوعي الفوقي والبيان الجمعي</h3>
-            <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_name})</h4>
+            <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_found})</h4>
             <p style='color:#ccc;'>هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره <b>({total_energy:.1f})</b>. 
-            يهيمن عليه جين <b>{orbit_name}</b> من خلال رمز <b>{gene_info['icon']} {gene_info['name']}</b>، 
-            مما يوجه التدفق نحو <b>{root_data.get('insight', 'التمكين السيادي')}</b>.</p>
+            يهيمن عليه جين <b>{orbit_found}</b> من خلال رمز <b>{gene_info['icon']} {gene_info['name']}</b>، 
+            مما يوجه التدفق نحو <b>{root_found.get('insight', 'التمكين السيادي')}</b>.</p>
             <p style='font-size:0.9em; border-top:1px dashed #444; padding-top:10px; color:#888;'>
             <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{target_root}</b> ليخلق استواءً وجودياً.
             </p>
@@ -547,13 +565,7 @@ with tabs[5]:
         elif state.get('active') and len(state.get('bodies', [])) > 0:
             st.success(f"✅ المفاعل نشط مع {len(state.get('bodies', []))} جذراً مستنطقاً.")
     else:
-        # إذا لم يتم العثور على الجذر في قاعدة البيانات
-        st.warning(f"🔍 الجذر '{target_root}' غير موجود في قاعدة البيانات.")
-        
-        # عرض قائمة بالجذور المتاحة في قاعدة البيانات كمرجع
-        available_roots = [r.get('root', '') for r in all_roots_flat[:20]]
-        if available_roots:
-            st.caption(f"📚 أمثلة على الجذور المتاحة: {', '.join(available_roots)}...")
+        st.info(f"🔍 بانتظار استنطاق الجذر '{target_root}'")
 
 # ==============================================================================
 # باقي التبويبات تعتمد على حالة المفاعل
