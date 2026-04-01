@@ -293,21 +293,17 @@ def load_semantic_roots_db(path):
     all_roots_flat = []
     orbit_counter = Counter()
 
-    for orbit_block in data:
-        orbit_raw = orbit_block.get("orbit", "وعي")
-        orbit_canonical = orbit_raw.split('(')[0].strip() if '(' in orbit_raw else orbit_raw
-        
-        for item in orbit_block.get("roots", []):
-            root_name = normalize_sovereign(item.get("name", item.get("root", "")))
-            if not root_name:
-                continue
-            
-            weight_val = float(item.get("weight", 1.0))
-            insight_text = item.get("insight", item.get("meaning", ""))
-            
-            # استخدام محرك المعايرة الدقيقة v27.8
-            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val)
-            
+    for batch in data.values():
+            if isinstance(batch, list):
+                for item in batch:
+                    root_name = item.get("الجذر", item.get("root", ""))
+                    if root_name: all_roots_flat[root_name] = item
+            elif isinstance(batch, dict):
+                all_roots_flat.update(batch)
+
+        r_index = list(all_roots_flat.keys())
+        orbit_counter = len(all_roots_flat)
+        return r_index, all_roots_flat, orbit_counter
             record = {
                 "root": root_name,
                 "orbit": orbit_canonical,
