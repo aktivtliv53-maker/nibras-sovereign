@@ -410,15 +410,28 @@ state = st.session_state.grand_monolith
 with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
     cols_genes = st.columns(5)
-    for i, (gk, gi) in enumerate(GENE_STYLE.items()):
-        cols_genes[i].markdown(f"""
-        <div class='ultra-card' style='border-top-color:{gi['color']}'>
-            <h2 style='margin:0'>{gi['icon']}</h2>
-            <h3 style='margin:10px 0'>{gi['name']}</h3>
-            <p style='font-size:0.9em; color:#888;'>{gi['meaning']}</p>
-            <small style='display:block; margin-top:10px;'>{gi['desc']}</small>
-        </div>
-        """, unsafe_allow_html=True)
+    # استخراج الجذر النشط من حالة النظام
+        active_root = state.get('active_root', None)
+        if active_root and active_root in all_roots_flat:
+            root_info = all_roots_flat[active_root]
+            
+            # ملامح الهندسة الجديدة (توافق الـ JSON)
+            features = {
+                "🌌 المدار": root_info.get("المدار_الثماني", "وعي"),
+                "⚖️ المقام": root_info.get("المقام_السباعي", "تمكين"),
+                "⚡ الطاقة": root_info.get("طاقة_التشاكل", "سريان"),
+                "📍 القرار": root_info.get("نقطة_القرار", "ثبات"),
+                "📜 الخلاصة": root_info.get("الخلاصة_السيادية", "بصيرة")
+            }
+
+            cols_genes = st.columns(len(features))
+            for i, (label, value) in enumerate(features.items()):
+                cols_genes[i].markdown(f"""
+                    <div style='border:1px solid #444; padding:10px; border-radius:10px; text-align:center; background:#111;'>
+                        <p style='color:#888; font-size:0.8em; margin:0;'>{label}</p>
+                        <h4 style='margin:5px 0; color:#ddd;'>{value}</h4>
+                    </div>
+                """, unsafe_allow_html=True)
 
 if state['active']:
     df_data = pd.DataFrame(state['bodies'])
