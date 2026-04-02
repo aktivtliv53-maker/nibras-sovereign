@@ -1177,5 +1177,356 @@
     "bio_link": "Ease",
     "structural_analysis": "الياء: انسياب. السين: سيولة. الراء: تدفق.",
     "insight_radar": "اليسر هو انسياب السكينة في مدار الجمع."
+ },
+  {
+    "root": "باء",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "Return Signal",
+    "structural_analysis": "الباء: وعاء. الألف: امتداد. الياء: عودة.",
+    "insight_radar": "البوء هو العودة إلى الأصل، مدار العود الذي يحقق التوازن."
+  },
+  {
+    "root": "بأر",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Well Spring",
+    "structural_analysis": "الباء: وعاء. الهمزة: انطلاق. الراء: تدفق.",
+    "insight_radar": "البئر هو مصدر التمكين الذي يغذي الجذور بالماء في يسر."
+  },
+  {
+    "root": "بأس",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Might",
+    "structural_analysis": "الباء: قوة. الهمزة: انطلاق. السين: شدة.",
+    "insight_radar": "البأس هو حركة القوة التي تدفع للتمكين."
+  },
+  {
+    "root": "بتر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Cut",
+    "structural_analysis": "الباء: قطع. التاء: تمام. الراء: تدفق.",
+    "insight_radar": "البتر هو حركة القطع التي تسبق النماء الجديد."
+  },
+  {
+    "root": "بث",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Spread",
+    "structural_analysis": "الباء: انبساط. الثاء: انتشار.",
+    "insight_radar": "البث هو حركة النشر التي تطلق الخير في كل اتجاه."
+  },
+  {
+    "root": "بخر",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Evaporate",
+    "structural_analysis": "الباء: ارتفاع. الخاء: خفاء. الراء: تدفق.",
+    "insight_radar": "البخر هو صعود الماء إلى مدار السماء."
+  },
+  {
+    "root": "بدأ",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Initiation",
+    "structural_analysis": "الباء: بداية. الدال: استمرار. الألف: امتداد.",
+    "insight_radar": "البدء هو نقطة انطلاق الذات في الوجود."
+  },
+  {
+    "root": "بدد",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Disperse",
+    "structural_analysis": "الباء: تفريق. الدال: استمرار. الدال: تكثيف.",
+    "insight_radar": "التبديد هو حركة النشر التي توزع الخير."
+  },
+  {
+    "root": "بذر",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Seed",
+    "structural_analysis": "الباء: بذرة. الذال: تميز. الراء: تدفق.",
+    "insight_radar": "البذر هو أصل التمكين الذي ينمو في الأرض."
+  },
+  {
+    "root": "بر",
+    "orbit_id": 3,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "AUG",
+    "structural_analysis": "الباء: احتواء. الراء: تدفق خيري.",
+    "insight_radar": "البر هو الإمداد الأرضي الذي يفيض خيراً."
+  },
+  {
+    "root": "برأ",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "De Novo Creation",
+    "structural_analysis": "الباء: بدء. الراء: تدفق. الهمزة: انطلاق.",
+    "insight_radar": "البراءة هي إبداع الذات من العدم."
+  },
+  {
+    "root": "برح",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Leave",
+    "structural_analysis": "الباء: انتقال. الراء: تدفق. الحاء: حركة.",
+    "insight_radar": "البرح هو حركة الرحيل التي تفتح آفاقاً جديدة."
+  },
+  {
+    "root": "برك",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Blessing",
+    "structural_analysis": "الباء: بركة. الراء: تدفق. الكاف: كف.",
+    "insight_radar": "البركة هي سكينة الوفرة التي تحتوي الخير."
+  },
+  {
+    "root": "بره",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Evidence",
+    "structural_analysis": "الباء: برهان. الراء: دليل. الهاء: وضوح.",
+    "insight_radar": "البرهان هو صعود الحجة إلى مدار اليقين."
+  },
+  {
+    "root": "بزغ",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Emerge",
+    "structural_analysis": "الباء: انبثاق. الزاي: اهتزاز. الغين: ظهور.",
+    "insight_radar": "البزغ هو صعود النور في مدار الشروق."
+  },
+  {
+    "root": "بصل",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Onion",
+    "structural_analysis": "الباء: بصلة. الصاد: طبقات. اللام: احتواء.",
+    "insight_radar": "البصل هو زاد التمكين الذي يقوي الجذور."
+  },
+  {
+    "root": "بشر",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Epigenome",
+    "structural_analysis": "الباء: احتواء. الشين: انتشار. الراء: تدفق.",
+    "insight_radar": "البشر هو الوعاء الجامع للظهور الإلهي."
+  },
+  {
+    "root": "بصر",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Vision",
+    "structural_analysis": "الباء: وعاء. الصاد: صلابة. الراء: تدفق بصري.",
+    "insight_radar": "البصر هو شمول الوعي لما يظهر."
+  },
+  {
+    "root": "بضع",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Piece",
+    "structural_analysis": "الباء: جزء. الضاد: احتواء. العين: عمق.",
+    "insight_radar": "البضع هو قطعة التمكين التي تنمو."
+  },
+  {
+    "root": "بطن",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Endoderm",
+    "structural_analysis": "الباء: احتواء. الطاء: انبساط. النون: استقرار.",
+    "insight_radar": "البطن هو وعاء السكينة الذي يحتوي الجوهر."
+  },
+  {
+    "root": "بعد",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Distance",
+    "structural_analysis": "الباء: بعد. العين: عمق. الدال: استمرار.",
+    "insight_radar": "البعد هو امتداد الوعي في الأفق."
+  },
+  {
+    "root": "بغض",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Detest",
+    "structural_analysis": "الباء: انصراف. الغين: غيب. الضاد: احتواء.",
+    "insight_radar": "البغض هو حركة الوعي التي تتحول إلى محبة."
+  },
+  {
+    "root": "بغى",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Seek",
+    "structural_analysis": "الباء: طلب. الغين: غيب. الياء: امتداد.",
+    "insight_radar": "البغي هو حركة الطلب التي تصل إلى المراد."
+  },
+  {
+    "root": "بقر",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Plowing",
+    "structural_analysis": "الباء: قاعدة. القاف: شق. الراء: تدفق.",
+    "insight_radar": "البقر هو شق الأرض لتنبت، التمكين الذي يمهد للجذور."
+  },
+  {
+    "root": "بكر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Firstborn",
+    "structural_analysis": "الباء: بداية. الكاف: كف. الراء: تدفق.",
+    "insight_radar": "البكر هو أول الذات التي تظهر في الوجود."
+  },
+  {
+    "root": "بكم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Muteness",
+    "structural_analysis": "الباء: سكون. الكاف: كف. الميم: احتواء.",
+    "insight_radar": "البكم هو سكينة الصمت التي تسبق النطق."
+  },
+  {
+    "root": "بل",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Transition",
+    "structural_analysis": "الباء: انعطاف. اللام: امتداد.",
+    "insight_radar": "بل هو صعود الوعي إلى مدار الاستدراك."
+  },
+  {
+    "root": "بلغ",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Reach",
+    "structural_analysis": "الباء: بلوغ. اللام: امتداد. الغين: غاية.",
+    "insight_radar": "البلوغ هو صعود الوعي إلى مدار الوصول."
+  },
+  {
+    "root": "بلل",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Moisture",
+    "structural_analysis": "الباء: رطوبة. اللام: لين. اللام: تكثيف.",
+    "insight_radar": "البلل هو إمداد التمكين بالندى."
+  },
+  {
+    "root": "بلي",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Trial",
+    "structural_analysis": "الباء: اختبار. اللام: امتداد. الياء: تمام.",
+    "insight_radar": "البلى هو مدار العود الذي يصقل الجوهر بالتجربة."
+  },
+  {
+    "root": "بنت",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Daughter",
+    "structural_analysis": "الباء: فرع. النون: نماء. التاء: تمام.",
+    "insight_radar": "البنت هي ثمرة التمكين التي تنمو."
+  },
+  {
+    "root": "بني",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Scaffold",
+    "structural_analysis": "الباء: قاعدة. النون: استقرار. الياء: امتداد.",
+    "insight_radar": "البناء هو رفع القواعد من الأرض إلى السماء."
+  },
+  {
+    "root": "بهت",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Astonishment",
+    "structural_analysis": "الباء: دهشة. الهاء: هبوط. التاء: تمام.",
+    "insight_radar": "البهت هو حركة الوعي التي تذهل للتعلم."
+  },
+  {
+    "root": "بهر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Overwhelm",
+    "structural_analysis": "الباء: سعة. الهاء: إحاطة. الراء: تدفق.",
+    "insight_radar": "البهر هو صعود الوعي إلى مدار الإدهاش."
+  },
+  {
+    "root": "بهم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Obscurity",
+    "structural_analysis": "الباء: خفاء. الهاء: استتار. الميم: إحاطة.",
+    "insight_radar": "البهم هو سكينة الغموض الذي يسبق الوضوح."
+  },
+  {
+    "root": "بؤس",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Hardship",
+    "structural_analysis": "الباء: ضيق. الهمزة: انطلاق. السين: سيولة.",
+    "insight_radar": "البؤس هو مدار العود الذي يتحول إلى يسر."
+  },
+  {
+    "root": "بور",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Fallow",
+    "structural_analysis": "الباء: أرض. الواو: سكون. الراء: استراحة.",
+    "insight_radar": "البور هو فترة راحة التمكين التي تسبق الخصب."
+  },
+  {
+    "root": "بيت",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Home",
+    "structural_analysis": "الباء: وعاء. الياء: إيواء. التاء: تمام.",
+    "insight_radar": "البيت هو سكينة الاحتواء التي تجمع الأهل."
+  },
+  {
+    "root": "بيض",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Egg",
+    "structural_analysis": "الباء: بداية. الياء: حياة. الضاد: احتواء.",
+    "insight_radar": "البيض هو مدار الذات الذي يحتوي الحياة الجديدة."
   }
 ]
