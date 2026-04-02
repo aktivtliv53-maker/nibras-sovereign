@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v28.0
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v28.1
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
 # الإصدار: Dynamic Activation - الإحلال الكامل لفك التجمد المنطقي
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
@@ -115,7 +115,7 @@ def match_root_logic(word, index_keys):
 
 def get_sovereign_gene(root_name, original_weight):
     """
-    محرك المعايرة الدقيقة لنطاق الأزل (1.7 - 2.0) - v28.0 Dynamic Activation
+    محرك المعايرة الدقيقة لنطاق الأزل (1.7 - 2.0) - v28.1 Dynamic Activation
     إعادة توزيع الأوزان العالية على الأنعام الأربعة وفق عتبات حساسة
     """
     r = normalize_sovereign(root_name).strip()
@@ -127,20 +127,17 @@ def get_sovereign_gene(root_name, original_weight):
         return "B", 55.0
 
     # 2. إعادة معايرة "العتبات الحرجة" (Critical Thresholds)
-    # نحول الرقم من (1.84) إلى (184) لسهولة الحساب
     val = w * 100 if w < 10 else w
 
-    # الميزان الجديد المتكيف مع أرقام "الأزل" في معجمك:
     if val >= 190:
-        return "G", val  # المعز: للقيم الفائقة (حق، حيي، قدوس)
+        return "G", val
     if val >= 185:
-        return "C", val  # الإبل: للقيم العالية (قدر، ملك، عظم)
+        return "C", val
     if val >= 180:
-        return "B", val  # البقر: للقيم المتوسطة في الأزل (رزاق، غفور، سميع)
+        return "B", val
     if val >= 170:
-        return "S", val  # الضأن: للقيم اللطيفة (شكور، تواب، لطيف)
+        return "S", val
     
-    # للمدارات الأخرى التي قد تحمل أوزاناً طبيعية
     if val > 80:
         return "G", val
     if val > 60:
@@ -189,7 +186,7 @@ def generate_collective_insight(bodies):
     dom_gene = max(set(genes), key=genes.count)
     total_e = sum(b['energy'] for b in bodies)
     
-    header = f"### 🌌 بيان الوعي الجمعي للمدار (v28.0)\n"
+    header = f"### 🌌 بيان الوعي الجمعي للمدار (v28.1)\n"
     analysis = f"هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره **({total_e:.1f})**. يهيمن عليه جين **{GENE_STYLE[dom_gene]['name']}**، مما يوجه التدفق نحو **{GENE_STYLE[dom_gene]['meaning']}**."
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
@@ -215,7 +212,7 @@ def is_placeholder_insight(insight_text):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v28.0", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v28.1", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -375,7 +372,7 @@ with tabs[0]:
         key="full_text_input"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v28.0)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v28.1)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -461,8 +458,12 @@ with tabs[1]:
     st.markdown("---")
     st.markdown("### 📖 استنطاق الجذر النشط")
     
-    # المنطق الديناميكي - يقرأ أول جذر مستنطق أو يبدأ بـ 'أحد'
-    target_root = state['pool'][0] if state.get('active') and state.get('pool') else 'أحد'
+    # منطق ديناميكي - يقرأ أول جذر مستنطق أو يستخدم 'أحد'
+    if state.get('active') and state.get('pool'):
+        target_root = state['pool'][0]
+    else:
+        target_root = 'أحد'
+    
     root_found = None
     orbit_found = "مدار الوعي العام"
     
@@ -494,6 +495,63 @@ with tabs[1]:
         st.info(f"🔍 بانتظار استنطاق الجذر '{target_root}'")
 
 # ==============================================================================
+# التبويب 5: الوعي الفوقي - مستقل ويعمل دائماً
+# ==============================================================================
+with tabs[5]:
+    st.header("🧠 الوعي الفوقي والبيان الجمعي")
+    
+    # منطق ديناميكي - يقرأ أول جذر مستنطق أو يستخدم 'أحد'
+    if state.get('active') and state.get('pool'):
+        target_root = state['pool'][0]
+    else:
+        target_root = 'أحد'
+    
+    root_found = None
+    orbit_found = "مدار الوعي العام"
+    gene_info = None
+    
+    for orbit_item in all_roots_data:
+        for r in orbit_item.get('roots', []):
+            if normalize_sovereign(r.get('name', '').strip()) == normalize_sovereign(target_root):
+                root_found = r
+                orbit_found = orbit_item.get('orbit', 'مدار السيادة')
+                gene_key = r.get('gene', 'N')
+                gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
+                break
+        if root_found:
+            break
+    
+    # حساب التردد الطاقي
+    total_energy = sum(body.get('energy', 0) for body in state.get('bodies', []))
+    
+    if root_found:
+        st.markdown(f"""
+        <div class='story-box' style='padding:20px; border:1px solid #333; border-radius:15px; background:#050505;'>
+            <h3 style='margin:0; color:#FFD700;'>🧠 الوعي الفوقي والبيان الجمعي</h3>
+            <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_found})</h4>
+            <p style='color:#ccc;'>هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره <b>({total_energy:.1f})</b>. 
+            يهيمن عليه جين <b>{orbit_found}</b> من خلال رمز <b>{gene_info['icon']} {gene_info['name']}</b>، 
+            مما يوجه التدفق نحو <b>{root_found.get('insight', 'التمكين السيادي')}</b>.</p>
+            <p style='font-size:0.9em; border-top:1px dashed #444; padding-top:10px; color:#888;'>
+            <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{target_root}</b> ليخلق استواءً وجودياً.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # إضافة معلومات حالة المفاعل
+        if not state.get('active'):
+            st.info("⚡ المفاعل في حالة انتظار. أدخل نصاً في التبويب الأول واضغط 'تفعيل المفاعل' لرؤية التأثير الفيزيائي.")
+        else:
+            st.success(f"✅ المفاعل نشط مع {len(state.get('bodies', []))} جذراً مستنطقاً.")
+    else:
+        st.warning(f"🔍 الجذر '{target_root}' غير موجود في قاعدة البيانات.")
+        
+        # عرض قائمة بالجذور المتاحة كمرجع
+        available_roots = [r.get('name', '') for orbit_item in all_roots_data for r in orbit_item.get('roots', [])][:15]
+        if available_roots:
+            st.caption(f"📚 أمثلة على الجذور المتاحة: {', '.join(available_roots)}...")
+
+# ==============================================================================
 # باقي التبويبات تعتمد على حالة المفاعل
 # ==============================================================================
 if state['active']:
@@ -509,7 +567,7 @@ if state['active']:
     with tabs[3]:
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v28.0:</b><br>
+            <b>بيان الاستواء الوجودي v28.1:</b><br>
             بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام المعايرة الدقيقة لنطاق الأزل. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
@@ -571,55 +629,17 @@ if state['active']:
             else:
                 st.success(f"**📖 بصيرة سيد المدار (من القاعدة) للجذر ({top_root}):**\n\n{file_insight}")
 
-    with tabs[5]:
-        st.header("🧠 الوعي الفوقي والبيان الجمعي")
-        
-        # المنطق الديناميكي نفسه المستخدم في التبويب 1
-        target_root = state['pool'][0] if state.get('active') and state.get('pool') else 'أحد'
-        root_found = None
-        orbit_found = "مدار الوعي العام"
-        gene_info = None
-        
-        for orbit_item in all_roots_data:
-            for r in orbit_item.get('roots', []):
-                if normalize_sovereign(r.get('name', '').strip()) == normalize_sovereign(target_root):
-                    root_found = r
-                    orbit_found = orbit_item.get('orbit', 'مدار السيادة')
-                    gene_key = r.get('gene', 'N')
-                    gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
-                    break
-            if root_found:
-                break
-        
-        # حساب التردد الطاقي
-        total_energy = sum(body.get('energy', 0) for body in state.get('bodies', []))
-        
-        if root_found:
-            st.markdown(f"""
-            <div class='story-box' style='padding:20px; border:1px solid #333; border-radius:15px; background:#050505;'>
-                <h3 style='margin:0; color:#FFD700;'>🧠 الوعي الفوقي والبيان الجمعي</h3>
-                <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_found})</h4>
-                <p style='color:#ccc;'>هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره <b>({total_energy:.1f})</b>. 
-                يهيمن عليه جين <b>{orbit_found}</b> من خلال رمز <b>{gene_info['icon']} {gene_info['name']}</b>، 
-                مما يوجه التدفق نحو <b>{root_found.get('insight', 'التمكين السيادي')}</b>.</p>
-                <p style='font-size:0.9em; border-top:1px dashed #444; padding-top:10px; color:#888;'>
-                <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{target_root}</b> ليخلق استواءً وجودياً.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.info(f"🔍 بانتظار استنطاق الجذر '{target_root}'")
-
 else:
-    for i in range(2, 6):
+    # عندما يكون المفاعل غير نشط، نعرض رسالة في التبويبات 2-4
+    for i in range(2, 5):
         with tabs[i]: 
-            st.info("المحراب في حالة انتظار... أطلق المفاعل لملء الموازين.")
+            st.info("⚙️ المحراب في حالة انتظار. أدخل النص في التبويب الأول ثم اضغط 'تفعيل المفاعل'.")
 
 # --- التذييل السيادي ---
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
 **الحالة:** استواء سيادي - معايرة دقيقة لنطاق الأزل - تشغيل ديناميكي  
-**الإصدار:** v28.0 (Dynamic Activation - الإحلال الكامل)  
+**الإصدار:** v28.1 (Dynamic Activation - الإقلاع المباشر)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
