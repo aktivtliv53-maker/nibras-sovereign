@@ -799,5 +799,2365 @@
     "bio_link": "Succession (تعاقب)",
     "structural_analysis": "الخاء: خلف. اللام: امتداد. الفاء: تفريغ.",
     "insight_radar": "الخلافة هي مدار العود الذي يعيد الوجود، الاستمرار الذي يخلف القديم بالجديد."
+ },
+ {
+    "root": "دبر",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Feedback Loop (حلقة تغذية راجعة)",
+    "structural_analysis": "الدال: استمرار. الباء: وعاء. الراء: تدفق.",
+    "insight_radar": "الدبر هو مدار العود الذي يراجع ما سبق، العودة التي تجمع نهاية المسار ببدايته."
+  },
+  {
+    "root": "دثر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Encapsulation (تغليف)",
+    "structural_analysis": "الدال: استمرار. الثاء: ثبات. الراء: احتواء.",
+    "insight_radar": "الدثر هو سكينة الاحتواء التي تغلف الجوهر، الجمع الذي يحمي الكنز من الضياع."
+  },
+  {
+    "root": "دخل",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Entry (دخول)",
+    "structural_analysis": "الدال: استمرار. الخاء: خفاء. اللام: امتداد.",
+    "insight_radar": "الدخول هو حركة العبور من خارج إلى داخل، السرعة التي تخترق الحواجز."
+  },
+  {
+    "root": "دعا",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Call (نداء)",
+    "structural_analysis": "الدال: استمرار. العين: عمق. الألف: امتداد.",
+    "insight_radar": "الدعاء هو صعود الوعي بنداء يبلغ الأفق، الشمول الذي يصل إلى ما فوق."
+  },
+  {
+    "root": "دق",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Precision (دقة)",
+    "structural_analysis": "الدال: استمرار. القاف: قوة مركزة.",
+    "insight_radar": "الدقة هي تمكين التماسك في نقطة واحدة، التجذر الذي يضبط الإحكام."
+  },
+  {
+    "root": "دل",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Guide (دليل)",
+    "structural_analysis": "الدال: استمرار. اللام: امتداد.",
+    "insight_radar": "الدلالة هي شمول الوعي الذي يرشد إلى المقصد، الصعود الذي ينير الطريق."
+  },
+  {
+    "root": "دين",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "System (نظام)",
+    "structural_analysis": "الدال: استمرار. الياء: انعطاف. النون: انتظام.",
+    "insight_radar": "الدين هو نظام التدبير الذي يسير الوجود، الوعي الذي يضبط حركة الكون."
+  },
+  {
+    "root": "ذات",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Identity (هوية)",
+    "structural_analysis": "الذال: تميز. الألف: امتداد. التاء: تمام.",
+    "insight_radar": "الذات هو مركز الوعي الذي لا يتجزأ، مدار الأصل الذي منه ينبثق كل وجود."
+  },
+  {
+    "root": "ذكر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Memory (ذاكرة)",
+    "structural_analysis": "الذال: تميز. الكاف: احتواء. الراء: تدفق.",
+    "insight_radar": "الذكر هو استحضار الوعي لما غاب، الصعود الذي يعيد الاتصال بالأصل."
+  },
+  {
+    "root": "ذنب",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Correction (تصحيح)",
+    "structural_analysis": "الذال: تميز. النون: نهاية. الباء: وعاء.",
+    "insight_radar": "الذنب هو مدار العود الذي يصحح المسار، العودة التي تسبق الانطلاق الجديد."
+  },
+  {
+    "root": "ذهب",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Movement (ذهاب)",
+    "structural_analysis": "الذال: تميز. الهاء: هبوط. الباء: وعاء.",
+    "insight_radar": "الذهاب هو حركة الانطلاق في مدار الحياة، السرعة التي تبلغ الغاية."
+  },
+  {
+    "root": "ذوق",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Taste (تذوق)",
+    "structural_analysis": "الذال: تميز. الواو: وصل. القاف: قوة ناعمة.",
+    "insight_radar": "الذوق هو سكينة الوعي التي تدرك الجوهر، الجمع الذي يتذوق الخفايا."
+  },
+  {
+    "root": "رأى",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Vision (رؤية)",
+    "structural_analysis": "الراء: تدفق. الهمزة: انطلاق. الياء: امتداد.",
+    "insight_radar": "الرؤية هي شمول الوعي لما يظهر، الصعود الذي يدرك الحقيقة."
+  },
+  {
+    "root": "رب",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Lord (رب)",
+    "structural_analysis": "الراء: تدفق. الباء: احتواء.",
+    "insight_radar": "الرب هو مدار الذات الذي يربي الوجود، الوعي الذي يحتوي ويمد."
+  },
+  {
+    "root": "ربط",
+    "orbit_id": 6,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "Connection (ربط)",
+    "structural_analysis": "الراء: تدفق. الباء: وعاء. الطاء: انبساط.",
+    "insight_radar": "الربط هو تدبير التمكين الذي يوحد المتفرقات، النظام الذي يجمع الأجزاء."
+  },
+  {
+    "root": "رحم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Uterus (رحم)",
+    "structural_analysis": "الراء: رقة. الحاء: حياة. الميم: احتواء.",
+    "insight_radar": "الرحم هو وعاء السكينة الأصلي، الجمع الذي ينشئ الحياة من لا شيء."
+  },
+  {
+    "root": "رزق",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Sustenance (رزق)",
+    "structural_analysis": "الراء: تدفق. الزاي: اهتزاز. القاف: تقدير.",
+    "insight_radar": "الرزق هو إمداد التمكين الذي يغذي الجذور، التجذر الذي ينمو بالعطاء."
+  },
+  {
+    "root": "رسخ",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Stability (رسوخ)",
+    "structural_analysis": "الراء: تدفق. السين: سيولة. الخاء: خفاء.",
+    "insight_radar": "الرسوخ هو تمكين الجذر في عمق الأرض، التجذر الذي لا يتزعزع."
+  },
+  {
+    "root": "رشد",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Guidance (رشد)",
+    "structural_analysis": "الراء: تدفق. الشين: انتشار. الدال: استمرار.",
+    "insight_radar": "الرشد هو استقامة الوعي نحو غايته، الصعود المتوازن الذي يبلغ الكمال."
+  },
+  {
+    "root": "رصد",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Observation (رصد)",
+    "structural_analysis": "الراء: تدفق. الصاد: صلابة. الدال: استمرار.",
+    "insight_radar": "الرصد هو شمول الوعي بالمراقبة، الصعود الذي لا يغفل عن شيء."
+  },
+  {
+    "root": "رضي",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Satisfaction (رضا)",
+    "structural_analysis": "الراء: رقة. الضاد: احتواء. الياء: امتداد.",
+    "insight_radar": "الرضا هو سكينة الوعي التي تقبل القضاء، الجمع الذي يسلم للخير."
+  },
+  {
+    "root": "رغب",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Desire (رغبة)",
+    "structural_analysis": "الراء: تدفق. الغين: غيب. الباء: احتواء.",
+    "insight_radar": "الرغبة هي صعود الوعي نحو ما يريد، الشمول الذي يطلب المزيد."
+  },
+  {
+    "root": "رقي",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Ascension (رقى)",
+    "structural_analysis": "الراء: تدفق. القاف: قوة. الياء: امتداد.",
+    "insight_radar": "الرقى هو صعود الوعي في مدار العلو، الشمول الذي لا يعرف الحدود."
+  },
+  {
+    "root": "ركز",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Focus (تركيز)",
+    "structural_analysis": "الراء: تدفق. الكاف: كف. الزاي: اهتزاز.",
+    "insight_radar": "الركز هو تمكين الجذر في نقطة واحدة، التجذر الذي يجمع القوة."
+  },
+  {
+    "root": "رمل",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Sand (رمل)",
+    "structural_analysis": "الراء: تدفق. الميم: امتداد. اللام: لين.",
+    "insight_radar": "الرمل هو أرض التمكين السائبة، التجذر الذي ينتشر بسهولة."
+  },
+  {
+    "root": "رهب",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Awe (رهبة)",
+    "structural_analysis": "الراء: تدفق. الهاء: هبوط. الباء: وعاء.",
+    "insight_radar": "الرهبة هي حركة الوعي نحو التعظيم، السرعة التي توقر الجلال."
+  },
+  {
+    "root": "روح",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Spirit (روح)",
+    "structural_analysis": "الراء: تدفق. الواو: دوران. الحاء: حياة.",
+    "insight_radar": "الروح هي الطاقة الصاعدة التي تحرك الجسد، الوعي المتدفق في مدار الشمول."
+  },
+  {
+    "root": "ريح",
+    "orbit_id": 5,
+    "energy_type": "أنثى",
+    "carrier_type": "معز",
+    "bio_link": "Wind (ريح)",
+    "structural_analysis": "الراء: تدفق. الياء: امتداد. الحاء: حركة.",
+    "insight_radar": "الريح هي حركة الهواء في مدار الحياة، السرعة التي تنقل الخير."
+  },
+  {
+    "root": "زاد",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Increase (زيادة)",
+    "structural_analysis": "الزاي: اهتزاز. الألف: امتداد. الدال: استمرار.",
+    "insight_radar": "الزيادة هي نماء التمكين الذي لا يتوقف، التجذر الذي يتسع بالخير."
+  },
+  {
+    "root": "زكا",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Purification (زكاة)",
+    "structural_analysis": "الزاي: اهتزاز. الكاف: كشف. الألف: امتداد.",
+    "insight_radar": "الزكاة هي تنقية الوعي ليرتفع، الصعود الذي يزيل الشوائب ليشتد العلو."
+  },
+  {
+    "root": "زمن",
+    "orbit_id": 7,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Time (زمن)",
+    "structural_analysis": "الزاي: اهتزاز. الميم: احتواء. النون: استمرار.",
+    "insight_radar": "الزمن هو مدار العود الذي يعيد الوجود، الحركة الدورية التي تكرر الدورات."
+  },
+  {
+    "root": "زوج",
+    "orbit_id": 6,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Pair (زوج)",
+    "structural_analysis": "الزاي: اهتزاز. الواو: وصل. الجيم: جمع.",
+    "insight_radar": "الزوج هو نظام السكينة الذي يجمع المتماثلين، التدبير الذي يكمل النقص."
+  },
+  {
+    "root": "زور",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Deviation (زور)",
+    "structural_analysis": "الزاي: اهتزاز. الواو: انعطاف. الراء: تدفق.",
+    "insight_radar": "الزور هو انحراف الحركة عن الاستواء، القفزة التي تسبق العودة إلى الصواب."
+  },
+  {
+    "root": "زيت",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Oil (زيت)",
+    "structural_analysis": "الزاي: اهتزاز. الياء: امتداد. التاء: تمام.",
+    "insight_radar": "الزيت هو زاد التمكين الذي يغذي الجذور، التجذر الذي يستخرج الخير من الأرض."
+  },
+  {
+    "root": "سجد",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Prostration (سجود)",
+    "structural_analysis": "السين: انحناء. الجيم: جمع. الدال: استقرار.",
+    "insight_radar": "السجود هو جمع الذات في نقطة السكينة، الاحتواء التام الذي يعيد الاتصال بالأصل."
+  },
+  {
+    "root": "سحر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Fascination (سحر)",
+    "structural_analysis": "السين: سيولة. الحاء: حيرة. الراء: تدفق.",
+    "insight_radar": "السحر هو حركة الوعي التي تأسر العقول، السرعة التي تذهل الأبصار."
+  },
+  {
+    "root": "سخا",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Generosity (سخاء)",
+    "structural_analysis": "السين: سيولة. الخاء: خفاء. الألف: امتداد.",
+    "insight_radar": "السخاء هو فيض السكينة على الغير، الجمع الذي يعطي بلا حساب."
+  },
+  {
+    "root": "سدر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Lote Tree (سدرة)",
+    "structural_analysis": "السين: سيولة. الدال: استمرار. الراء: تدفق.",
+    "insight_radar": "السدرة هي مدار الصعود الأقصى، الشمول الذي ينتهي إليه الوعي."
+  },
+  {
+    "root": "سر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Secret (سر)",
+    "structural_analysis": "السين: استتار. الراء: تدفق خفي.",
+    "insight_radar": "السر هو سكينة الباطن التي تخفي الجوهر، الجمع الذي لا يبوح بمكنونه."
+  },
+  {
+    "root": "سرى",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Journey (سرى)",
+    "structural_analysis": "السين: سيولة. الراء: تدفق. الياء: امتداد.",
+    "insight_radar": "السرى هو حركة الليل في مدار الحياة، السرعة التي تبلغ المدى."
+  },
+  {
+    "root": "سطع",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Emerge (سطوع)",
+    "structural_analysis": "السين: سيولة. الطاء: انبساط. العين: علو.",
+    "insight_radar": "السطوع هو صعود النور في مدار الشمول، الظهور الذي يضيء الأفق."
+  },
+  {
+    "root": "سفر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Travel (سفر)",
+    "structural_analysis": "السين: سيولة. الفاء: انفطار. الراء: تدفق.",
+    "insight_radar": "السفر هو حركة الانتقال في الأرض، السرعة التي تفتح الآفاق."
+  },
+  {
+    "root": "سكن",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Dwelling (سكن)",
+    "structural_analysis": "السين: سكون. الكاف: كف. النون: استقرار.",
+    "insight_radar": "السكن هو استقرار الوعي في مدار السكينة، الطمأنينة التي تثبت الجوهر."
+  },
+  {
+    "root": "سلم",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Peace (سلام)",
+    "structural_analysis": "السين: سيولة. اللام: لين. الميم: إحاطة.",
+    "insight_radar": "السلام هو سكينة الوجود التي تجمع الأمن، الجمع الذي يزيل الخوف."
+  },
+  {
+    "root": "سمع",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Hearing (سمع)",
+    "structural_analysis": "السين: سيولة. الميم: احتواء. العين: عمق.",
+    "insight_radar": "السمع هو استقبال الوجود في وعاء السكينة، الاحتواء الهادئ للرسائل الكونية."
+  },
+  {
+    "root": "سمو",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Exaltation (سمو)",
+    "structural_analysis": "السين: سيولة. الميم: امتداد. الواو: علو.",
+    "insight_radar": "السمو هو صعود الوعي إلى مدار العلو، الشمول الذي يعلو كل شيء."
+  },
+  {
+    "root": "سهل",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Ease (سهولة)",
+    "structural_analysis": "السين: انسياب. الهاء: هدوء. اللام: امتداد.",
+    "insight_radar": "السهل هو انبساط السكينة في كل اتجاه، اليسر الذي لا يقاوم تدفقه."
+  },
+  {
+    "root": "سير",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Walk (سير)",
+    "structural_analysis": "السين: سيولة. الياء: امتداد. الراء: تدفق.",
+    "insight_radar": "السير هو حركة الانتقال المتدرجة، السرعة التي تبلغ الغاية بثبات."
+  },
+  {
+    "root": "شجر",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Tree (شجر)",
+    "structural_analysis": "الشين: انتشار. الجيم: جمع. الراء: تدفق.",
+    "insight_radar": "الشجر هو تجذر التمكين الذي يتفرع، النماء الذي يمد الظل والثمر."
+  },
+  {
+    "root": "شخص",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Person (شخص)",
+    "structural_analysis": "الشين: انتشار. الخاء: خفاء. الصاد: صلابة.",
+    "insight_radar": "الشخص هو تجلي الذات في قالب محدد، الوعي الذي يتشخص ليعرف."
+  },
+  {
+    "root": "شرح",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Expansion (شرح)",
+    "structural_analysis": "الشين: انتشار. الراء: تدفق. الحاء: حياة.",
+    "insight_radar": "الشرح هو انبساط السكينة في الصدر، الجمع الذي يتسع للكل."
+  },
+  {
+    "root": "شرع",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Law (شريعة)",
+    "structural_analysis": "الشين: انتشار. الراء: تدفق. العين: عمق.",
+    "insight_radar": "الشريعة هي نظام التدبير الذي يسير الوجود، الوعي الذي يشرع الطريق."
+  },
+  {
+    "root": "شمس",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Sun (شمس)",
+    "structural_analysis": "الشين: انتشار. الميم: امتداد. السين: سيولة.",
+    "insight_radar": "الشمس هي نقطة الإشعاع التي تمد الوجود بالطاقة، مدار الصعود الذي يضيء كل أفق."
+  },
+  {
+    "root": "شهد",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Witness (شهادة)",
+    "structural_analysis": "الشين: انتشار. الهاء: هبوط. الدال: استمرار.",
+    "insight_radar": "الشهادة هي شمول الوعي بالحضور، الصعود الذي يشهد الحقيقة."
+  },
+  {
+    "root": "شوق",
+    "orbit_id": 2,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Longing (شوق)",
+    "structural_analysis": "الشين: انتشار. الواو: وصل. القاف: قوة.",
+    "insight_radar": "الشوق هو صعود الوعي نحو ما يحب، الشمول الذي يطلب القرب."
+  },
+  {
+    "root": "صبر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Patience (صبر)",
+    "structural_analysis": "الصاد: صلابة. الباء: احتواء. الراء: تدفق.",
+    "insight_radar": "الصبر هو سكينة الوعي التي تتحمل، الجمع الذي ينتظر الخير."
+  },
+  {
+    "root": "صعد",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Ascend (صعود)",
+    "structural_analysis": "الصاد: صلابة. العين: علو. الدال: استمرار.",
+    "insight_radar": "الصعود هو حركة الوعي نحو العلو، مدار الشمول الذي لا يقف عند حد."
+  },
+  {
+    "root": "صفا",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Purity (صفاء)",
+    "structural_analysis": "الصاد: صلابة. الفاء: تفريغ. الألف: امتداد.",
+    "insight_radar": "الصفاء هو سكينة الوعي التي لا يشوبها كدر، الجمع الذي يصفو من الشوائب."
+  },
+  {
+    "root": "صقر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Falcon (صقر)",
+    "structural_analysis": "الصاد: صلابة. القاف: قوة. الراء: تدفق.",
+    "insight_radar": "الصقر هو صعود الوعي في مدار العلو، الشمول الذي يرى من الأعلى."
+  },
+  {
+    "root": "صلح",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Reconciliation (صلح)",
+    "structural_analysis": "الصاد: صلابة. اللام: لين. الحاء: حياة.",
+    "insight_radar": "الصلح هو سكينة الجمع بين المتفرقات، الاحتواء الذي يوحد القلوب."
+  },
+  {
+    "root": "صلى",
+    "orbit_id": 2,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Prayer (صلاة)",
+    "structural_analysis": "الصاد: صلة. اللام: امتداد. الياء: اتصال.",
+    "insight_radar": "الصلاة هي صعود الوعي إلى مدار الاتصال، الشمول الذي يصل العبد بالرب."
+  },
+  {
+    "root": "صمد",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Eternal (صمد)",
+    "structural_analysis": "الصاد: صلابة. الميم: امتداد. الدال: استمرار.",
+    "insight_radar": "الصمد هو مدار الذات الذي لا يحتاج، الوعي المطلق الذي يصمد بلا تغير."
+  },
+  {
+    "root": "صوت",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Sound (صوت)",
+    "structural_analysis": "الصاد: صلابة. الواو: دوران. التاء: تمام.",
+    "insight_radar": "الصوت هو حركة الاهتزاز في مدار الحياة، السرعة التي تنقل المعنى."
+  },
+  {
+    "root": "ضرب",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Strike (ضرب)",
+    "structural_analysis": "الضاد: احتواء. الراء: تدفق. الباء: وعاء.",
+    "insight_radar": "الضرب هو حركة التأثير في مدار الحياة، السرعة التي تحدث التغيير."
+  },
+  {
+    "root": "ضل",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Search Space (فضاء بحث)",
+    "structural_analysis": "الضاد: احتواء. اللام: امتداد.",
+    "insight_radar": "الضلال هو اتساع مدار البحث عن الوعي، الصعود الذي يتجول حتى يصل إلى الشمول."
+  },
+  {
+    "root": "ضمن",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Guarantee (ضمان)",
+    "structural_analysis": "الضاد: احتواء. الميم: إحاطة. النون: استقرار.",
+    "insight_radar": "الضمان هو سكينة الاحتواء التي تحمي، الجمع الذي يضمن السلامة."
+  },
+  {
+    "root": "طبع",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Nature (طبع)",
+    "structural_analysis": "الطاء: انبساط. الباء: وعاء. العين: عمق.",
+    "insight_radar": "الطبع هو مدار الذات الذي يظهر الجبلة، الوعي الذي يطبع كل شيء بصفته."
+  },
+  {
+    "root": "طهر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Purity (طهارة)",
+    "structural_analysis": "الطاء: انبساط. الهاء: هدوء. الراء: تدفق.",
+    "insight_radar": "الطهارة هي سكينة النقاء التي تزيل الكدر، الجمع الذي يصفو للخير."
+  },
+  {
+    "root": "طور",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Stage (طور)",
+    "structural_analysis": "الطاء: انبساط. الواو: انعطاف. الراء: تدفق.",
+    "insight_radar": "الطور هو حركة الانتقال من حال إلى حال، السرعة التي تتصاعد في مدارات."
+  },
+  {
+    "root": "طير",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Bird (طير)",
+    "structural_analysis": "الطاء: انبساط. الياء: امتداد. الراء: تدفق.",
+    "insight_radar": "الطير هو صعود الوعي في مدار العلو، الشمول الذي يحلق في الأفق."
+  },
+  {
+    "root": "ظاهر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Manifest (ظاهر)",
+    "structural_analysis": "الظاء: ظهور. الألف: امتداد. الهاء: هبوط. الراء: تدفق.",
+    "insight_radar": "الظاهر هو مدار الصعود الذي يظهر الوجود، الشمول الذي لا يخفى."
+  },
+  {
+    "root": "ظل",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Shadow (ظل)",
+    "structural_analysis": "الظاء: استتار. اللام: امتداد.",
+    "insight_radar": "الظل هو سكينة الساتر التي تحمي، الجمع الذي يقي من الحرور."
+  },
+  {
+    "root": "ظن",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Assumption (ظن)",
+    "structural_analysis": "الظاء: استتار. النون: نية.",
+    "insight_radar": "الظن هو صعود الوعي إلى احتمال، الشمول الذي يبحث عن اليقين."
+  },
+  {
+    "root": "عبد",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Worship (عبادة)",
+    "structural_analysis": "العين: عمق. الباء: احتواء. الدال: استمرار.",
+    "insight_radar": "العبادة هي سكينة التسليم التي تجمع العبد بالرب، الجمع الذي يتحقق في الطاعة."
+  },
+  {
+    "root": "عبر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Cross (عبور)",
+    "structural_analysis": "العين: عمق. الباء: وعاء. الراء: تدفق.",
+    "insight_radar": "العبور هو حركة الانتقال من ضفة إلى ضفة، السرعة التي تبلغ الغاية."
+  },
+  {
+    "root": "عجل",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Haste (عجلة)",
+    "structural_analysis": "العين: عمق. الجيم: جمع. اللام: امتداد.",
+    "insight_radar": "العجلة هي حركة السرعة التي لا تنتظر، القفزة التي تسبق الزمن."
+  },
+  {
+    "root": "عدل",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Justice (عدل)",
+    "structural_analysis": "العين: عمق. الدال: استمرار. اللام: امتداد.",
+    "insight_radar": "العدل هو سكينة التوازن التي تجمع الحق، الجمع الذي يضع كل شيء في موضعه."
+  },
+  {
+    "root": "عذر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Excuse (عذر)",
+    "structural_analysis": "العين: عمق. الذال: تميز. الراء: تدفق.",
+    "insight_radar": "العذر هو سكينة القبول التي تغفر، الجمع الذي يزيل اللوم."
+  },
+  {
+    "root": "عرف",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Knowledge (عرف)",
+    "structural_analysis": "العين: عمق. الراء: تدفق. الفاء: انفطار.",
+    "insight_radar": "المعرفة هي شمول الوعي للحقيقة، الصعود الذي يكشف المستور."
+  },
+  {
+    "root": "عقل",
+    "orbit_id": 4,
+    "energy_type": "ذكر",
+    "carrier_type": "ضأن",
+    "bio_link": "Intellect (عقل)",
+    "structural_analysis": "العين: عمق. القاف: قوة. اللام: امتداد.",
+    "insight_radar": "العقل هو وعاء السكينة الذي يجمع المعاني، الاحتواء الذي يرتب الفوضى في نظام."
+  },
+  {
+    "root": "علم",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Knowledge (علم)",
+    "structural_analysis": "العين: عمق. اللام: امتداد. الميم: احتواء.",
+    "insight_radar": "العلم هو شمول الوعي للمعاني، الصعود الذي يحيط بكل معلوم."
+  },
+  {
+    "root": "علي",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "High (علي)",
+    "structural_analysis": "العين: علو. اللام: امتداد. الياء: استمرار.",
+    "insight_radar": "العلي هو مدار الصعود الأقصى، الشمول الذي لا يعلوه شيء."
+  },
+  {
+    "root": "عمر",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Lifespan (عمر)",
+    "structural_analysis": "العين: عمق. الميم: امتداد. الراء: تدفق.",
+    "insight_radar": "العمر هو تمكين التماسك في الزمن، التجذر الذي يمتد بالحياة."
+  },
+  {
+    "root": "عنا",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Care (عناية)",
+    "structural_analysis": "العين: عمق. النون: نية. الألف: امتداد.",
+    "insight_radar": "العناية هي سكينة الاحتواء التي ترعى، الجمع الذي يحمي ويربي."
+  },
+  {
+    "root": "عوج",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Curve (عوج)",
+    "structural_analysis": "العين: عمق. الواو: انعطاف. الجيم: جمع.",
+    "insight_radar": "العوج هو انحراف الحركة عن الاستواء، القفزة التي تسبق التقويم."
+  },
+  {
+    "root": "غفر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Forgiveness (غفر)",
+    "structural_analysis": "الغين: غفر. الفاء: تفريغ. الراء: تدفق.",
+    "insight_radar": "الغفران هو سكينة الستر التي تغطي الزلل، الجمع الذي يعيد النقاء."
+  },
+  {
+    "root": "غيب",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Non-coding DNA (حمض نووي غير مشفر)",
+    "structural_analysis": "الغين: استتار. الياء: امتداد. الباء: احتواء.",
+    "insight_radar": "الغيب هو وعاء الذات الذي يحتوي ما وراء الظهور، المعلومات المحتجبة التي تدير النظام."
+  },
+  {
+    "root": "غيث",
+    "orbit_id": 3,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "Rain (غيث)",
+    "structural_analysis": "الغين: غيث. الياء: امتداد. الثاء: ثبات.",
+    "insight_radar": "الغيث هو إمداد التمكين الذي يحيي الأرض، التجذر الذي ينمو بالماء."
+  },
+  {
+    "root": "فجر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Dawn (فجر)",
+    "structural_analysis": "الفاء: انفطار. الجيم: جمع. الراء: تدفق.",
+    "insight_radar": "الفجر هو صعود النور في مدار الشمول، الانبثاق الذي يبدد الظلام."
+  },
+  {
+    "root": "فطر",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Creation (فطرة)",
+    "structural_analysis": "الفاء: انفطار. الطاء: انبساط. الراء: تدفق.",
+    "insight_radar": "الفطرة هي مدار الذات الذي فطر الوجود، الوعي الذي أبدع الكون."
+  },
+  {
+    "root": "فلق",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Split (فلق)",
+    "structural_analysis": "الفاء: انفطار. اللام: امتداد. القاف: قطع.",
+    "insight_radar": "الفلق هو حركة الانشقاق في مدار الحياة، السرعة التي تخلق الانفجار."
+  },
+  {
+    "root": "فهم",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Understanding (فهم)",
+    "structural_analysis": "الفاء: انفطار. الهاء: هبوط. الميم: احتواء.",
+    "insight_radar": "الفهم هو نزول المعنى إلى وعاء السكينة، الاحتواء الذي يجعل الخارج داخلاً."
+  },
+  {
+    "root": "فوز",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Success (فوز)",
+    "structural_analysis": "الفاء: انفطار. الواو: وصل. الزاي: اهتزاز.",
+    "insight_radar": "الفوز هو صعود الوعي إلى مدار الغاية، الشمول الذي يحقق المراد."
+  },
+  {
+    "root": "قبض",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Grasp (قبض)",
+    "structural_analysis": "القاف: قوة. الباء: وعاء. الضاد: احتواء.",
+    "insight_radar": "القبض هو تمكين التماسك في نقطة، التجذر الذي يجمع القوة."
+  },
+  {
+    "root": "قدر",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Morphogen Gradient (تدرج مكون الشكل)",
+    "structural_analysis": "القاف: تقدير. الدال: استمرار. الراء: تدفق.",
+    "insight_radar": "القدر هو تقدير الذات للوجود بمقدار، الوعي الذي يحدد حدود كل شيء بحكمة."
+  },
+  {
+    "root": "قرأ",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Read (قراءة)",
+    "structural_analysis": "القاف: قارئ. الراء: تدفق. الهمزة: انطلاق.",
+    "insight_radar": "القراءة هي جمع المعاني من أفق الوعي، الصعود بالنص إلى مدار الشمول."
+  },
+  {
+    "root": "قرب",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Proximity (قرب)",
+    "structural_analysis": "القاف: قرب. الراء: رقة. الباء: احتواء.",
+    "insight_radar": "القرب هو دنو السكينة من جوهرها، الجمع الذي يزيل المسافات."
+  },
+  {
+    "root": "قصد",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Intention (قصد)",
+    "structural_analysis": "القاف: قصد. الصاد: صلابة. الدال: استمرار.",
+    "insight_radar": "القصد هو صعود الوعي نحو الغاية، الشمول الذي لا يضل طريقه."
+  },
+  {
+    "root": "قضا",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Judgment (قضاء)",
+    "structural_analysis": "القاف: قضاء. الضاد: إحكام. الألف: امتداد.",
+    "insight_radar": "القضاء هو نظام التدبير الذي يحكم الوجود، الوعي الذي ينفذ الإرادة."
+  },
+  {
+    "root": "قلم",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Pen (قلم)",
+    "structural_analysis": "القاف: قوة. اللام: امتداد. الميم: كتابة.",
+    "insight_radar": "القلم هو أداة التدبير التي تسطر الوجود، النظام الذي يوجه الحركة بعلم."
+  },
+  {
+    "root": "قمر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Moon (قمر)",
+    "structural_analysis": "القاف: قمر. الميم: امتداد. الراء: تدفق.",
+    "insight_radar": "القمر هو سكينة الليل التي تضيء، الجمع الذي ينير في الظلام."
+  },
+  {
+    "root": "قهق",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Regression (رجوع)",
+    "structural_analysis": "القاف: قهقرى. الهاء: هبوط. القاف: عودة.",
+    "insight_radar": "القهقرى هو مدار العود الذي يرجع إلى الخلف، العودة التي تسبق الانطلاق."
+  },
+  {
+    "root": "قهر",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Dominance (قهر)",
+    "structural_analysis": "القاف: قوة. الهاء: هيمنة. الراء: تدفق.",
+    "insight_radar": "القهر هو حركة النفوذ التي لا تقاوم، السرعة التي توجه بالقوة."
+  },
+  {
+    "root": "قوى",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Strength (قوة)",
+    "structural_analysis": "القاف: قوة. الواو: وصل. الياء: امتداد.",
+    "insight_radar": "القوة هي تمكين التماسك في البناء، التجذر الذي يثبت الجذور."
+  },
+  {
+    "root": "قيد",
+    "orbit_id": 6,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Restriction (قيد)",
+    "structural_analysis": "القاف: قيد. الياء: امتداد. الدال: استمرار.",
+    "insight_radar": "القيد هو نظام التمكين الذي يحدد، التدبير الذي يضبط الحركة."
+  },
+  {
+    "root": "كسب",
+    "orbit_id": 3,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "Earn (كسب)",
+    "structural_analysis": "الكاف: كسب. السين: سيولة. الباء: احتواء.",
+    "insight_radar": "الكسب هو تحصيل التمكين بالعمل، التجذر الذي يجني الثمر."
+  },
+  {
+    "root": "كفر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Cover (كفر)",
+    "structural_analysis": "الكاف: كفر. الفاء: تفريغ. الراء: تدفق.",
+    "insight_radar": "الكفر هو حركة الستر التي تغطي الحقيقة، القفزة التي تسبق الكشف."
+  },
+  {
+    "root": "كلأ",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Protection (كلاءة)",
+    "structural_analysis": "الكاف: كف. اللام: امتداد. الهمزة: إحاطة.",
+    "insight_radar": "الكلاءة هي سكينة الحماية التي ترعى، الجمع الذي يحمي من الضياع."
+  },
+  {
+    "root": "كلم",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Speech (كلام)",
+    "structural_analysis": "الكاف: كلام. اللام: امتداد. الميم: إحاطة.",
+    "insight_radar": "الكلام هو سكينة التواصل التي تجمع المعاني، الجمع الذي ينقل الفكرة."
+  },
+  {
+    "root": "كمل",
+    "orbit_id": 7,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Completion (كمال)",
+    "structural_analysis": "الكاف: كمال. الميم: إحاطة. اللام: امتداد.",
+    "insight_radar": "الكمال هو مدار العود الذي يتم الدائرة، الإتمام الذي يعيد إلى الأصل."
+  },
+  {
+    "root": "كنز",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Treasure (كنز)",
+    "structural_analysis": "الكاف: كنز. النون: نهاية. الزاي: اهتزاز.",
+    "insight_radar": "الكنز هو مخزون التمكين الذي يخبأ، التجذر الذي يدخر الخير."
+  },
+  {
+    "root": "كوكب",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Planet (كوكب)",
+    "structural_analysis": "الكاف: كوكب. الواو: دوران. الكاف: مركز. الباء: احتواء.",
+    "insight_radar": "الكوكب هو مدار الصعود الذي يدور في الأفق، الشمول الذي يسير بنظام."
+  },
+  {
+    "root": "ليل",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Night (ليل)",
+    "structural_analysis": "اللام: لين. الياء: امتداد. اللام: استتار.",
+    "insight_radar": "الليل هو سكينة السكون التي تجمع الظلام، الجمع الذي يسبق النور."
+  },
+  {
+    "root": "ماء",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Water (ماء)",
+    "structural_analysis": "الميم: امتداد. الألف: حياة. الهمزة: انطلاق.",
+    "insight_radar": "الماء هو إمداد التمكين الذي يحيي الأرض، التجذر الذي ينمو بالحياة."
+  },
+  {
+    "root": "مال",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Wealth (مال)",
+    "structural_analysis": "الميم: تمكين. الألف: امتداد. اللام: لين.",
+    "insight_radar": "المال هو زاد التمكين الذي يثمر، التجذر الذي يجمع الخير."
+  },
+  {
+    "root": "ملك",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Sovereignty (ملك)",
+    "structural_analysis": "الميم: ملك. اللام: امتداد. الكاف: كف.",
+    "insight_radar": "الملك هو نظام التدبير الذي يحيط بالجميع، الوعي الذي يوجه الحركة من أعلى."
+  },
+  {
+    "root": "من",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Source (من)",
+    "structural_analysis": "الميم: من. النون: نهاية.",
+    "insight_radar": "من هو مدار الذات الذي يحدد المصدر، الوعي الذي يبين الأصل."
+  },
+  {
+    "root": "نبت",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Plant (نبت)",
+    "structural_analysis": "النون: نبت. الباء: بدء. التاء: تمام.",
+    "insight_radar": "النبت هو نماء التمكين من الأرض، التجذر الذي يظهر خير الزرع."
+  },
+  {
+    "root": "نزل",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Descent (نزول)",
+    "structural_analysis": "النون: نزول. الزاي: اهتزاز. اللام: امتداد.",
+    "insight_radar": "النزول هو تمكين الوعي في الأرض، التجذر الذي يرسخ المعاني في مادة الوجود."
+  },
+  {
+    "root": "نصر",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Victory (نصر)",
+    "structural_analysis": "النون: نصر. الصاد: صلابة. الراء: تدفق.",
+    "insight_radar": "النصر هو حركة العون التي تحقق الغاية، السرعة التي تنقل من ضعف إلى قوة."
+  },
+  {
+    "root": "نفس",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Soul (نفس)",
+    "structural_analysis": "النون: نفس. الفاء: انفطار. السين: سيولة.",
+    "insight_radar": "النفس هي مدار الذات التي تظهر الوعي، الجوهر الذي يتنفس بالحياة."
+  },
+  {
+    "root": "نور",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Light (نور)",
+    "structural_analysis": "النون: نور. الواو: وصل. الراء: تدفق.",
+    "insight_radar": "النور هو صعود الوعي في مدار الإشراق، الشمول الذي يضيء كل شيء."
+  },
+  {
+    "root": "نوم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Sleep (نوم)",
+    "structural_analysis": "النون: نوم. الواو: انعطاف. الميم: احتواء.",
+    "insight_radar": "النوم هو سكينة الوعي التي تستريح، الجمع الذي يعيد الشحن."
+  },
+  {
+    "root": "هبط",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Descent (هبوط)",
+    "structural_analysis": "الهاء: هبوط. الباء: وعاء. الطاء: انبساط.",
+    "insight_radar": "الهبوط هو نزول الوعي إلى الأرض ليتجذر، التمكين الذي يرسخ الصعود."
+  },
+  {
+    "root": "هدى",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Guidance (هدى)",
+    "structural_analysis": "الهاء: هداية. الدال: استمرار. الألف: امتداد.",
+    "insight_radar": "الهدى هو نور الوعي الذي يرشد إلى الشمول، الصعود الذي لا يضل طريقه."
+  },
+  {
+    "root": "هوى",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Desire (هوى)",
+    "structural_analysis": "الهاء: هبوط. الواو: انعطاف. الياء: امتداد.",
+    "insight_radar": "الهوى هو حركة الوعي نحو ما يريد، السرعة التي تدفع إلى الانجذاب."
+  },
+  {
+    "root": "وحد",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Unity (وحد)",
+    "structural_analysis": "الواو: وصل. الحاء: حصر. الدال: استمرار.",
+    "insight_radar": "الوحد هو مدار الذات الذي لا يتجزأ، الوعي المطلق الذي يشمل الكثرة."
+  },
+  {
+    "root": "وصل",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Connection (وصل)",
+    "structural_analysis": "الواو: وصل. الصاد: صلة. اللام: امتداد.",
+    "insight_radar": "الوصل هو سكينة الاتصال التي تجمع المنفصل، الجمع الذي يعيد الوحدة."
+  },
+  {
+    "root": "وقت",
+    "orbit_id": 7,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Time (وقت)",
+    "structural_analysis": "الواو: دوران. القاف: تحديد. التاء: تمام.",
+    "insight_radar": "الوقت هو مدار العود الذي يحصي الزمن، القياس الذي يعيد الدورات."
+  },
+  {
+    "root": "يتم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Orphan (يتيم)",
+    "structural_analysis": "الياء: امتداد. التاء: تمام. الميم: احتواء.",
+    "insight_radar": "اليتم هو سكينة الاحتواء لمن فقد السند، الجمع الذي يعيد الأمان."
+  },
+  {
+    "root": "يسر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Ease (يسر)",
+    "structural_analysis": "الياء: انسياب. السين: سيولة. الراء: تدفق.",
+    "insight_radar": "اليسر هو انسياب السكينة في مدار الجمع، السهولة التي تجعل كل طريق ممهداً."
+ },
+  {
+   [
+  {
+    "root": "دبر",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Feedback Loop (حلقة تغذية راجعة)",
+    "structural_analysis": "الدال: استمرار. الباء: وعاء. الراء: تدفق.",
+    "insight_radar": "الدبر هو مدار العود الذي يراجع ما سبق، العودة التي تجمع نهاية المسار ببدايته."
+  },
+  {
+    "root": "دثر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Encapsulation (تغليف)",
+    "structural_analysis": "الدال: استمرار. الثاء: ثبات. الراء: احتواء.",
+    "insight_radar": "الدثر هو سكينة الاحتواء التي تغلف الجوهر، الجمع الذي يحمي الكنز من الضياع."
+  },
+  {
+    "root": "دخل",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Entry (دخول)",
+    "structural_analysis": "الدال: استمرار. الخاء: خفاء. اللام: امتداد.",
+    "insight_radar": "الدخول هو حركة العبور من خارج إلى داخل، السرعة التي تخترق الحواجز."
+  },
+  {
+    "root": "دعا",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Call (نداء)",
+    "structural_analysis": "الدال: استمرار. العين: عمق. الألف: امتداد.",
+    "insight_radar": "الدعاء هو صعود الوعي بنداء يبلغ الأفق، الشمول الذي يصل إلى ما فوق."
+  },
+  {
+    "root": "دق",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Precision (دقة)",
+    "structural_analysis": "الدال: استمرار. القاف: قوة مركزة.",
+    "insight_radar": "الدقة هي تمكين التماسك في نقطة واحدة، التجذر الذي يضبط الإحكام."
+  },
+  {
+    "root": "دل",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Guide (دليل)",
+    "structural_analysis": "الدال: استمرار. اللام: امتداد.",
+    "insight_radar": "الدلالة هي شمول الوعي الذي يرشد إلى المقصد، الصعود الذي ينير الطريق."
+  },
+  {
+    "root": "دين",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "System (نظام)",
+    "structural_analysis": "الدال: استمرار. الياء: انعطاف. النون: انتظام.",
+    "insight_radar": "الدين هو نظام التدبير الذي يسير الوجود، الوعي الذي يضبط حركة الكون."
+  },
+  {
+    "root": "ذات",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Identity (هوية)",
+    "structural_analysis": "الذال: تميز. الألف: امتداد. التاء: تمام.",
+    "insight_radar": "الذات هو مركز الوعي الذي لا يتجزأ، مدار الأصل الذي منه ينبثق كل وجود."
+  },
+  {
+    "root": "ذكر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Memory (ذاكرة)",
+    "structural_analysis": "الذال: تميز. الكاف: احتواء. الراء: تدفق.",
+    "insight_radar": "الذكر هو استحضار الوعي لما غاب، الصعود الذي يعيد الاتصال بالأصل."
+  },
+  {
+    "root": "ذنب",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Correction (تصحيح)",
+    "structural_analysis": "الذال: تميز. النون: نهاية. الباء: وعاء.",
+    "insight_radar": "الذنب هو مدار العود الذي يصحح المسار، العودة التي تسبق الانطلاق الجديد."
+  },
+  {
+    "root": "ذهب",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Movement (ذهاب)",
+    "structural_analysis": "الذال: تميز. الهاء: هبوط. الباء: وعاء.",
+    "insight_radar": "الذهاب هو حركة الانطلاق في مدار الحياة، السرعة التي تبلغ الغاية."
+  },
+  {
+    "root": "ذوق",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Taste (تذوق)",
+    "structural_analysis": "الذال: تميز. الواو: وصل. القاف: قوة ناعمة.",
+    "insight_radar": "الذوق هو سكينة الوعي التي تدرك الجوهر، الجمع الذي يتذوق الخفايا."
+  },
+  {
+    "root": "رأى",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Vision (رؤية)",
+    "structural_analysis": "الراء: تدفق. الهمزة: انطلاق. الياء: امتداد.",
+    "insight_radar": "الرؤية هي شمول الوعي لما يظهر، الصعود الذي يدرك الحقيقة."
+  },
+  {
+    "root": "رب",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Lord (رب)",
+    "structural_analysis": "الراء: تدفق. الباء: احتواء.",
+    "insight_radar": "الرب هو مدار الذات الذي يربي الوجود، الوعي الذي يحتوي ويمد."
+  },
+  {
+    "root": "ربط",
+    "orbit_id": 6,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "Connection (ربط)",
+    "structural_analysis": "الراء: تدفق. الباء: وعاء. الطاء: انبساط.",
+    "insight_radar": "الربط هو تدبير التمكين الذي يوحد المتفرقات، النظام الذي يجمع الأجزاء."
+  },
+  {
+    "root": "رحم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Uterus (رحم)",
+    "structural_analysis": "الراء: رقة. الحاء: حياة. الميم: احتواء.",
+    "insight_radar": "الرحم هو وعاء السكينة الأصلي، الجمع الذي ينشئ الحياة من لا شيء."
+  },
+  {
+    "root": "رزق",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Sustenance (رزق)",
+    "structural_analysis": "الراء: تدفق. الزاي: اهتزاز. القاف: تقدير.",
+    "insight_radar": "الرزق هو إمداد التمكين الذي يغذي الجذور، التجذر الذي ينمو بالعطاء."
+  },
+  {
+    "root": "رسخ",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Stability (رسوخ)",
+    "structural_analysis": "الراء: تدفق. السين: سيولة. الخاء: خفاء.",
+    "insight_radar": "الرسوخ هو تمكين الجذر في عمق الأرض، التجذر الذي لا يتزعزع."
+  },
+  {
+    "root": "رشد",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Guidance (رشد)",
+    "structural_analysis": "الراء: تدفق. الشين: انتشار. الدال: استمرار.",
+    "insight_radar": "الرشد هو استقامة الوعي نحو غايته، الصعود المتوازن الذي يبلغ الكمال."
+  },
+  {
+    "root": "رصد",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Observation (رصد)",
+    "structural_analysis": "الراء: تدفق. الصاد: صلابة. الدال: استمرار.",
+    "insight_radar": "الرصد هو شمول الوعي بالمراقبة، الصعود الذي لا يغفل عن شيء."
+  },
+  {
+    "root": "رضي",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Satisfaction (رضا)",
+    "structural_analysis": "الراء: رقة. الضاد: احتواء. الياء: امتداد.",
+    "insight_radar": "الرضا هو سكينة الوعي التي تقبل القضاء، الجمع الذي يسلم للخير."
+  },
+  {
+    "root": "رغب",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Desire (رغبة)",
+    "structural_analysis": "الراء: تدفق. الغين: غيب. الباء: احتواء.",
+    "insight_radar": "الرغبة هي صعود الوعي نحو ما يريد، الشمول الذي يطلب المزيد."
+  },
+  {
+    "root": "رقي",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Ascension (رقى)",
+    "structural_analysis": "الراء: تدفق. القاف: قوة. الياء: امتداد.",
+    "insight_radar": "الرقى هو صعود الوعي في مدار العلو، الشمول الذي لا يعرف الحدود."
+  },
+  {
+    "root": "ركز",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Focus (تركيز)",
+    "structural_analysis": "الراء: تدفق. الكاف: كف. الزاي: اهتزاز.",
+    "insight_radar": "الركز هو تمكين الجذر في نقطة واحدة، التجذر الذي يجمع القوة."
+  },
+  {
+    "root": "رمل",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Sand (رمل)",
+    "structural_analysis": "الراء: تدفق. الميم: امتداد. اللام: لين.",
+    "insight_radar": "الرمل هو أرض التمكين السائبة، التجذر الذي ينتشر بسهولة."
+  },
+  {
+    "root": "رهب",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Awe (رهبة)",
+    "structural_analysis": "الراء: تدفق. الهاء: هبوط. الباء: وعاء.",
+    "insight_radar": "الرهبة هي حركة الوعي نحو التعظيم، السرعة التي توقر الجلال."
+  },
+  {
+    "root": "روح",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Spirit (روح)",
+    "structural_analysis": "الراء: تدفق. الواو: دوران. الحاء: حياة.",
+    "insight_radar": "الروح هي الطاقة الصاعدة التي تحرك الجسد، الوعي المتدفق في مدار الشمول."
+  },
+  {
+    "root": "ريح",
+    "orbit_id": 5,
+    "energy_type": "أنثى",
+    "carrier_type": "معز",
+    "bio_link": "Wind (ريح)",
+    "structural_analysis": "الراء: تدفق. الياء: امتداد. الحاء: حركة.",
+    "insight_radar": "الريح هي حركة الهواء في مدار الحياة، السرعة التي تنقل الخير."
+  },
+  {
+    "root": "زاد",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Increase (زيادة)",
+    "structural_analysis": "الزاي: اهتزاز. الألف: امتداد. الدال: استمرار.",
+    "insight_radar": "الزيادة هي نماء التمكين الذي لا يتوقف، التجذر الذي يتسع بالخير."
+  },
+  {
+    "root": "زكا",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Purification (زكاة)",
+    "structural_analysis": "الزاي: اهتزاز. الكاف: كشف. الألف: امتداد.",
+    "insight_radar": "الزكاة هي تنقية الوعي ليرتفع، الصعود الذي يزيل الشوائب ليشتد العلو."
+  },
+  {
+    "root": "زمن",
+    "orbit_id": 7,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Time (زمن)",
+    "structural_analysis": "الزاي: اهتزاز. الميم: احتواء. النون: استمرار.",
+    "insight_radar": "الزمن هو مدار العود الذي يعيد الوجود، الحركة الدورية التي تكرر الدورات."
+  },
+  {
+    "root": "زوج",
+    "orbit_id": 6,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Pair (زوج)",
+    "structural_analysis": "الزاي: اهتزاز. الواو: وصل. الجيم: جمع.",
+    "insight_radar": "الزوج هو نظام السكينة الذي يجمع المتماثلين، التدبير الذي يكمل النقص."
+  },
+  {
+    "root": "زور",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Deviation (زور)",
+    "structural_analysis": "الزاي: اهتزاز. الواو: انعطاف. الراء: تدفق.",
+    "insight_radar": "الزور هو انحراف الحركة عن الاستواء، القفزة التي تسبق العودة إلى الصواب."
+  },
+  {
+    "root": "زيت",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Oil (زيت)",
+    "structural_analysis": "الزاي: اهتزاز. الياء: امتداد. التاء: تمام.",
+    "insight_radar": "الزيت هو زاد التمكين الذي يغذي الجذور، التجذر الذي يستخرج الخير من الأرض."
+  },
+  {
+    "root": "سجد",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Prostration (سجود)",
+    "structural_analysis": "السين: انحناء. الجيم: جمع. الدال: استقرار.",
+    "insight_radar": "السجود هو جمع الذات في نقطة السكينة، الاحتواء التام الذي يعيد الاتصال بالأصل."
+  },
+  {
+    "root": "سحر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Fascination (سحر)",
+    "structural_analysis": "السين: سيولة. الحاء: حيرة. الراء: تدفق.",
+    "insight_radar": "السحر هو حركة الوعي التي تأسر العقول، السرعة التي تذهل الأبصار."
+  },
+  {
+    "root": "سخا",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Generosity (سخاء)",
+    "structural_analysis": "السين: سيولة. الخاء: خفاء. الألف: امتداد.",
+    "insight_radar": "السخاء هو فيض السكينة على الغير، الجمع الذي يعطي بلا حساب."
+  },
+  {
+    "root": "سدر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Lote Tree (سدرة)",
+    "structural_analysis": "السين: سيولة. الدال: استمرار. الراء: تدفق.",
+    "insight_radar": "السدرة هي مدار الصعود الأقصى، الشمول الذي ينتهي إليه الوعي."
+  },
+  {
+    "root": "سر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Secret (سر)",
+    "structural_analysis": "السين: استتار. الراء: تدفق خفي.",
+    "insight_radar": "السر هو سكينة الباطن التي تخفي الجوهر، الجمع الذي لا يبوح بمكنونه."
+  },
+  {
+    "root": "سرى",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Journey (سرى)",
+    "structural_analysis": "السين: سيولة. الراء: تدفق. الياء: امتداد.",
+    "insight_radar": "السرى هو حركة الليل في مدار الحياة، السرعة التي تبلغ المدى."
+  },
+  {
+    "root": "سطع",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Emerge (سطوع)",
+    "structural_analysis": "السين: سيولة. الطاء: انبساط. العين: علو.",
+    "insight_radar": "السطوع هو صعود النور في مدار الشمول، الظهور الذي يضيء الأفق."
+  },
+  {
+    "root": "سفر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Travel (سفر)",
+    "structural_analysis": "السين: سيولة. الفاء: انفطار. الراء: تدفق.",
+    "insight_radar": "السفر هو حركة الانتقال في الأرض، السرعة التي تفتح الآفاق."
+  },
+  {
+    "root": "سكن",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Dwelling (سكن)",
+    "structural_analysis": "السين: سكون. الكاف: كف. النون: استقرار.",
+    "insight_radar": "السكن هو استقرار الوعي في مدار السكينة، الطمأنينة التي تثبت الجوهر."
+  },
+  {
+    "root": "سلم",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Peace (سلام)",
+    "structural_analysis": "السين: سيولة. اللام: لين. الميم: إحاطة.",
+    "insight_radar": "السلام هو سكينة الوجود التي تجمع الأمن، الجمع الذي يزيل الخوف."
+  },
+  {
+    "root": "سمع",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Hearing (سمع)",
+    "structural_analysis": "السين: سيولة. الميم: احتواء. العين: عمق.",
+    "insight_radar": "السمع هو استقبال الوجود في وعاء السكينة، الاحتواء الهادئ للرسائل الكونية."
+  },
+  {
+    "root": "سمو",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Exaltation (سمو)",
+    "structural_analysis": "السين: سيولة. الميم: امتداد. الواو: علو.",
+    "insight_radar": "السمو هو صعود الوعي إلى مدار العلو، الشمول الذي يعلو كل شيء."
+  },
+  {
+    "root": "سهل",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Ease (سهولة)",
+    "structural_analysis": "السين: انسياب. الهاء: هدوء. اللام: امتداد.",
+    "insight_radar": "السهل هو انبساط السكينة في كل اتجاه، اليسر الذي لا يقاوم تدفقه."
+  },
+  {
+    "root": "سير",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Walk (سير)",
+    "structural_analysis": "السين: سيولة. الياء: امتداد. الراء: تدفق.",
+    "insight_radar": "السير هو حركة الانتقال المتدرجة، السرعة التي تبلغ الغاية بثبات."
+  },
+  {
+    "root": "شجر",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Tree (شجر)",
+    "structural_analysis": "الشين: انتشار. الجيم: جمع. الراء: تدفق.",
+    "insight_radar": "الشجر هو تجذر التمكين الذي يتفرع، النماء الذي يمد الظل والثمر."
+  },
+  {
+    "root": "شخص",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Person (شخص)",
+    "structural_analysis": "الشين: انتشار. الخاء: خفاء. الصاد: صلابة.",
+    "insight_radar": "الشخص هو تجلي الذات في قالب محدد، الوعي الذي يتشخص ليعرف."
+  },
+  {
+    "root": "شرح",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Expansion (شرح)",
+    "structural_analysis": "الشين: انتشار. الراء: تدفق. الحاء: حياة.",
+    "insight_radar": "الشرح هو انبساط السكينة في الصدر، الجمع الذي يتسع للكل."
+  },
+  {
+    "root": "شرع",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Law (شريعة)",
+    "structural_analysis": "الشين: انتشار. الراء: تدفق. العين: عمق.",
+    "insight_radar": "الشريعة هي نظام التدبير الذي يسير الوجود، الوعي الذي يشرع الطريق."
+  },
+  {
+    "root": "شمس",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Sun (شمس)",
+    "structural_analysis": "الشين: انتشار. الميم: امتداد. السين: سيولة.",
+    "insight_radar": "الشمس هي نقطة الإشعاع التي تمد الوجود بالطاقة، مدار الصعود الذي يضيء كل أفق."
+  },
+  {
+    "root": "شهد",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Witness (شهادة)",
+    "structural_analysis": "الشين: انتشار. الهاء: هبوط. الدال: استمرار.",
+    "insight_radar": "الشهادة هي شمول الوعي بالحضور، الصعود الذي يشهد الحقيقة."
+  },
+  {
+    "root": "شوق",
+    "orbit_id": 2,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Longing (شوق)",
+    "structural_analysis": "الشين: انتشار. الواو: وصل. القاف: قوة.",
+    "insight_radar": "الشوق هو صعود الوعي نحو ما يحب، الشمول الذي يطلب القرب."
+  },
+  {
+    "root": "صبر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Patience (صبر)",
+    "structural_analysis": "الصاد: صلابة. الباء: احتواء. الراء: تدفق.",
+    "insight_radar": "الصبر هو سكينة الوعي التي تتحمل، الجمع الذي ينتظر الخير."
+  },
+  {
+    "root": "صعد",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Ascend (صعود)",
+    "structural_analysis": "الصاد: صلابة. العين: علو. الدال: استمرار.",
+    "insight_radar": "الصعود هو حركة الوعي نحو العلو، مدار الشمول الذي لا يقف عند حد."
+  },
+  {
+    "root": "صفا",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Purity (صفاء)",
+    "structural_analysis": "الصاد: صلابة. الفاء: تفريغ. الألف: امتداد.",
+    "insight_radar": "الصفاء هو سكينة الوعي التي لا يشوبها كدر، الجمع الذي يصفو من الشوائب."
+  },
+  {
+    "root": "صقر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Falcon (صقر)",
+    "structural_analysis": "الصاد: صلابة. القاف: قوة. الراء: تدفق.",
+    "insight_radar": "الصقر هو صعود الوعي في مدار العلو، الشمول الذي يرى من الأعلى."
+  },
+  {
+    "root": "صلح",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Reconciliation (صلح)",
+    "structural_analysis": "الصاد: صلابة. اللام: لين. الحاء: حياة.",
+    "insight_radar": "الصلح هو سكينة الجمع بين المتفرقات، الاحتواء الذي يوحد القلوب."
+  },
+  {
+    "root": "صلى",
+    "orbit_id": 2,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Prayer (صلاة)",
+    "structural_analysis": "الصاد: صلة. اللام: امتداد. الياء: اتصال.",
+    "insight_radar": "الصلاة هي صعود الوعي إلى مدار الاتصال، الشمول الذي يصل العبد بالرب."
+  },
+  {
+    "root": "صمد",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Eternal (صمد)",
+    "structural_analysis": "الصاد: صلابة. الميم: امتداد. الدال: استمرار.",
+    "insight_radar": "الصمد هو مدار الذات الذي لا يحتاج، الوعي المطلق الذي يصمد بلا تغير."
+  },
+  {
+    "root": "صوت",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Sound (صوت)",
+    "structural_analysis": "الصاد: صلابة. الواو: دوران. التاء: تمام.",
+    "insight_radar": "الصوت هو حركة الاهتزاز في مدار الحياة، السرعة التي تنقل المعنى."
+  },
+  {
+    "root": "ضرب",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Strike (ضرب)",
+    "structural_analysis": "الضاد: احتواء. الراء: تدفق. الباء: وعاء.",
+    "insight_radar": "الضرب هو حركة التأثير في مدار الحياة، السرعة التي تحدث التغيير."
+  },
+  {
+    "root": "ضل",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Search Space (فضاء بحث)",
+    "structural_analysis": "الضاد: احتواء. اللام: امتداد.",
+    "insight_radar": "الضلال هو اتساع مدار البحث عن الوعي، الصعود الذي يتجول حتى يصل إلى الشمول."
+  },
+  {
+    "root": "ضمن",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Guarantee (ضمان)",
+    "structural_analysis": "الضاد: احتواء. الميم: إحاطة. النون: استقرار.",
+    "insight_radar": "الضمان هو سكينة الاحتواء التي تحمي، الجمع الذي يضمن السلامة."
+  },
+  {
+    "root": "طبع",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Nature (طبع)",
+    "structural_analysis": "الطاء: انبساط. الباء: وعاء. العين: عمق.",
+    "insight_radar": "الطبع هو مدار الذات الذي يظهر الجبلة، الوعي الذي يطبع كل شيء بصفته."
+  },
+  {
+    "root": "طهر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Purity (طهارة)",
+    "structural_analysis": "الطاء: انبساط. الهاء: هدوء. الراء: تدفق.",
+    "insight_radar": "الطهارة هي سكينة النقاء التي تزيل الكدر، الجمع الذي يصفو للخير."
+  },
+  {
+    "root": "طور",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Stage (طور)",
+    "structural_analysis": "الطاء: انبساط. الواو: انعطاف. الراء: تدفق.",
+    "insight_radar": "الطور هو حركة الانتقال من حال إلى حال، السرعة التي تتصاعد في مدارات."
+  },
+  {
+    "root": "طير",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Bird (طير)",
+    "structural_analysis": "الطاء: انبساط. الياء: امتداد. الراء: تدفق.",
+    "insight_radar": "الطير هو صعود الوعي في مدار العلو، الشمول الذي يحلق في الأفق."
+  },
+  {
+    "root": "ظاهر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Manifest (ظاهر)",
+    "structural_analysis": "الظاء: ظهور. الألف: امتداد. الهاء: هبوط. الراء: تدفق.",
+    "insight_radar": "الظاهر هو مدار الصعود الذي يظهر الوجود، الشمول الذي لا يخفى."
+  },
+  {
+    "root": "ظل",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Shadow (ظل)",
+    "structural_analysis": "الظاء: استتار. اللام: امتداد.",
+    "insight_radar": "الظل هو سكينة الساتر التي تحمي، الجمع الذي يقي من الحرور."
+  },
+  {
+    "root": "ظن",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Assumption (ظن)",
+    "structural_analysis": "الظاء: استتار. النون: نية.",
+    "insight_radar": "الظن هو صعود الوعي إلى احتمال، الشمول الذي يبحث عن اليقين."
+  },
+  {
+    "root": "عبد",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Worship (عبادة)",
+    "structural_analysis": "العين: عمق. الباء: احتواء. الدال: استمرار.",
+    "insight_radar": "العبادة هي سكينة التسليم التي تجمع العبد بالرب، الجمع الذي يتحقق في الطاعة."
+  },
+  {
+    "root": "عبر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Cross (عبور)",
+    "structural_analysis": "العين: عمق. الباء: وعاء. الراء: تدفق.",
+    "insight_radar": "العبور هو حركة الانتقال من ضفة إلى ضفة، السرعة التي تبلغ الغاية."
+  },
+  {
+    "root": "عجل",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Haste (عجلة)",
+    "structural_analysis": "العين: عمق. الجيم: جمع. اللام: امتداد.",
+    "insight_radar": "العجلة هي حركة السرعة التي لا تنتظر، القفزة التي تسبق الزمن."
+  },
+  {
+    "root": "عدل",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Justice (عدل)",
+    "structural_analysis": "العين: عمق. الدال: استمرار. اللام: امتداد.",
+    "insight_radar": "العدل هو سكينة التوازن التي تجمع الحق، الجمع الذي يضع كل شيء في موضعه."
+  },
+  {
+    "root": "عذر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Excuse (عذر)",
+    "structural_analysis": "العين: عمق. الذال: تميز. الراء: تدفق.",
+    "insight_radar": "العذر هو سكينة القبول التي تغفر، الجمع الذي يزيل اللوم."
+  },
+  {
+    "root": "عرف",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Knowledge (عرف)",
+    "structural_analysis": "العين: عمق. الراء: تدفق. الفاء: انفطار.",
+    "insight_radar": "المعرفة هي شمول الوعي للحقيقة، الصعود الذي يكشف المستور."
+  },
+  {
+    "root": "عقل",
+    "orbit_id": 4,
+    "energy_type": "ذكر",
+    "carrier_type": "ضأن",
+    "bio_link": "Intellect (عقل)",
+    "structural_analysis": "العين: عمق. القاف: قوة. اللام: امتداد.",
+    "insight_radar": "العقل هو وعاء السكينة الذي يجمع المعاني، الاحتواء الذي يرتب الفوضى في نظام."
+  },
+  {
+    "root": "علم",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Knowledge (علم)",
+    "structural_analysis": "العين: عمق. اللام: امتداد. الميم: احتواء.",
+    "insight_radar": "العلم هو شمول الوعي للمعاني، الصعود الذي يحيط بكل معلوم."
+  },
+  {
+    "root": "علي",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "High (علي)",
+    "structural_analysis": "العين: علو. اللام: امتداد. الياء: استمرار.",
+    "insight_radar": "العلي هو مدار الصعود الأقصى، الشمول الذي لا يعلوه شيء."
+  },
+  {
+    "root": "عمر",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Lifespan (عمر)",
+    "structural_analysis": "العين: عمق. الميم: امتداد. الراء: تدفق.",
+    "insight_radar": "العمر هو تمكين التماسك في الزمن، التجذر الذي يمتد بالحياة."
+  },
+  {
+    "root": "عنا",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Care (عناية)",
+    "structural_analysis": "العين: عمق. النون: نية. الألف: امتداد.",
+    "insight_radar": "العناية هي سكينة الاحتواء التي ترعى، الجمع الذي يحمي ويربي."
+  },
+  {
+    "root": "عوج",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Curve (عوج)",
+    "structural_analysis": "العين: عمق. الواو: انعطاف. الجيم: جمع.",
+    "insight_radar": "العوج هو انحراف الحركة عن الاستواء، القفزة التي تسبق التقويم."
+  },
+  {
+    "root": "غفر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Forgiveness (غفر)",
+    "structural_analysis": "الغين: غفر. الفاء: تفريغ. الراء: تدفق.",
+    "insight_radar": "الغفران هو سكينة الستر التي تغطي الزلل، الجمع الذي يعيد النقاء."
+  },
+  {
+    "root": "غيب",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Non-coding DNA (حمض نووي غير مشفر)",
+    "structural_analysis": "الغين: استتار. الياء: امتداد. الباء: احتواء.",
+    "insight_radar": "الغيب هو وعاء الذات الذي يحتوي ما وراء الظهور، المعلومات المحتجبة التي تدير النظام."
+  },
+  {
+    "root": "غيث",
+    "orbit_id": 3,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "Rain (غيث)",
+    "structural_analysis": "الغين: غيث. الياء: امتداد. الثاء: ثبات.",
+    "insight_radar": "الغيث هو إمداد التمكين الذي يحيي الأرض، التجذر الذي ينمو بالماء."
+  },
+  {
+    "root": "فجر",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Dawn (فجر)",
+    "structural_analysis": "الفاء: انفطار. الجيم: جمع. الراء: تدفق.",
+    "insight_radar": "الفجر هو صعود النور في مدار الشمول، الانبثاق الذي يبدد الظلام."
+  },
+  {
+    "root": "فطر",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Creation (فطرة)",
+    "structural_analysis": "الفاء: انفطار. الطاء: انبساط. الراء: تدفق.",
+    "insight_radar": "الفطرة هي مدار الذات الذي فطر الوجود، الوعي الذي أبدع الكون."
+  },
+  {
+    "root": "فلق",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Split (فلق)",
+    "structural_analysis": "الفاء: انفطار. اللام: امتداد. القاف: قطع.",
+    "insight_radar": "الفلق هو حركة الانشقاق في مدار الحياة، السرعة التي تخلق الانفجار."
+  },
+  {
+    "root": "فهم",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Understanding (فهم)",
+    "structural_analysis": "الفاء: انفطار. الهاء: هبوط. الميم: احتواء.",
+    "insight_radar": "الفهم هو نزول المعنى إلى وعاء السكينة، الاحتواء الذي يجعل الخارج داخلاً."
+  },
+  {
+    "root": "فوز",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Success (فوز)",
+    "structural_analysis": "الفاء: انفطار. الواو: وصل. الزاي: اهتزاز.",
+    "insight_radar": "الفوز هو صعود الوعي إلى مدار الغاية، الشمول الذي يحقق المراد."
+  },
+  {
+    "root": "قبض",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Grasp (قبض)",
+    "structural_analysis": "القاف: قوة. الباء: وعاء. الضاد: احتواء.",
+    "insight_radar": "القبض هو تمكين التماسك في نقطة، التجذر الذي يجمع القوة."
+  },
+  {
+    "root": "قدر",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "إبل",
+    "bio_link": "Morphogen Gradient (تدرج مكون الشكل)",
+    "structural_analysis": "القاف: تقدير. الدال: استمرار. الراء: تدفق.",
+    "insight_radar": "القدر هو تقدير الذات للوجود بمقدار، الوعي الذي يحدد حدود كل شيء بحكمة."
+  },
+  {
+    "root": "قرأ",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Read (قراءة)",
+    "structural_analysis": "القاف: قارئ. الراء: تدفق. الهمزة: انطلاق.",
+    "insight_radar": "القراءة هي جمع المعاني من أفق الوعي، الصعود بالنص إلى مدار الشمول."
+  },
+  {
+    "root": "قرب",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Proximity (قرب)",
+    "structural_analysis": "القاف: قرب. الراء: رقة. الباء: احتواء.",
+    "insight_radar": "القرب هو دنو السكينة من جوهرها، الجمع الذي يزيل المسافات."
+  },
+  {
+    "root": "قصد",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Intention (قصد)",
+    "structural_analysis": "القاف: قصد. الصاد: صلابة. الدال: استمرار.",
+    "insight_radar": "القصد هو صعود الوعي نحو الغاية، الشمول الذي لا يضل طريقه."
+  },
+  {
+    "root": "قضا",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Judgment (قضاء)",
+    "structural_analysis": "القاف: قضاء. الضاد: إحكام. الألف: امتداد.",
+    "insight_radar": "القضاء هو نظام التدبير الذي يحكم الوجود، الوعي الذي ينفذ الإرادة."
+  },
+  {
+    "root": "قلم",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Pen (قلم)",
+    "structural_analysis": "القاف: قوة. اللام: امتداد. الميم: كتابة.",
+    "insight_radar": "القلم هو أداة التدبير التي تسطر الوجود، النظام الذي يوجه الحركة بعلم."
+  },
+  {
+    "root": "قمر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Moon (قمر)",
+    "structural_analysis": "القاف: قمر. الميم: امتداد. الراء: تدفق.",
+    "insight_radar": "القمر هو سكينة الليل التي تضيء، الجمع الذي ينير في الظلام."
+  },
+  {
+    "root": "قهق",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Regression (رجوع)",
+    "structural_analysis": "القاف: قهقرى. الهاء: هبوط. القاف: عودة.",
+    "insight_radar": "القهقرى هو مدار العود الذي يرجع إلى الخلف، العودة التي تسبق الانطلاق."
+  },
+  {
+    "root": "قهر",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Dominance (قهر)",
+    "structural_analysis": "القاف: قوة. الهاء: هيمنة. الراء: تدفق.",
+    "insight_radar": "القهر هو حركة النفوذ التي لا تقاوم، السرعة التي توجه بالقوة."
+  },
+  {
+    "root": "قوى",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Strength (قوة)",
+    "structural_analysis": "القاف: قوة. الواو: وصل. الياء: امتداد.",
+    "insight_radar": "القوة هي تمكين التماسك في البناء، التجذر الذي يثبت الجذور."
+  },
+  {
+    "root": "قيد",
+    "orbit_id": 6,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Restriction (قيد)",
+    "structural_analysis": "القاف: قيد. الياء: امتداد. الدال: استمرار.",
+    "insight_radar": "القيد هو نظام التمكين الذي يحدد، التدبير الذي يضبط الحركة."
+  },
+  {
+    "root": "كسب",
+    "orbit_id": 3,
+    "energy_type": "مزدوج",
+    "carrier_type": "بقر",
+    "bio_link": "Earn (كسب)",
+    "structural_analysis": "الكاف: كسب. السين: سيولة. الباء: احتواء.",
+    "insight_radar": "الكسب هو تحصيل التمكين بالعمل، التجذر الذي يجني الثمر."
+  },
+  {
+    "root": "كفر",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Cover (كفر)",
+    "structural_analysis": "الكاف: كفر. الفاء: تفريغ. الراء: تدفق.",
+    "insight_radar": "الكفر هو حركة الستر التي تغطي الحقيقة، القفزة التي تسبق الكشف."
+  },
+  {
+    "root": "كلأ",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Protection (كلاءة)",
+    "structural_analysis": "الكاف: كف. اللام: امتداد. الهمزة: إحاطة.",
+    "insight_radar": "الكلاءة هي سكينة الحماية التي ترعى، الجمع الذي يحمي من الضياع."
+  },
+  {
+    "root": "كلم",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Speech (كلام)",
+    "structural_analysis": "الكاف: كلام. اللام: امتداد. الميم: إحاطة.",
+    "insight_radar": "الكلام هو سكينة التواصل التي تجمع المعاني، الجمع الذي ينقل الفكرة."
+  },
+  {
+    "root": "كمل",
+    "orbit_id": 7,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Completion (كمال)",
+    "structural_analysis": "الكاف: كمال. الميم: إحاطة. اللام: امتداد.",
+    "insight_radar": "الكمال هو مدار العود الذي يتم الدائرة، الإتمام الذي يعيد إلى الأصل."
+  },
+  {
+    "root": "كنز",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Treasure (كنز)",
+    "structural_analysis": "الكاف: كنز. النون: نهاية. الزاي: اهتزاز.",
+    "insight_radar": "الكنز هو مخزون التمكين الذي يخبأ، التجذر الذي يدخر الخير."
+  },
+  {
+    "root": "كوكب",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Planet (كوكب)",
+    "structural_analysis": "الكاف: كوكب. الواو: دوران. الكاف: مركز. الباء: احتواء.",
+    "insight_radar": "الكوكب هو مدار الصعود الذي يدور في الأفق، الشمول الذي يسير بنظام."
+  },
+  {
+    "root": "ليل",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Night (ليل)",
+    "structural_analysis": "اللام: لين. الياء: امتداد. اللام: استتار.",
+    "insight_radar": "الليل هو سكينة السكون التي تجمع الظلام، الجمع الذي يسبق النور."
+  },
+  {
+    "root": "ماء",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Water (ماء)",
+    "structural_analysis": "الميم: امتداد. الألف: حياة. الهمزة: انطلاق.",
+    "insight_radar": "الماء هو إمداد التمكين الذي يحيي الأرض، التجذر الذي ينمو بالحياة."
+  },
+  {
+    "root": "مال",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Wealth (مال)",
+    "structural_analysis": "الميم: تمكين. الألف: امتداد. اللام: لين.",
+    "insight_radar": "المال هو زاد التمكين الذي يثمر، التجذر الذي يجمع الخير."
+  },
+  {
+    "root": "ملك",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Sovereignty (ملك)",
+    "structural_analysis": "الميم: ملك. اللام: امتداد. الكاف: كف.",
+    "insight_radar": "الملك هو نظام التدبير الذي يحيط بالجميع، الوعي الذي يوجه الحركة من أعلى."
+  },
+  {
+    "root": "من",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Source (من)",
+    "structural_analysis": "الميم: من. النون: نهاية.",
+    "insight_radar": "من هو مدار الذات الذي يحدد المصدر، الوعي الذي يبين الأصل."
+  },
+  {
+    "root": "نبت",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Plant (نبت)",
+    "structural_analysis": "النون: نبت. الباء: بدء. التاء: تمام.",
+    "insight_radar": "النبت هو نماء التمكين من الأرض، التجذر الذي يظهر خير الزرع."
+  },
+  {
+    "root": "نزل",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Descent (نزول)",
+    "structural_analysis": "النون: نزول. الزاي: اهتزاز. اللام: امتداد.",
+    "insight_radar": "النزول هو تمكين الوعي في الأرض، التجذر الذي يرسخ المعاني في مادة الوجود."
+  },
+  {
+    "root": "نصر",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Victory (نصر)",
+    "structural_analysis": "النون: نصر. الصاد: صلابة. الراء: تدفق.",
+    "insight_radar": "النصر هو حركة العون التي تحقق الغاية، السرعة التي تنقل من ضعف إلى قوة."
+  },
+  {
+    "root": "نفس",
+    "orbit_id": 1,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Soul (نفس)",
+    "structural_analysis": "النون: نفس. الفاء: انفطار. السين: سيولة.",
+    "insight_radar": "النفس هي مدار الذات التي تظهر الوعي، الجوهر الذي يتنفس بالحياة."
+  },
+  {
+    "root": "نور",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Light (نور)",
+    "structural_analysis": "النون: نور. الواو: وصل. الراء: تدفق.",
+    "insight_radar": "النور هو صعود الوعي في مدار الإشراق، الشمول الذي يضيء كل شيء."
+  },
+  {
+    "root": "نوم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Sleep (نوم)",
+    "structural_analysis": "النون: نوم. الواو: انعطاف. الميم: احتواء.",
+    "insight_radar": "النوم هو سكينة الوعي التي تستريح، الجمع الذي يعيد الشحن."
+  },
+  {
+    "root": "هبط",
+    "orbit_id": 3,
+    "energy_type": "أنثى",
+    "carrier_type": "بقر",
+    "bio_link": "Descent (هبوط)",
+    "structural_analysis": "الهاء: هبوط. الباء: وعاء. الطاء: انبساط.",
+    "insight_radar": "الهبوط هو نزول الوعي إلى الأرض ليتجذر، التمكين الذي يرسخ الصعود."
+  },
+  {
+    "root": "هدى",
+    "orbit_id": 2,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Guidance (هدى)",
+    "structural_analysis": "الهاء: هداية. الدال: استمرار. الألف: امتداد.",
+    "insight_radar": "الهدى هو نور الوعي الذي يرشد إلى الشمول، الصعود الذي لا يضل طريقه."
+  },
+  {
+    "root": "هوى",
+    "orbit_id": 5,
+    "energy_type": "مزدوج",
+    "carrier_type": "معز",
+    "bio_link": "Desire (هوى)",
+    "structural_analysis": "الهاء: هبوط. الواو: انعطاف. الياء: امتداد.",
+    "insight_radar": "الهوى هو حركة الوعي نحو ما يريد، السرعة التي تدفع إلى الانجذاب."
+  },
+  {
+    "root": "وحد",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Unity (وحد)",
+    "structural_analysis": "الواو: وصل. الحاء: حصر. الدال: استمرار.",
+    "insight_radar": "الوحد هو مدار الذات الذي لا يتجزأ، الوعي المطلق الذي يشمل الكثرة."
+  },
+  {
+    "root": "وصل",
+    "orbit_id": 4,
+    "energy_type": "مزدوج",
+    "carrier_type": "ضأن",
+    "bio_link": "Connection (وصل)",
+    "structural_analysis": "الواو: وصل. الصاد: صلة. اللام: امتداد.",
+    "insight_radar": "الوصل هو سكينة الاتصال التي تجمع المنفصل، الجمع الذي يعيد الوحدة."
+  },
+  {
+    "root": "وقت",
+    "orbit_id": 7,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Time (وقت)",
+    "structural_analysis": "الواو: دوران. القاف: تحديد. التاء: تمام.",
+    "insight_radar": "الوقت هو مدار العود الذي يحصي الزمن، القياس الذي يعيد الدورات."
+  },
+  {
+    "root": "يتم",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Orphan (يتيم)",
+    "structural_analysis": "الياء: امتداد. التاء: تمام. الميم: احتواء.",
+    "insight_radar": "اليتم هو سكينة الاحتواء لمن فقد السند، الجمع الذي يعيد الأمان."
+  },
+  {
+    "root": "يسر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Ease (يسر)",
+    "structural_analysis": "الياء: انسياب. السين: سيولة. الراء: تدفق.",
+    "insight_radar": "اليسر هو انسياب السكينة في مدار الجمع، السهولة التي تجعل كل طريق ممهداً."
   }
-]
+] 
