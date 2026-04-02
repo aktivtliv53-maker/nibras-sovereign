@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v28.1
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v28.2
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Dynamic Activation - الإحلال الكامل لفك التجمد المنطقي
+# الإصدار: Single Source of Truth - توحيد مرجعية الحقيقة
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -84,9 +84,16 @@ LETTER_GEOMETRY = {
 ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]')
 NON_ARABIC_KEEP_SPACES_PATTERN = re.compile(r'[^\u0621-\u063A\u0641-\u064A\s]')
 
+def normalize_lexicon_root(root_name: str):
+    """تطبيع جذور الليكسيكون (المصدر) - الهمزات والألفات"""
+    if not root_name:
+        return ""
+    return root_name.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ة", "ه").replace("ى", "ي").strip()
+
 def normalize_sovereign(text: str):
     """تطهير النص للوصول لجوهر الحرف الهندسي - نسخة متقدمة"""
-    if not text: return ""
+    if not text:
+        return ""
     text = ARABIC_DIACRITICS_PATTERN.sub('', text)
     text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ى", "ي").replace("ة", "ه")
     text = NON_ARABIC_KEEP_SPACES_PATTERN.sub(' ', text)
@@ -95,8 +102,10 @@ def normalize_sovereign(text: str):
 def match_root_logic(word, index_keys):
     """بروتوكول الربط المداري لاستخلاص الجذور الثلاثية - نسخة متقدمة"""
     w = normalize_sovereign(word)
-    if not w or len(w) < 2: return None
-    if w in index_keys: return w
+    if not w or len(w) < 2:
+        return None
+    if w in index_keys:
+        return w
     
     prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "بال", "وال", "فال"]
     suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما", "تم", "هن"]
@@ -104,29 +113,28 @@ def match_root_logic(word, index_keys):
     for p in prefixes:
         if w.startswith(p) and len(w)-len(p) >= 3:
             candidate = w[len(p):]
-            if candidate in index_keys: return candidate
+            if candidate in index_keys:
+                return candidate
             
     for s in suffixes:
         if w.endswith(s) and len(w)-len(s) >= 3:
             candidate = w[:-len(s)]
-            if candidate in index_keys: return candidate
+            if candidate in index_keys:
+                return candidate
     
     return None
 
 def get_sovereign_gene(root_name, original_weight):
     """
-    محرك المعايرة الدقيقة لنطاق الأزل (1.7 - 2.0) - v28.1 Dynamic Activation
-    إعادة توزيع الأوزان العالية على الأنعام الأربعة وفق عتبات حساسة
+    محرك المعايرة الدقيقة لنطاق الأزل (1.7 - 2.0) - v28.2 Single Source of Truth
     """
-    r = normalize_sovereign(root_name).strip()
+    r = normalize_lexicon_root(root_name).strip()
     w = float(original_weight)
 
-    # 1. نظام الحوكمة بالهوية (الأولوية القصوى)
     cow_roots = ["رزق", "رزاق", "ارض", "ثبت", "زرع", "نبت", "طعم", "بني", "مكث", "كنز"]
     if r in cow_roots:
         return "B", 55.0
 
-    # 2. إعادة معايرة "العتبات الحرجة" (Critical Thresholds)
     val = w * 100 if w < 10 else w
 
     if val >= 190:
@@ -148,7 +156,8 @@ def get_sovereign_gene(root_name, original_weight):
 
 def summarize_word_signature(root):
     """تحويل الجذر إلى توقيع جيني ثابت (Deterministic Signature)."""
-    if not root: return {'dominant_gene': 'N', 'total_energy': 300.0}
+    if not root:
+        return {'dominant_gene': 'N', 'total_energy': 300.0}
     
     hash_object = hashlib.md5(root.encode())
     hash_val = int(hash_object.hexdigest(), 16)
@@ -186,7 +195,7 @@ def generate_collective_insight(bodies):
     dom_gene = max(set(genes), key=genes.count)
     total_e = sum(b['energy'] for b in bodies)
     
-    header = f"### 🌌 بيان الوعي الجمعي للمدار (v28.1)\n"
+    header = f"### 🌌 بيان الوعي الجمعي للمدار (v28.2)\n"
     analysis = f"هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره **({total_e:.1f})**. يهيمن عليه جين **{GENE_STYLE[dom_gene]['name']}**، مما يوجه التدفق نحو **{GENE_STYLE[dom_gene]['meaning']}**."
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
@@ -212,7 +221,7 @@ def is_placeholder_insight(insight_text):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v28.1", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v28.2", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -273,24 +282,11 @@ if 'grand_monolith' not in st.session_state:
 # مسار الملف - هيكل المدارات
 roots_path = "data/nibras_lexicon.json"
 
-# ==============================================================================
-# التأكد من تحميل البيانات في حالة الجلسة
-# ==============================================================================
-if 'all_roots_data' not in st.session_state or not st.session_state['all_roots_data']:
-    try:
-        with open(roots_path, 'r', encoding='utf-8') as f:
-            st.session_state['all_roots_data'] = json.load(f)
-    except FileNotFoundError:
-        st.error(f"⚠️ الملف غير موجود: {roots_path}")
-        st.stop()
-    except json.JSONDecodeError as e:
-        st.error(f"❌ خطأ في بنية ملف JSON: {e}")
-        st.stop()
-
-all_roots_data = st.session_state['all_roots_data']
-
 def load_semantic_roots_db(path):
-    """تحميل قاعدة الجذور من هيكل المدارات (Orbit-based Structure)"""
+    """
+    تحميل قاعدة الجذور من هيكل المدارات (Orbit-based Structure)
+    بناء r_index بمفاتيح مطهرة (Normalized Keys) - Single Source of Truth
+    """
     if not os.path.exists(path):
         st.error(f"⚠️ المدار غير مراقب: الملف مفقود في {path}")
         st.stop()
@@ -302,8 +298,7 @@ def load_semantic_roots_db(path):
             st.error(f"❌ خطأ في بنية ملف JSON: {e}")
             st.stop()
 
-    r_index = {}
-    all_roots = []
+    r_index = {}  # المرجع الوحيد للبيانات - مفاتيح مطهرة
     all_roots_flat = []
     orbit_counter = Counter()
 
@@ -311,24 +306,22 @@ def load_semantic_roots_db(path):
         orbit_raw = orbit_block.get("orbit", "وعي")
         orbit_canonical = orbit_raw.split('(')[0].strip() if '(' in orbit_raw else orbit_raw
         
-        current_orbit = {
-            "orbit": orbit_canonical,
-            "orbit_raw": orbit_raw,
-            "roots": []
-        }
-        
         for item in orbit_block.get("roots", []):
-            root_name = normalize_sovereign(item.get("name", item.get("root", "")))
-            if not root_name:
+            root_raw = item.get("name", item.get("root", ""))
+            if not root_raw:
                 continue
+            
+            # تطبيع الجذر فوراً لاستخدامه كمفتاح
+            root_normalized = normalize_lexicon_root(root_raw)
             
             weight_val = float(item.get("weight", 1.0))
             insight_text = item.get("insight", item.get("meaning", ""))
             
-            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val)
+            gene_key, calibrated_weight = get_sovereign_gene(root_normalized, weight_val)
             
             record = {
-                "root": root_name,
+                "root_raw": root_raw,
+                "root": root_normalized,
                 "orbit": orbit_canonical,
                 "orbit_raw": orbit_raw,
                 "weight": calibrated_weight / 100 if calibrated_weight > 10 else calibrated_weight,
@@ -337,16 +330,14 @@ def load_semantic_roots_db(path):
                 "gene": gene_key
             }
             
-            r_index[root_name] = record
+            r_index[root_normalized] = record
             all_roots_flat.append(record)
-            current_orbit["roots"].append(record)
             orbit_counter[orbit_canonical] += 1
-        
-        all_roots.append(current_orbit)
     
-    return r_index, all_roots, all_roots_flat, orbit_counter
+    return r_index, all_roots_flat, orbit_counter
 
-r_index, all_roots, all_roots_flat, orbit_counter = load_semantic_roots_db(roots_path)
+# تحميل قاعدة البيانات - r_index هو المرجع الوحيد
+r_index, all_roots_flat, orbit_counter = load_semantic_roots_db(roots_path)
 
 # ==============================================================================
 # [5] المِحراب السداسي - صرح البيانات
@@ -372,7 +363,7 @@ with tabs[0]:
         key="full_text_input"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v28.1)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v28.2)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -439,7 +430,7 @@ with tabs[0]:
 state = st.session_state.grand_monolith
 
 # ==============================================================================
-# التبويب 1: الرنين الجيني - ديناميكي بالكامل
+# التبويب 1: الرنين الجيني - باستخدام r_index (Single Source of Truth)
 # ==============================================================================
 with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق الجيني")
@@ -458,23 +449,14 @@ with tabs[1]:
     st.markdown("---")
     st.markdown("### 📖 استنطاق الجذر النشط")
     
-    # منطق ديناميكي - يقرأ أول جذر مستنطق أو يستخدم 'أحد'
+    # المستدعي السيادي - منطق ثابت
     if state.get('active') and state.get('pool'):
-        target_root = state['pool'][0]
+        target_root_raw = state['pool'][0]
     else:
-        target_root = 'أحد'
+        target_root_raw = 'أحد'
     
-    root_found = None
-    orbit_found = "مدار الوعي العام"
-    
-    for orbit_item in all_roots_data:
-        for r in orbit_item.get('roots', []):
-            if normalize_sovereign(r.get('name', '').strip()) == normalize_sovereign(target_root):
-                root_found = r
-                orbit_found = orbit_item.get('orbit', 'مدار السيادة')
-                break
-        if root_found:
-            break
+    target_root_normalized = normalize_sovereign(target_root_raw)
+    root_found = r_index.get(target_root_normalized)
     
     if root_found:
         display_items = [
@@ -492,64 +474,50 @@ with tabs[1]:
                     </div>
                 """, unsafe_allow_html=True)
     else:
-        st.info(f"🔍 بانتظار استنطاق الجذر '{target_root}'")
+        st.info(f"🔍 جذر '{target_root_raw}' قيد الاستنطاق...")
 
 # ==============================================================================
-# التبويب 5: الوعي الفوقي - مستقل ويعمل دائماً
+# التبويب 5: الوعي الفوقي - باستخدام r_index (Single Source of Truth)
 # ==============================================================================
 with tabs[5]:
     st.header("🧠 الوعي الفوقي والبيان الجمعي")
     
-    # منطق ديناميكي - يقرأ أول جذر مستنطق أو يستخدم 'أحد'
+    # المستدعي السيادي - منطق ثابت (مطابق للتبويب 1)
     if state.get('active') and state.get('pool'):
-        target_root = state['pool'][0]
+        target_root_raw = state['pool'][0]
     else:
-        target_root = 'أحد'
+        target_root_raw = 'أحد'
     
-    root_found = None
-    orbit_found = "مدار الوعي العام"
-    gene_info = None
-    
-    for orbit_item in all_roots_data:
-        for r in orbit_item.get('roots', []):
-            if normalize_sovereign(r.get('name', '').strip()) == normalize_sovereign(target_root):
-                root_found = r
-                orbit_found = orbit_item.get('orbit', 'مدار السيادة')
-                gene_key = r.get('gene', 'N')
-                gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
-                break
-        if root_found:
-            break
+    target_root_normalized = normalize_sovereign(target_root_raw)
+    root_found = r_index.get(target_root_normalized)
     
     # حساب التردد الطاقي
     total_energy = sum(body.get('energy', 0) for body in state.get('bodies', []))
     
     if root_found:
+        gene_key = root_found.get('gene', 'N')
+        gene_info = GENE_STYLE.get(gene_key, GENE_STYLE['N'])
+        orbit_name = root_found.get('orbit', 'مدار الوعي العام')
+        
         st.markdown(f"""
         <div class='story-box' style='padding:20px; border:1px solid #333; border-radius:15px; background:#050505;'>
             <h3 style='margin:0; color:#FFD700;'>🧠 الوعي الفوقي والبيان الجمعي</h3>
-            <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_found})</h4>
+            <h4 style='margin:10px 0; color:#eee;'>🌌 بيان الوعي الجمعي للمدار ({orbit_name})</h4>
             <p style='color:#ccc;'>هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره <b>({total_energy:.1f})</b>. 
-            يهيمن عليه جين <b>{orbit_found}</b> من خلال رمز <b>{gene_info['icon']} {gene_info['name']}</b>، 
+            يهيمن عليه جين <b>{orbit_name}</b> من خلال رمز <b>{gene_info['icon']} {gene_info['name']}</b>، 
             مما يوجه التدفق نحو <b>{root_found.get('insight', 'التمكين السيادي')}</b>.</p>
             <p style='font-size:0.9em; border-top:1px dashed #444; padding-top:10px; color:#888;'>
-            <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{target_root}</b> ليخلق استواءً وجودياً.
+            <b>تسلسل التمكين:</b> يتدفق الوعي عبر محاور <b>{target_root_raw}</b> ليخلق استواءً وجودياً.
             </p>
         </div>
         """, unsafe_allow_html=True)
         
-        # إضافة معلومات حالة المفاعل
         if not state.get('active'):
             st.info("⚡ المفاعل في حالة انتظار. أدخل نصاً في التبويب الأول واضغط 'تفعيل المفاعل' لرؤية التأثير الفيزيائي.")
         else:
             st.success(f"✅ المفاعل نشط مع {len(state.get('bodies', []))} جذراً مستنطقاً.")
     else:
-        st.warning(f"🔍 الجذر '{target_root}' غير موجود في قاعدة البيانات.")
-        
-        # عرض قائمة بالجذور المتاحة كمرجع
-        available_roots = [r.get('name', '') for orbit_item in all_roots_data for r in orbit_item.get('roots', [])][:15]
-        if available_roots:
-            st.caption(f"📚 أمثلة على الجذور المتاحة: {', '.join(available_roots)}...")
+        st.warning(f"🔍 الجذر '{target_root_raw}' غير موجود في قاعدة البيانات. تأكد من صحة الملف data/nibras_lexicon.json")
 
 # ==============================================================================
 # باقي التبويبات تعتمد على حالة المفاعل
@@ -567,7 +535,7 @@ if state['active']:
     with tabs[3]:
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v28.1:</b><br>
+            <b>بيان الاستواء الوجودي v28.2:</b><br>
             بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام المعايرة الدقيقة لنطاق الأزل. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
@@ -630,7 +598,6 @@ if state['active']:
                 st.success(f"**📖 بصيرة سيد المدار (من القاعدة) للجذر ({top_root}):**\n\n{file_insight}")
 
 else:
-    # عندما يكون المفاعل غير نشط، نعرض رسالة في التبويبات 2-4
     for i in range(2, 5):
         with tabs[i]: 
             st.info("⚙️ المحراب في حالة انتظار. أدخل النص في التبويب الأول ثم اضغط 'تفعيل المفاعل'.")
@@ -638,8 +605,8 @@ else:
 # --- التذييل السيادي ---
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
-**الحالة:** استواء سيادي - معايرة دقيقة لنطاق الأزل - تشغيل ديناميكي  
-**الإصدار:** v28.1 (Dynamic Activation - الإقلاع المباشر)  
+**الحالة:** استواء سيادي - Single Source of Truth  
+**الإصدار:** v28.2 (SSOT - توحيد مرجعية الحقيقة)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
