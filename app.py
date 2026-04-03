@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.0
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.1
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: القراءة الشاملة - لا فشل، لا ترقيع، لا استثناء
+# الإصدار: الواجهة النقية - استنطاق كامل بلا قَصّ ولا تلوث
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
@@ -20,9 +20,11 @@ import hashlib
 import numpy as np
 
 # ==============================================================================
-# [0] إعادة تعيين الكاش لضمان قراءة جديدة
+# [0] إعدادات العرض - منع القص (Truncation)
 # ==============================================================================
-st.cache_data.clear()
+pd.set_option('display.max_colwidth', None)
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
 
 # ==============================================================================
 # [1] مصفوفة الجينات والرموز السيادية
@@ -70,21 +72,17 @@ LETTER_GEOMETRY = {
 }
 
 # ==============================================================================
-# [3] دوال التطهير والتوحيد - مطلقة لا تقبل الترقيع
+# [3] دوال التطهير والتوحيد
 # ==============================================================================
 
 def normalize_root(text):
-    """
-    دالة التطهير المطلقة - تحول أي جذر إلى مفتاح موحد للبحث
-    """
+    """دالة التطهير المطلقة - تحول أي جذر إلى مفتاح موحد للبحث"""
     if not text:
         return ""
     s = str(text).strip()
-    # توحيد الألفات والياءات والتاء المربوطة
     s = s.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ٱ", "ا")
     s = s.replace("ى", "ي").replace("ة", "ه")
     s = s.replace("ـ", "")
-    # إزالة التشكيل
     s = re.sub(r'[\u064B-\u065F\u0670\u06D6-\u06ED]', '', s)
     return s
 
@@ -99,8 +97,17 @@ def normalize_input_text(text):
     s = re.sub(r'[^\u0621-\u063A\u0641-\u064A\s]', ' ', s)
     return re.sub(r'\s+', ' ', s).strip()
 
+def ensure_dot(text):
+    """ضمان انتهاء النص بنقطة"""
+    if not text:
+        return ""
+    s = str(text).strip()
+    if not s.endswith('.'):
+        s = s + '.'
+    return s
+
 # ==============================================================================
-# [4] الميزان الجيني الحتمي - v29.0
+# [4] الميزان الجيني الحتمي
 # ==============================================================================
 
 def normalize_gene_weight(x):
@@ -116,14 +123,10 @@ def normalize_gene_weight(x):
         return 175.0
 
 def get_sovereign_gene(root_name, original_weight):
-    """
-    محرك الاستحقاق الجيني الحتمي
-    الأولوية: carrier_type في JSON ← القواعد الذهبية ← الميزان الرقمي
-    """
+    """محرك الاستحقاق الجيني الحتمي"""
     r = normalize_root(root_name)
     val = normalize_gene_weight(original_weight)
 
-    # [أ] القواعد الذهبية - الحقائق المطلقة
     GENE_MAP = {
         "B": {"ارض", "ثبت", "زرع", "نبت", "طعم", "بني", "مكث", "كنز", "رزق", "حفظ", "بقر", "بقرة", "جذر", "اصل", "رزاق", "ترب", "حجر", "حصد", "جثث", "جذر", "جير", "حمل"},
         "G": {"علو", "صعد", "قهر", "حكم", "سلط", "عزز", "رفع", "قوم", "معز", "عز", "قوة", "ملك", "علا", "جحد", "جرى", "جند", "جهد", "جور", "جوز", "جول", "حيد", "حمر", "حمس", "تعب"},
@@ -135,7 +138,6 @@ def get_sovereign_gene(root_name, original_weight):
         if r in roots:
             return gene_key, val
 
-    # [ب] الميزان الرقمي
     if val >= 195:
         return "G", val
     if val >= 185:
@@ -145,19 +147,15 @@ def get_sovereign_gene(root_name, original_weight):
     return "S", val
 
 def extract_root_from_word(word, index_keys):
-    """
-    استخراج الجذر من كلمة مدخلة - بحث شامل
-    """
+    """استخراج الجذر من كلمة مدخلة - بحث شامل"""
     w = normalize_input_text(word)
     if not w or len(w) < 2:
         return None
     
-    # البحث المباشر
     w_norm = normalize_root(w)
     if w_norm in index_keys:
         return w_norm
     
-    # إزالة ال prefixes
     prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "بال", "وال", "فال", "لل", "للا"]
     for p in prefixes:
         if w.startswith(p) and len(w) - len(p) >= 2:
@@ -165,7 +163,6 @@ def extract_root_from_word(word, index_keys):
             if candidate in index_keys:
                 return candidate
     
-    # إزالة ال suffixes
     suffixes = ["ون", "ين", "ان", "ات", "ه", "ها", "هم", "كم", "نا", "كما", "تم", "هن", "ي", "ة"]
     for s in suffixes:
         if w.endswith(s) and len(w) - len(s) >= 2:
@@ -178,9 +175,10 @@ def extract_root_from_word(word, index_keys):
 def generate_geometric_insight(root):
     """توليد بصيرة هندسية من حروف الجذر"""
     if not root or len(root) < 2:
-        return "جذر قيد التكوين..."
+        return "جذر قيد التكوين."
     parts = [LETTER_GEOMETRY.get(c, f"تفاعل طاقي للحرف ({c})") for c in root]
-    return "**الاستنطاق الهندسي:** " + " ثم ".join(parts) + " | **تم الاستواء.**"
+    result = "الاستنطاق الهندسي: " + " ثم ".join(parts) + ". تم الاستواء."
+    return ensure_dot(result)
 
 def is_placeholder(insight):
     """التحقق من كون البصيرة نصاً افتراضياً"""
@@ -204,15 +202,12 @@ def signature_from_root(root):
     }
 
 # ==============================================================================
-# [5] تحميل قاعدة البيانات - القراءة الشاملة
+# [5] تحميل قاعدة البيانات
 # ==============================================================================
 
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
-    """
-    تحميل الليكسيكون بالكامل - لا فشل، لا استثناء
-    يعيد r_index (قاموس بالمفاتيح المطهرة) وقائمة all_roots
-    """
+    """تحميل الليكسيكون بالكامل"""
     if not os.path.exists(path):
         st.error(f"❌ ملف الليكسيكون غير موجود: {path}")
         st.stop()
@@ -232,40 +227,32 @@ def load_lexicon_db(path):
     all_roots = []
     
     for item in data:
-        # استخراج الجذر الخام
         raw_root = item.get("root", "")
         if not raw_root:
             continue
         
-        # المفتاح المطهر
         normalized_key = normalize_root(raw_root)
-        
-        # استخراج carrier_type لتحديد الجين
         carrier = item.get("carrier_type", "")
-        energy_type = item.get("energy_type", "مزدوج")
-        
-        # الوزن - استخدام قيمة افتراضية منطقية
         weight_val = item.get("weight", 50.0)
+        
         if weight_val == 1.0 and carrier:
-            # تعيين وزن افتراضي حسب الناقل
             weight_map = {"إبل": 185, "بقر": 180, "ضأن": 175, "معز": 190}
             weight_val = weight_map.get(carrier, 175)
         
-        # الميزان الجيني
         gene_key, cal_weight = get_sovereign_gene(raw_root, weight_val)
+        insight_text = item.get("insight_radar", item.get("insight", ""))
         
-        # بناء السجل
         record = {
             "root_raw": raw_root,
             "root": normalized_key,
             "orbit_id": item.get("orbit_id", 0),
             "orbit": f"المدار {item.get('orbit_id', 0)}" if item.get('orbit_id') else "وعي",
-            "energy_type": energy_type,
+            "energy_type": item.get("energy_type", "مزدوج"),
             "carrier_type": carrier,
             "bio_link": item.get("bio_link", ""),
             "structural_analysis": item.get("structural_analysis", ""),
-            "insight": item.get("insight_radar", item.get("insight", "")),
-            "meaning": item.get("insight_radar", item.get("meaning", "")),
+            "insight": ensure_dot(insight_text),
+            "meaning": ensure_dot(insight_text),
             "gene": gene_key,
             "weight": cal_weight / 100 if cal_weight > 10 else cal_weight
         }
@@ -280,20 +267,84 @@ def load_lexicon_db(path):
     return r_index, all_roots
 
 # ==============================================================================
-# [6] تهيئة التطبيق
+# [6] دالة عرض الجدول المخصص - بدون قص
 # ==============================================================================
 
-st.set_page_config(page_title="نبراس السيادي v29.0", page_icon="🛡️", layout="wide")
+def display_roots_table(bodies_data):
+    """عرض الجذور في جدول مخصص بدون قص النصوص"""
+    if not bodies_data:
+        st.info("لا توجد بيانات للعرض.")
+        return
+    
+    for idx, body in enumerate(bodies_data):
+        insight_text = body.get('insight', '')
+        if is_placeholder(insight_text) or not insight_text:
+            insight_text = generate_geometric_insight(body.get('root', ''))
+        
+        st.markdown(f"""
+        <div style='border:1px solid #333; border-radius:10px; padding:15px; margin-bottom:15px; background:#0a0a0a;'>
+            <table style='width:100%; border-collapse:collapse; direction:rtl;'>
+                <tr>
+                    <td style='padding:8px; width:100px; color:#888;'>الجذر</td>
+                    <td style='padding:8px; color:#4fc3f7; font-weight:bold;'>{body.get('root', '')}</td>
+                </tr>
+                <tr>
+                    <td style='padding:8px; width:100px; color:#888;'>الجين</td>
+                    <td style='padding:8px;'><span style='color:{GENE_STYLE.get(body.get('gene', 'S'), GENE_STYLE['S'])["color"]};'>{GENE_STYLE.get(body.get('gene', 'S'), GENE_STYLE['S'])["icon"]} {GENE_STYLE.get(body.get('gene', 'S'), GENE_STYLE['S'])["name"]}</span></td>
+                </tr>
+                <tr>
+                    <td style='padding:8px; width:100px; color:#888;'>الطاقة</td>
+                    <td style='padding:8px;'>{body.get('energy', 0):.2f}</td>
+                </tr>
+                <tr>
+                    <td style='padding:8px; width:100px; color:#888; vertical-align:top;'>الاستنطاق</td>
+                    <td style='padding:8px; line-height:1.6;'>{ensure_dot(insight_text)}</td>
+                </tr>
+            </table>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ==============================================================================
+# [7] تهيئة التطبيق
+# ==============================================================================
+
+st.set_page_config(page_title="نبراس السيادي v29.1", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Orbitron:wght@600&display=swap');
-    [data-testid="stAppViewContainer"] { background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%); color: #e0e0e0; font-family: 'Amiri', serif; direction: rtl; }
-    @media (max-width: 768px) { .story-box { font-size: 1.15em; padding: 25px; } }
-    .story-box { background: linear-gradient(135deg, rgba(10,21,10,0.85) 0%, rgba(1,1,3,0.95) 100%); padding: 40px; border-radius: 25px; border-right: 15px solid #4CAF50; line-height: 2; font-size: 1.3em; margin-bottom: 30px; }
-    .ultra-card { background: #0d0d14; padding: 25px; border-radius: 20px; border-top: 8px solid #4fc3f7; text-align: center; transition: all 0.3s ease; margin-bottom: 20px; }
-    .ultra-card:hover { transform: translateY(-5px); background: #14141f; }
-    .stat-val { font-size: 2.5em; font-weight: bold; color: #00ffcc; }
+    [data-testid="stAppViewContainer"] {
+        background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
+        color: #e0e0e0;
+        font-family: 'Amiri', serif;
+        direction: rtl;
+    }
+    .story-box {
+        background: linear-gradient(135deg, rgba(10,21,10,0.85) 0%, rgba(1,1,3,0.95) 100%);
+        padding: 40px;
+        border-radius: 25px;
+        border-right: 15px solid #4CAF50;
+        line-height: 2;
+        font-size: 1.3em;
+        margin-bottom: 30px;
+    }
+    .ultra-card {
+        background: #0d0d14;
+        padding: 25px;
+        border-radius: 20px;
+        border-top: 8px solid #4fc3f7;
+        text-align: center;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+    .stat-val {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #00ffcc;
+    }
+    /* إخفاء أي عناصر عائمة غير مرغوب فيها */
+    .st-emotion-cache-1v0mbdj, .st-emotion-cache-1wivap2 {
+        display: none;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -306,11 +357,12 @@ if 'active_bodies' not in st.session_state:
     st.session_state.active_bodies = []
     st.session_state.active_pool = []
     st.session_state.is_active = False
+    st.session_state.full_analysis = None
 
-# عرض إحصائيات في الشريط الجانبي
+# الشريط الجانبي
 with st.sidebar:
     st.markdown(f"""
-    **نبراس السيادي v29.0**  
+    **نبراس السيادي v29.1**  
     **المستخدم:** محمد  
     ---
     **📊 قاعدة البيانات:**
@@ -320,14 +372,11 @@ with st.sidebar:
     - 🐑 ضأن: {len([r for r in r_index.values() if r['gene'] == 'S'])}
     - 🐐 معز: {len([r for r in r_index.values() if r['gene'] == 'G'])}
     ---
-    **🔑 عينة الجذور:**
-    {', '.join(list(r_index.keys())[:12])}
-    ---
     **خِت فِت.**
     """)
 
 # ==============================================================================
-# [7] واجهة التبويبات
+# [8] واجهة التبويبات
 # ==============================================================================
 
 tabs = st.tabs(["🔍 الاستنطاق المداري", "🌌 الرنين الجيني", "📈 اللوحة الوجودية", "📜 البيان الختامي", "⚖️ الميزان السيادي", "🧠 الوعي الفوقي"])
@@ -381,11 +430,29 @@ with tabs[0]:
                 fig = px.scatter(pd.DataFrame(bodies), x="x", y="y", text="root", size="energy", color="gene",
                                  color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
                                  range_x=[-35, 35], range_y=[-35, 35])
-                fig.update_layout(height=600, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                fig.update_layout(height=500, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                                   showlegend=False, xaxis_visible=False, yaxis_visible=False)
                 st.plotly_chart(fig, use_container_width=True)
                 
-                st.success(f"✅ تم استنطاق {len(bodies)} جذراً: {', '.join(pool[:10])}")
+                # بيان الوعي الجمعي - يظهر مباشرة
+                st.markdown("---")
+                st.markdown("### 🌌 بيان الوعي الجمعي")
+                
+                total_energy = sum(b['energy'] for b in bodies)
+                genes_count = Counter(b['gene'] for b in bodies)
+                dominant_gene = max(genes_count, key=genes_count.get)
+                gene_info = GENE_STYLE[dominant_gene]
+                
+                st.markdown(f"""
+                <div class='story-box'>
+                    <p><b>تم استنطاق {len(bodies)} جذراً.</b><br>
+                    الهيمنة الجينية: <span style='color:{gene_info["color"]}'>{gene_info['icon']} {gene_info['name']}</span><br>
+                    مجموع الطاقة: {total_energy:.1f}<br>
+                    الجذور المستنطقة: {', '.join(pool[:10])}{'...' if len(pool) > 10 else ''}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.success(f"✅ تم الاستنطاق بنجاح.")
             else:
                 st.warning("⚠️ لم يتم العثور على جذور مطابقة في الليكسيكون")
         else:
@@ -444,11 +511,11 @@ with tabs[1]:
             st.markdown(f"""
             <div style='border:1px solid #4CAF50; padding:15px; border-radius:15px; background:#0a1a0a; margin-top:15px;'>
                 <p style='color:#4CAF50;'>🔮 بصيرة الجذر</p>
-                <p>{found['insight'][:200]}{'...' if len(found['insight']) > 200 else ''}</p>
+                <p>{ensure_dot(found['insight'])}</p>
             </div>
             """, unsafe_allow_html=True)
         else:
-            st.error(f"❌ الجذر '{search_root}' غير موجود. الجذور المتاحة: {', '.join(list(r_index.keys())[:15])}")
+            st.error(f"❌ الجذر '{search_root}' غير موجود")
 
 # ==================== التبويب 2: اللوحة الوجودية ====================
 with tabs[2]:
@@ -469,7 +536,7 @@ with tabs[3]:
         dominant = df['gene'].mode()[0] if not df.empty else 'S'
         st.markdown(f"""
         <div class='story-box'>
-            <b>بيان الاستواء الوجودي v29.0:</b><br>
+            <b>بيان الاستواء الوجودي v29.1:</b><br>
             تم استنطاق <b>{len(st.session_state.active_pool)}</b> جذراً.<br>
             الهيمنة الجينية: <b style='color:{GENE_STYLE[dominant]["color"]}'>{GENE_STYLE[dominant]['icon']} {GENE_STYLE[dominant]['name']}</b><br>
             مجموع الطاقة: <b>{df['energy'].sum():.1f}</b>
@@ -480,78 +547,35 @@ with tabs[3]:
 
 # ==================== التبويب 4: الميزان السيادي ====================
 with tabs[4]:
-    st.markdown("### ⚖️ ميزان النزاهة الجذرية")
+    st.markdown("### ⚖️ ميزان النزاهة الجذرية - استنطاق كامل")
     
     if st.session_state.is_active and st.session_state.active_bodies:
-        results = []
-        for body in st.session_state.active_bodies:
-            root_norm = normalize_root(body['root'])
-            orig = r_index.get(root_norm, {})
-            insight = orig.get('insight', '')
-            if is_placeholder(insight) or not insight:
-                display = generate_geometric_insight(root_norm)
-            else:
-                display = f"✅ {insight[:100]}..."
-            results.append({"الجذر": body['root'], "الجين": body['gene'], "الطاقة": body['energy'], "الاستنطاق": display})
-        
-        st.dataframe(pd.DataFrame(results), use_container_width=True, height=400)
-        
-        geo_count = sum(1 for r in results if "الاستنطاق الهندسي" in r['الاستنطاق'])
-        real_count = len(results) - geo_count
-        col1, col2 = st.columns(2)
-        col1.metric("🔮 استنطاق هندسي", geo_count)
-        col2.metric("📖 بصيرة أصلية", real_count)
+        display_roots_table(st.session_state.active_bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل")
 
 # ==================== التبويب 5: الوعي الفوقي ====================
 with tabs[5]:
-    st.markdown("### 🧠 الوعي الفوقي والبيان الجمعي")
+    st.markdown("### 🧠 الوعي الفوقي")
     
-    # عرض حالة الجذور الأساسية
-    col_a, col_b, col_c = st.columns(3)
-    
-    for root_name, col in [("أحد", col_a), ("أرض", col_b), ("أب", col_c)]:
-        normalized = normalize_root(root_name)
-        found = r_index.get(normalized)
-        if found:
-            col.success(f"✅ {root_name} موجود")
-        else:
-            col.error(f"❌ {root_name} غير موجود")
-    
-    st.markdown("---")
-    
-    # عرض الجذر النشط أو الافتراضي
-    if st.session_state.is_active and st.session_state.active_pool:
-        target = st.session_state.active_pool[0]
-    else:
-        target = "أحد"
-    
-    normalized_target = normalize_root(target)
-    found_target = r_index.get(normalized_target)
-    
-    if found_target:
-        total_energy = sum(b.get('energy', 0) for b in st.session_state.active_bodies) if st.session_state.is_active else 0
-        gene_info = GENE_STYLE[found_target['gene']]
+    if st.session_state.is_active and st.session_state.active_bodies:
+        total_energy = sum(b['energy'] for b in st.session_state.active_bodies)
+        genes_count = Counter(b['gene'] for b in st.session_state.active_bodies)
+        dominant_gene = max(genes_count, key=genes_count.get)
+        gene_info = GENE_STYLE[dominant_gene]
         
         st.markdown(f"""
         <div class='story-box'>
             <h3 style='margin:0; color:#FFD700;'>🌌 بيان الوعي الجمعي</h3>
-            <p><b>الجذر:</b> {found_target['root_raw']}<br>
-            <b>المدار:</b> {found_target['orbit']}<br>
-            <b>الجين الحتمي:</b> <span style='color:{gene_info["color"]}'>{gene_info['icon']} {gene_info['name']}</span><br>
-            <b>الطاقة الكلية:</b> {total_energy:.1f}<br>
-            <b>البصيرة:</b> {found_target['insight'][:200]}</p>
+            <p><b>عدد الجذور المستنطقة:</b> {len(st.session_state.active_bodies)}<br>
+            <b>مجموع الطاقة:</b> {total_energy:.1f}<br>
+            <b>الهيمنة الجينية:</b> <span style='color:{gene_info["color"]}'>{gene_info['icon']} {gene_info['name']}</span><br>
+            <b>الجذور:</b> {', '.join(st.session_state.active_pool)}</p>
         </div>
         """, unsafe_allow_html=True)
         
-        if found_target.get('structural_analysis'):
-            st.info(f"🔬 **التحليل البنيوي:** {found_target['structural_analysis']}")
-        
-        if st.session_state.is_active:
-            st.success(f"✅ المفاعل نشط مع {len(st.session_state.active_bodies)} جذراً")
-        else:
-            st.info("⚡ فعّل المفاعل في التبويب الأول")
+        # عرض تفاصيل كل جذر
+        st.markdown("#### 📖 تفاصيل الاستنطاق")
+        display_roots_table(st.session_state.active_bodies)
     else:
-        st.error(f"❌ الجذر '{target}' غير موجود. هذا لا يجب أن يحدث مع ليكسيكون سليم.")
-        st.write(f"المفاتيح المتاحة: {', '.join(list(r_index.keys())[:20])}")
+        st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول")
