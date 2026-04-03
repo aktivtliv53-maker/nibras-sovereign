@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.1
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.2
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: الواجهة النقية - استنطاق كامل بلا قَصّ ولا تلوث
+# الإصدار: النافذة السيادية - إعادة ربط البيانات مع عرض كامل بلا قَصّ
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
@@ -38,7 +38,7 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [2] قاموس هندسة الحروف
+# [2] قاموس هندسة الحروف (للاستنطاق الهندسي)
 # ==============================================================================
 LETTER_GEOMETRY = {
     'ا': 'امتداد عمودي، صلة بين العلوي والأرضي، تدفق طاقي مستقيم.',
@@ -202,12 +202,12 @@ def signature_from_root(root):
     }
 
 # ==============================================================================
-# [5] تحميل قاعدة البيانات
+# [5] تحميل قاعدة البيانات من nibras_lexicon.json
 # ==============================================================================
 
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
-    """تحميل الليكسيكون بالكامل"""
+    """تحميل الليكسيكون بالكامل وربطه بقاعدة البيانات"""
     if not os.path.exists(path):
         st.error(f"❌ ملف الليكسيكون غير موجود: {path}")
         st.stop()
@@ -267,40 +267,37 @@ def load_lexicon_db(path):
     return r_index, all_roots
 
 # ==============================================================================
-# [6] دالة عرض الجدول المخصص - بدون قص
+# [6] دالة عرض النتائج - بدون قص، بدون جداول
 # ==============================================================================
 
-def display_roots_table(bodies_data):
-    """عرض الجذور في جدول مخصص بدون قص النصوص"""
+def display_roots_as_blocks(bodies_data):
+    """عرض الجذور والاستنطاق ككتل نصية مستقلة - بدون قص"""
     if not bodies_data:
         st.info("لا توجد بيانات للعرض.")
         return
     
-    for idx, body in enumerate(bodies_data):
+    for body in bodies_data:
+        root = body.get('root', '')
         insight_text = body.get('insight', '')
-        if is_placeholder(insight_text) or not insight_text:
-            insight_text = generate_geometric_insight(body.get('root', ''))
         
+        # إذا كانت البصيرة فارغة أو افتراضية، استخدم الاستنطاق الهندسي
+        if is_placeholder(insight_text) or not insight_text:
+            insight_text = generate_geometric_insight(root)
+        
+        # ضمان انتهاء النص بنقطة
+        insight_text = ensure_dot(insight_text)
+        
+        # عرض ككتلة نصية نظيفة
         st.markdown(f"""
-        <div style='border:1px solid #333; border-radius:10px; padding:15px; margin-bottom:15px; background:#0a0a0a;'>
-            <table style='width:100%; border-collapse:collapse; direction:rtl;'>
-                <tr>
-                    <td style='padding:8px; width:100px; color:#888;'>الجذر</td>
-                    <td style='padding:8px; color:#4fc3f7; font-weight:bold;'>{body.get('root', '')}</td>
-                </tr>
-                <tr>
-                    <td style='padding:8px; width:100px; color:#888;'>الجين</td>
-                    <td style='padding:8px;'><span style='color:{GENE_STYLE.get(body.get('gene', 'S'), GENE_STYLE['S'])["color"]};'>{GENE_STYLE.get(body.get('gene', 'S'), GENE_STYLE['S'])["icon"]} {GENE_STYLE.get(body.get('gene', 'S'), GENE_STYLE['S'])["name"]}</span></td>
-                </tr>
-                <tr>
-                    <td style='padding:8px; width:100px; color:#888;'>الطاقة</td>
-                    <td style='padding:8px;'>{body.get('energy', 0):.2f}</td>
-                </tr>
-                <tr>
-                    <td style='padding:8px; width:100px; color:#888; vertical-align:top;'>الاستنطاق</td>
-                    <td style='padding:8px; line-height:1.6;'>{ensure_dot(insight_text)}</td>
-                </tr>
-            </table>
+        <div style='border:1px solid #2a2a3a; border-radius:15px; padding:20px; margin-bottom:20px; background:linear-gradient(135deg, #0d0d14 0%, #0a0a0f 100%);'>
+            <p style='margin:0 0 10px 0; font-size:1.1em;'>
+                <span style='color:#4fc3f7; font-weight:bold;'>📌 الجذر:</span> 
+                <span style='color:#fff; font-weight:bold;'>{root}</span>
+            </p>
+            <p style='margin:0; line-height:1.8; font-size:1.05em;'>
+                <span style='color:#4CAF50; font-weight:bold;'>🔮 الاستنطاق:</span> 
+                <span style='color:#ddd;'>{insight_text}</span>
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -308,8 +305,9 @@ def display_roots_table(bodies_data):
 # [7] تهيئة التطبيق
 # ==============================================================================
 
-st.set_page_config(page_title="نبراس السيادي v29.1", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="نبراس السيادي v29.2", page_icon="🛡️", layout="wide")
 
+# CSS النظيف - بدون عناصر عائمة أو أعمدة رأسية
 st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] {
@@ -320,35 +318,52 @@ st.markdown("""
     }
     .story-box {
         background: linear-gradient(135deg, rgba(10,21,10,0.85) 0%, rgba(1,1,3,0.95) 100%);
-        padding: 40px;
+        padding: 35px;
         border-radius: 25px;
         border-right: 15px solid #4CAF50;
         line-height: 2;
-        font-size: 1.3em;
+        font-size: 1.2em;
         margin-bottom: 30px;
     }
     .ultra-card {
         background: #0d0d14;
-        padding: 25px;
+        padding: 20px;
         border-radius: 20px;
         border-top: 8px solid #4fc3f7;
         text-align: center;
-        transition: all 0.3s ease;
         margin-bottom: 20px;
     }
-    .stat-val {
-        font-size: 2.5em;
-        font-weight: bold;
-        color: #00ffcc;
-    }
     /* إخفاء أي عناصر عائمة غير مرغوب فيها */
-    .st-emotion-cache-1v0mbdj, .st-emotion-cache-1wivap2 {
+    .st-emotion-cache-1v0mbdj, .st-emotion-cache-1wivap2, .st-emotion-cache-zq5wmm {
         display: none;
+    }
+    /* تحسين شكل حقل الإدخال */
+    .stTextArea textarea {
+        background: #0d0d14;
+        color: #e0e0e0;
+        border: 1px solid #2a2a3a;
+        border-radius: 10px;
+        font-family: 'Amiri', serif;
+        font-size: 1.1em;
+    }
+    /* تحسين شكل الأزرار */
+    .stButton button {
+        background: linear-gradient(135deg, #1a472a 0%, #0d2a1a 100%);
+        color: #e0e0e0;
+        border: 1px solid #4CAF50;
+        border-radius: 10px;
+        font-family: 'Amiri', serif;
+        font-size: 1.1em;
+        padding: 10px 25px;
+    }
+    .stButton button:hover {
+        background: linear-gradient(135deg, #2a573a 0%, #1a3a2a 100%);
+        border-color: #6fbf6f;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# تحميل الليكسيكون
+# تحميل الليكسيكون من قاعدة البيانات
 ROOTS_PATH = "data/nibras_lexicon.json"
 r_index, all_roots = load_lexicon_db(ROOTS_PATH)
 
@@ -357,26 +372,32 @@ if 'active_bodies' not in st.session_state:
     st.session_state.active_bodies = []
     st.session_state.active_pool = []
     st.session_state.is_active = False
-    st.session_state.full_analysis = None
 
-# الشريط الجانبي
+# الشريط الجانبي النظيف - بدون أعمدة رأسية أو مربعات تحقق
 with st.sidebar:
     st.markdown(f"""
-    **نبراس السيادي v29.1**  
-    **المستخدم:** محمد  
+    <div style='text-align:center; padding:10px;'>
+        <h2 style='color:#4fc3f7; margin:0;'>🛡️ نبراس السيادي</h2>
+        <p style='color:#888; margin:5px 0;'>الإصدار v29.2</p>
+        <p style='color:#555; margin:0;'>المستخدم: محمد</p>
+    </div>
     ---
-    **📊 قاعدة البيانات:**
-    - إجمالي الجذور: {len(r_index)}
-    - 🐪 إبل: {len([r for r in r_index.values() if r['gene'] == 'C'])}
-    - 🐄 بقر: {len([r for r in r_index.values() if r['gene'] == 'B'])}
-    - 🐑 ضأن: {len([r for r in r_index.values() if r['gene'] == 'S'])}
-    - 🐐 معز: {len([r for r in r_index.values() if r['gene'] == 'G'])}
+    <div style='padding:5px;'>
+        <p style='color:#4CAF50; margin:0 0 10px 0;'>📊 إحصائيات القاعدة:</p>
+        <p style='margin:3px 0;'>📚 إجمالي الجذور: <span style='color:#4fc3f7;'>{len(r_index)}</span></p>
+        <p style='margin:3px 0;'>🐪 الإبل: <span style='color:#4fc3f7;'>{len([r for r in r_index.values() if r['gene'] == 'C'])}</span></p>
+        <p style='margin:3px 0;'>🐄 البقر: <span style='color:#FFD700;'>{len([r for r in r_index.values() if r['gene'] == 'B'])}</span></p>
+        <p style='margin:3px 0;'>🐑 الضأن: <span style='color:#4CAF50;'>{len([r for r in r_index.values() if r['gene'] == 'S'])}</span></p>
+        <p style='margin:3px 0;'>🐐 المعز: <span style='color:#ff5252;'>{len([r for r in r_index.values() if r['gene'] == 'G'])}</span></p>
+    </div>
     ---
-    **خِت فِت.**
-    """)
+    <div style='text-align:center; padding:10px;'>
+        <p style='color:#555; margin:0;'>خِت فِت.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [8] واجهة التبويبات
+# [8] الواجهة الرئيسية - التبويبات
 # ==============================================================================
 
 tabs = st.tabs(["🔍 الاستنطاق المداري", "🌌 الرنين الجيني", "📈 اللوحة الوجودية", "📜 البيان الختامي", "⚖️ الميزان السيادي", "🧠 الوعي الفوقي"])
@@ -387,12 +408,12 @@ with tabs[0]:
     
     input_text = st.text_area(
         "أدخل النص للاستنطاق:",
-        height=150,
+        height=120,
         placeholder="مثال: أحد أبى أثر أجد أجل أخذ أذن أرب أرض أزل أسر أصل أفق",
         key="input_area"
     )
     
-    if st.button("🚀 تفعيل المفاعل", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True):
         if input_text.strip():
             clean = normalize_input_text(input_text)
             words = clean.split()
@@ -426,15 +447,15 @@ with tabs[0]:
                 st.session_state.active_pool = list(set(pool))
                 st.session_state.is_active = True
                 
-                # عرض الرسم البياني
+                # رسم بياني للحركة المدارية
                 fig = px.scatter(pd.DataFrame(bodies), x="x", y="y", text="root", size="energy", color="gene",
                                  color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
                                  range_x=[-35, 35], range_y=[-35, 35])
-                fig.update_layout(height=500, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                fig.update_layout(height=450, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                                   showlegend=False, xaxis_visible=False, yaxis_visible=False)
                 st.plotly_chart(fig, use_container_width=True)
                 
-                # بيان الوعي الجمعي - يظهر مباشرة
+                # بيان الوعي الجمعي
                 st.markdown("---")
                 st.markdown("### 🌌 بيان الوعي الجمعي")
                 
@@ -445,18 +466,21 @@ with tabs[0]:
                 
                 st.markdown(f"""
                 <div class='story-box'>
-                    <p><b>تم استنطاق {len(bodies)} جذراً.</b><br>
-                    الهيمنة الجينية: <span style='color:{gene_info["color"]}'>{gene_info['icon']} {gene_info['name']}</span><br>
-                    مجموع الطاقة: {total_energy:.1f}<br>
-                    الجذور المستنطقة: {', '.join(pool[:10])}{'...' if len(pool) > 10 else ''}</p>
+                    <p style='margin:5px 0;'>✅ تم استنطاق <b>{len(bodies)}</b> جذراً.</p>
+                    <p style='margin:5px 0;'>🐪 الهيمنة الجينية: <b style='color:{gene_info["color"]};'>{gene_info['icon']} {gene_info['name']}</b></p>
+                    <p style='margin:5px 0;'>⚡ مجموع الطاقة: <b>{total_energy:.1f}</b></p>
+                    <p style='margin:5px 0;'>📚 الجذور المستنطقة: <b>{', '.join(pool)}</b></p>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                st.success(f"✅ تم الاستنطاق بنجاح.")
+                # عرض نتائج الاستنطاق ككتل نصية
+                st.markdown("### 📖 تفاصيل الاستنطاق")
+                display_roots_as_blocks(bodies)
+                
             else:
-                st.warning("⚠️ لم يتم العثور على جذور مطابقة في الليكسيكون")
+                st.warning("⚠️ لم يتم العثور على جذور مطابقة في قاعدة البيانات.")
         else:
-            st.warning("⚠️ الرجاء إدخال نص")
+            st.warning("⚠️ الرجاء إدخال نص للاستنطاق.")
 
 # ==================== التبويب 1: الرنين الجيني ====================
 with tabs[1]:
@@ -467,67 +491,68 @@ with tabs[1]:
         if i < 4:
             cols[i].markdown(f"""
             <div class='ultra-card' style='border-top-color:{info["color"]}'>
-                <h2>{info['icon']}</h2>
-                <h3>{info['name']}</h3>
-                <p>{info['meaning']}</p>
+                <h2 style='margin:0;'>{info['icon']}</h2>
+                <h3 style='margin:10px 0 5px 0;'>{info['name']}</h3>
+                <p style='margin:0; font-size:0.9em; color:#aaa;'>{info['meaning']}</p>
             </div>
             """, unsafe_allow_html=True)
     
     st.markdown("---")
     st.markdown("### 📖 استنطاق جذر محدد")
     
-    search_root = st.text_input("أدخل جذراً للبحث:", value="أحد", key="search_root")
+    # قائمة منسدلة بكل الجذور المتاحة
+    root_options = sorted([r['root_raw'] for r in all_roots])
+    selected_root_display = st.selectbox("اختر جذراً:", options=root_options, index=0 if root_options else None)
     
-    if search_root:
-        normalized = normalize_root(search_root)
+    if selected_root_display:
+        normalized = normalize_root(selected_root_display)
         found = r_index.get(normalized)
         
         if found:
             gene_info = GENE_STYLE[found['gene']]
+            
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown(f"""
-                <div style='border:1px solid #444; padding:15px; border-radius:15px; background:#111; margin-bottom:15px;'>
-                    <p style='color:#888;'>الجذر الأصلي</p>
-                    <h3>{found['root_raw']}</h3>
+                <div style='border:1px solid #2a2a3a; padding:15px; border-radius:15px; background:#0d0d14; margin-bottom:15px;'>
+                    <p style='color:#888; margin:0;'>📌 الجذر الأصلي</p>
+                    <h3 style='margin:5px 0 0 0; color:#4fc3f7;'>{found['root_raw']}</h3>
                 </div>
-                <div style='border:1px solid {gene_info["color"]}; padding:15px; border-radius:15px; background:#111;'>
-                    <p style='color:#888;'>الجين الحتمي</p>
-                    <h3 style='color:{gene_info["color"]};'>{gene_info['icon']} {gene_info['name']}</h3>
+                <div style='border:1px solid {gene_info["color"]}; padding:15px; border-radius:15px; background:#0d0d14;'>
+                    <p style='color:#888; margin:0;'>🧬 الجين الحتمي</p>
+                    <h3 style='margin:5px 0 0 0; color:{gene_info["color"]};'>{gene_info['icon']} {gene_info['name']}</h3>
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
                 st.markdown(f"""
-                <div style='border:1px solid #444; padding:15px; border-radius:15px; background:#111; margin-bottom:15px;'>
-                    <p style='color:#888;'>المدار</p>
-                    <h3>{found['orbit']}</h3>
+                <div style='border:1px solid #2a2a3a; padding:15px; border-radius:15px; background:#0d0d14; margin-bottom:15px;'>
+                    <p style='color:#888; margin:0;'>🔄 المدار الوجودي</p>
+                    <h3 style='margin:5px 0 0 0;'>{found['orbit']}</h3>
                 </div>
-                <div style='border:1px solid #444; padding:15px; border-radius:15px; background:#111;'>
-                    <p style='color:#888;'>نوع الطاقة</p>
-                    <h3>{found['energy_type']}</h3>
+                <div style='border:1px solid #2a2a3a; padding:15px; border-radius:15px; background:#0d0d14;'>
+                    <p style='color:#888; margin:0;'>⚡ نوع الطاقة</p>
+                    <h3 style='margin:5px 0 0 0;'>{found['energy_type']}</h3>
                 </div>
                 """, unsafe_allow_html=True)
             
             st.markdown(f"""
-            <div style='border:1px solid #4CAF50; padding:15px; border-radius:15px; background:#0a1a0a; margin-top:15px;'>
-                <p style='color:#4CAF50;'>🔮 بصيرة الجذر</p>
-                <p>{ensure_dot(found['insight'])}</p>
+            <div style='border:1px solid #4CAF50; padding:20px; border-radius:15px; background:#0a1a0a; margin-top:15px;'>
+                <p style='color:#4CAF50; margin:0 0 10px 0; font-weight:bold;'>🔮 بصيرة الجذر</p>
+                <p style='margin:0; line-height:1.7; color:#ddd;'>{ensure_dot(found['insight'])}</p>
             </div>
             """, unsafe_allow_html=True)
-        else:
-            st.error(f"❌ الجذر '{search_root}' غير موجود")
 
 # ==================== التبويب 2: اللوحة الوجودية ====================
 with tabs[2]:
-    st.markdown("### 📈 التحليل الكمي")
+    st.markdown("### 📈 التحليل الكمي للمدار")
     if st.session_state.is_active and st.session_state.active_bodies:
         df = pd.DataFrame(st.session_state.active_bodies)
         col1, col2 = st.columns(2)
         col1.plotly_chart(px.pie(df, names='gene', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, hole=0.5, title="توزيع الجينات"))
-        col2.plotly_chart(px.bar(df.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="التعداد"))
-        st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة الطاقة"))
+        col2.plotly_chart(px.bar(df.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="تعداد الأجسام المدارية"))
+        st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة طاقة الجذور"))
     else:
-        st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول")
+        st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
 
 # ==================== التبويب 3: البيان الختامي ====================
 with tabs[3]:
@@ -536,27 +561,29 @@ with tabs[3]:
         dominant = df['gene'].mode()[0] if not df.empty else 'S'
         st.markdown(f"""
         <div class='story-box'>
-            <b>بيان الاستواء الوجودي v29.1:</b><br>
-            تم استنطاق <b>{len(st.session_state.active_pool)}</b> جذراً.<br>
-            الهيمنة الجينية: <b style='color:{GENE_STYLE[dominant]["color"]}'>{GENE_STYLE[dominant]['icon']} {GENE_STYLE[dominant]['name']}</b><br>
-            مجموع الطاقة: <b>{df['energy'].sum():.1f}</b>
+            <p style='margin:5px 0;'><b>بيان الاستواء الوجودي v29.2</b></p>
+            <p style='margin:5px 0;'>✅ تم استنطاق <b>{len(st.session_state.active_pool)}</b> جذراً.</p>
+            <p style='margin:5px 0;'>🐪 الهيمنة الجينية: <b style='color:{GENE_STYLE[dominant]["color"]};'>{GENE_STYLE[dominant]['icon']} {GENE_STYLE[dominant]['name']}</b></p>
+            <p style='margin:5px 0;'>⚡ مجموع الطاقة: <b>{df['energy'].sum():.1f}</b></p>
+            <p style='margin:5px 0;'>📚 الجذور: <b>{', '.join(st.session_state.active_pool)}</b></p>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.info("⚙️ انتظر تفعيل المفاعل")
+        st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
 
 # ==================== التبويب 4: الميزان السيادي ====================
 with tabs[4]:
-    st.markdown("### ⚖️ ميزان النزاهة الجذرية - استنطاق كامل")
+    st.markdown("### ⚖️ ميزان النزاهة الجذرية")
+    st.markdown("عرض كامل للاستنطاقات بدون قص:")
     
     if st.session_state.is_active and st.session_state.active_bodies:
-        display_roots_table(st.session_state.active_bodies)
+        display_roots_as_blocks(st.session_state.active_bodies)
     else:
-        st.info("⚙️ انتظر تفعيل المفاعل")
+        st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
 
 # ==================== التبويب 5: الوعي الفوقي ====================
 with tabs[5]:
-    st.markdown("### 🧠 الوعي الفوقي")
+    st.markdown("### 🧠 الوعي الفوقي - البيان الجمعي")
     
     if st.session_state.is_active and st.session_state.active_bodies:
         total_energy = sum(b['energy'] for b in st.session_state.active_bodies)
@@ -566,16 +593,15 @@ with tabs[5]:
         
         st.markdown(f"""
         <div class='story-box'>
-            <h3 style='margin:0; color:#FFD700;'>🌌 بيان الوعي الجمعي</h3>
-            <p><b>عدد الجذور المستنطقة:</b> {len(st.session_state.active_bodies)}<br>
-            <b>مجموع الطاقة:</b> {total_energy:.1f}<br>
-            <b>الهيمنة الجينية:</b> <span style='color:{gene_info["color"]}'>{gene_info['icon']} {gene_info['name']}</span><br>
-            <b>الجذور:</b> {', '.join(st.session_state.active_pool)}</p>
+            <h3 style='margin:0 0 15px 0; color:#FFD700;'>🌌 بيان الوعي الجمعي</h3>
+            <p style='margin:8px 0;'><b>عدد الجذور المستنطقة:</b> {len(st.session_state.active_bodies)}</p>
+            <p style='margin:8px 0;'><b>مجموع الطاقة:</b> {total_energy:.1f}</p>
+            <p style='margin:8px 0;'><b>الهيمنة الجينية:</b> <span style='color:{gene_info["color"]};'>{gene_info['icon']} {gene_info['name']}</span></p>
+            <p style='margin:8px 0;'><b>الجذور المستنطقة:</b> {', '.join(st.session_state.active_pool)}</p>
         </div>
         """, unsafe_allow_html=True)
         
-        # عرض تفاصيل كل جذر
-        st.markdown("#### 📖 تفاصيل الاستنطاق")
-        display_roots_table(st.session_state.active_bodies)
+        st.markdown("#### 📖 تفاصيل الاستنطاق الكاملة")
+        display_roots_as_blocks(st.session_state.active_bodies)
     else:
-        st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول")
+        st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
