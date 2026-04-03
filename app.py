@@ -6,28 +6,31 @@ import os
 import re
 from collections import Counter
 
-# 1. إعدادات الهوية البصرية (مطابقة للصورة 8)
+# 1. إعدادات الهوية البصرية (التبويبات والنصوص الكاملة)
 st.set_page_config(page_title="نبراس السيادي", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background: #050505; color: #e0e0e0; direction: rtl; }
-    /* صندوق البيان الختامي الموسع الأخضر الداكن */
     .summary-box {
         background: #0d1a0d; padding: 25px; border-radius: 12px; 
         border-right: 8px solid #FFD700; margin-bottom: 30px;
     }
-    /* كروت الاستنطاق السوداء الأنيقة */
     .insight-card {
         background: #111; padding: 20px; border-radius: 10px;
-        border-left: 4px solid #4fc3f7; margin-bottom: 15px;
+        border-right: 4px solid #4fc3f7; margin-bottom: 15px;
         line-height: 1.8; font-size: 1.15em;
     }
-    .root-label { color: #81c784; font-weight: bold; font-size: 1.2em; }
+    /* تنسيق التبويبات لتبدو واضحة */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #1a1a1a; border-radius: 5px; padding: 10px 20px; color: #ddd;
+    }
+    .stTabs [aria-selected="true"] { background-color: #0d1a0d; color: #FFD700; border: 1px solid #FFD700; }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. الدوال والمحرك
+# 2. المحرك الداخلي
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪'},
     'B': {'name': 'البقر', 'color': '#FFD700', 'icon': '🐄'},
@@ -50,48 +53,69 @@ def load_db():
 
 db = load_db()
 
-# 3. واجهة المدخلات
-input_text = st.text_area("أدخل النص للاستنطاق:", height=100)
+# 3. بناء النوافذ (Tabs) كما كانت
+tab1, tab2, tab3 = st.tabs(["🔍 مفاعل الاستنطاق", "📜 البيان الختامي", "📈 تحليل المدارات"])
 
-if st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True):
-    if input_text.strip():
-        words = input_text.split()
-        bodies = []
-        for w in words:
-            norm = normalize_root(w)
-            if norm in db:
-                item = db[norm]
-                g_code = item.get('gene', 'S')
-                bodies.append({
-                    "root": item['root'], "orbit": item.get('orbit_id', 1),
-                    "gene": g_code, "insight": item.get('insight_radar', item.get('insight', 'بصيرة قيد التكوين.')),
-                    "color": GENE_STYLE.get(g_code, GENE_STYLE['S'])['color'],
-                    "gene_display": f"{GENE_STYLE.get(g_code, GENE_STYLE['S'])['icon']} {GENE_STYLE.get(g_code, GENE_STYLE['S'])['name']}"
-                })
-        
-        if bodies:
-            # عرض الرسم البياني (كما في الصورة 7)
-            fig = px.scatter(pd.DataFrame(bodies), x="root", y="orbit", color="gene_display", 
-                             template="plotly_dark", size_max=20)
-            st.plotly_chart(fig, use_container_width=True)
+with tab1:
+    st.markdown("### 📍 إدخال المسار الوجودي")
+    input_text = st.text_area("أدخل الجذور المراد استنطاقها:", height=100, placeholder="مثال: احد، ارض، اب...")
+    
+    if st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True):
+        if input_text.strip():
+            words = input_text.split()
+            bodies = []
+            for w in words:
+                norm = normalize_root(w)
+                if norm in db:
+                    item = db[norm]
+                    g_code = item.get('gene', 'S')
+                    bodies.append({
+                        "root": item['root'], "orbit": item.get('orbit_id', 1),
+                        "gene": g_code, "insight": item.get('insight_radar', item.get('insight', 'بصيرة قيد التكوين.')),
+                        "color": GENE_STYLE.get(g_code, GENE_STYLE['S'])['color'],
+                        "gene_display": f"{GENE_STYLE.get(g_code, GENE_STYLE['S'])['icon']} {GENE_STYLE.get(g_code, GENE_STYLE['S'])['name']}"
+                    })
             
-            # عرض البيان الختامي الموسع (كما في الصورة 8)
-            genes = [b['gene'] for b in bodies]
-            dom = max(set(genes), key=genes.count)
+            if bodies:
+                st.session_state.bodies = bodies
+                st.success(f"تم رصد {len(bodies)} أجسام في المدار.")
+                
+                # عرض فوري تحت الزر لضمان عدم وجود صفحة خالية
+                for b in bodies:
+                    st.markdown(f'<div class="insight-card" style="border-right-color:{b["color"]}"><b>📌 {b["root"]}</b><br>{b["insight"]}</div>', unsafe_allow_html=True)
+            else:
+                st.error("لم يتم العثور على جذور.")
+
+with tab2:
+    if 'bodies' in st.session_state:
+        bodies = st.session_state.bodies
+        genes = [b['gene'] for b in bodies]
+        dom = max(set(genes), key=genes.count)
+        
+        # البيان الختامي الموسع (الصندوق الذهبي)
+        st.markdown(f"""
+        <div class="summary-box">
+            <h2 style='color:#FFD700; margin:0;'>📜 البيان الختامي الموسع</h2>
+            <p style='font-size:1.2em; margin-top:15px;'>الهيمنة الجينية: {GENE_STYLE[dom]['icon']} {GENE_STYLE[dom]['name']}</p>
+            <p>الجذور: {', '.join([b['root'] for b in bodies])}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # كروت التفاصيل
+        for b in bodies:
             st.markdown(f"""
-            <div class="summary-box">
-                <h2 style='color:#FFD700; margin:0;'>📜 البيان الختامي الموسع</h2>
-                <p style='font-size:1.1em; margin-top:10px;'>✅ تم استنطاق {len(bodies)} جذور | الهيمنة: {GENE_STYLE[dom]['icon']} {GENE_STYLE[dom]['name']}</p>
+            <div class="insight-card" style="border-right-color:{b['color']}">
+                <b style="color:{b['color']};">📌 الجذر: {b['root']}</b> | {b['gene_display']}<br>
+                <p>{b['insight']}</p>
             </div>
             """, unsafe_allow_html=True)
-            
-            # عرض تفاصيل الاستنطاق (بدون بتر)
-            for b in bodies:
-                st.markdown(f"""
-                <div class="insight-card">
-                    <span class="root-label">📌 الجذر: {b['root']} | {b['gene_display']}</span>
-                    <p style='margin-top:10px;'>{b['insight']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.error("لم يتم العثور على جذور مطابقة.")
+    else:
+        st.info("الرجاء إدخال البيانات وتفعيل المفاعل في التبويب الأول.")
+
+with tab3:
+    if 'bodies' in st.session_state:
+        df = pd.DataFrame(st.session_state.bodies)
+        fig = px.scatter(df, x="root", y="orbit", color="gene_display", size_max=20, template="plotly_dark")
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("لا توجد بيانات للتحليل المداري.")
