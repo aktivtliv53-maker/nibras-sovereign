@@ -6,7 +6,7 @@ import os
 import re
 from collections import Counter
 
-# 1. إعدادات الهوية البصرية (التبويبات والنصوص الكاملة)
+# 1. إعدادات الهوية البصرية (تثبيت التبويبات الثلاثة)
 st.set_page_config(page_title="نبراس السيادي", page_icon="🛡️", layout="wide")
 
 st.markdown("""
@@ -14,23 +14,23 @@ st.markdown("""
     [data-testid="stAppViewContainer"] { background: #050505; color: #e0e0e0; direction: rtl; }
     .summary-box {
         background: #0d1a0d; padding: 25px; border-radius: 12px; 
-        border-right: 8px solid #FFD700; margin-bottom: 30px;
+        border-right: 8px solid #FFD700; margin-bottom: 30px; border: 1px solid #1a3a1a;
     }
     .insight-card {
         background: #111; padding: 20px; border-radius: 10px;
-        border-right: 4px solid #4fc3f7; margin-bottom: 15px;
-        line-height: 1.8; font-size: 1.15em;
+        border-right: 5px solid #4fc3f7; margin-bottom: 15px;
+        line-height: 1.8; font-size: 1.15em; border-bottom: 1px solid #222;
     }
-    /* تنسيق التبويبات لتبدو واضحة */
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    /* تنسيق صارم للتبويبات لضمان عدم التكرار */
+    .stTabs [data-baseweb="tab-list"] { gap: 15px; }
     .stTabs [data-baseweb="tab"] {
-        background-color: #1a1a1a; border-radius: 5px; padding: 10px 20px; color: #ddd;
+        background-color: #161616; border-radius: 8px 8px 0 0; padding: 12px 25px; color: #aaa;
     }
-    .stTabs [aria-selected="true"] { background-color: #0d1a0d; color: #FFD700; border: 1px solid #FFD700; }
+    .stTabs [aria-selected="true"] { background-color: #0d1a0d; color: #FFD700; border-bottom: 2px solid #FFD700; }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. المحرك الداخلي
+# 2. المحرك السيادي
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪'},
     'B': {'name': 'البقر', 'color': '#FFD700', 'icon': '🐄'},
@@ -46,21 +46,23 @@ def normalize_root(text):
 def load_db():
     path = "data/nibras_lexicon.json"
     if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        return {normalize_root(item['root']): item for item in data}
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return {normalize_root(item['root']): item for item in data}
+        except: return {}
     return {}
 
 db = load_db()
 
-# 3. بناء النوافذ (Tabs) كما كانت
-tab1, tab2, tab3 = st.tabs(["🔍 مفاعل الاستنطاق", "📜 البيان الختامي", "📈 تحليل المدارات"])
+# 3. الهيكل الثلاثي (الحتمي) - لن تظهر غير هذه الثلاثة
+tab1, tab2, tab3 = st.tabs(["🔍 مفاعل الاستنطاق المداري", "📜 البيان الختامي الموسع", "📈 الخريطة الوجودية"])
 
 with tab1:
-    st.markdown("### 📍 إدخال المسار الوجودي")
-    input_text = st.text_area("أدخل الجذور المراد استنطاقها:", height=100, placeholder="مثال: احد، ارض، اب...")
+    st.markdown("### 📍 إدخال المسار")
+    input_text = st.text_area("أدخل الجذور للاستنطاق:", height=100, key="main_input")
     
-    if st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل", use_container_width=True):
         if input_text.strip():
             words = input_text.split()
             bodies = []
@@ -77,45 +79,39 @@ with tab1:
                     })
             
             if bodies:
-                st.session_state.bodies = bodies
-                st.success(f"تم رصد {len(bodies)} أجسام في المدار.")
-                
-                # عرض فوري تحت الزر لضمان عدم وجود صفحة خالية
-                for b in bodies:
-                    st.markdown(f'<div class="insight-card" style="border-right-color:{b["color"]}"><b>📌 {b["root"]}</b><br>{b["insight"]}</div>', unsafe_allow_html=True)
+                st.session_state.active_bodies = bodies
+                st.success(f"تم رصد {len(bodies)} أجسام. انتقل للتبويبات التالية.")
             else:
-                st.error("لم يتم العثور على جذور.")
+                st.error("لم يتم العثور على جذور مطابقة.")
 
 with tab2:
-    if 'bodies' in st.session_state:
-        bodies = st.session_state.bodies
+    if 'active_bodies' in st.session_state:
+        bodies = st.session_state.active_bodies
         genes = [b['gene'] for b in bodies]
         dom = max(set(genes), key=genes.count)
         
-        # البيان الختامي الموسع (الصندوق الذهبي)
         st.markdown(f"""
         <div class="summary-box">
             <h2 style='color:#FFD700; margin:0;'>📜 البيان الختامي الموسع</h2>
             <p style='font-size:1.2em; margin-top:15px;'>الهيمنة الجينية: {GENE_STYLE[dom]['icon']} {GENE_STYLE[dom]['name']}</p>
-            <p>الجذور: {', '.join([b['root'] for b in bodies])}</p>
         </div>
         """, unsafe_allow_html=True)
         
-        # كروت التفاصيل
         for b in bodies:
             st.markdown(f"""
             <div class="insight-card" style="border-right-color:{b['color']}">
-                <b style="color:{b['color']};">📌 الجذر: {b['root']}</b> | {b['gene_display']}<br>
-                <p>{b['insight']}</p>
+                <b style="color:{b['color']}; font-size:1.2em;">📌 الجذر: {b['root']}</b> | {b['gene_display']}
+                <p style='margin-top:10px;'>{b['insight']}</p>
             </div>
             """, unsafe_allow_html=True)
     else:
-        st.info("الرجاء إدخال البيانات وتفعيل المفاعل في التبويب الأول.")
+        st.info("بانتظار تفعيل المفاعل...")
 
 with tab3:
-    if 'bodies' in st.session_state:
-        df = pd.DataFrame(st.session_state.bodies)
-        fig = px.scatter(df, x="root", y="orbit", color="gene_display", size_max=20, template="plotly_dark")
+    if 'active_bodies' in st.session_state:
+        df = pd.DataFrame(st.session_state.active_bodies)
+        fig = px.scatter(df, x="root", y="orbit", color="gene_display", 
+                         size=[20]*len(df), template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("لا توجد بيانات للتحليل المداري.")
+        st.info("لا توجد بيانات للخريطة الوجودية.")
