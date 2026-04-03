@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.2
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.3
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: النافذة السيادية - إعادة ربط البيانات مع عرض كامل بلا قَصّ
+# الإصدار: النافذة السيادية - عرض كامل فوري بلا قص
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
@@ -267,37 +267,31 @@ def load_lexicon_db(path):
     return r_index, all_roots
 
 # ==============================================================================
-# [6] دالة عرض النتائج - بدون قص، بدون جداول
+# [6] دالة العرض المطورة (لضمان عدم القص)
 # ==============================================================================
 
 def display_roots_as_blocks(bodies_data):
-    """عرض الجذور والاستنطاق ككتل نصية مستقلة - بدون قص"""
+    """عرض الجذور والاستنطاق ككتل نصية كاملة تنتهي بنقطة."""
     if not bodies_data:
-        st.info("لا توجد بيانات للعرض.")
+        st.info("لا توجد بيانات مستنطقة حالياً.")
         return
     
     for body in bodies_data:
         root = body.get('root', '')
-        insight_text = body.get('insight', '')
+        # جلب النص الكامل من الحقل المتاح
+        insight_text = body.get('insight', body.get('meaning', ''))
         
-        # إذا كانت البصيرة فارغة أو افتراضية، استخدم الاستنطاق الهندسي
-        if is_placeholder(insight_text) or not insight_text:
+        # إذا كان النص مقصوصاً أو فارغاً، نستخدم الاستنطاق الهندسي كبديل
+        if not insight_text or "..." in insight_text:
             insight_text = generate_geometric_insight(root)
+            
+        final_text = ensure_dot(insight_text)
         
-        # ضمان انتهاء النص بنقطة
-        insight_text = ensure_dot(insight_text)
-        
-        # عرض ككتلة نصية نظيفة
+        # قالب العرض السيادي
         st.markdown(f"""
-        <div style='border:1px solid #2a2a3a; border-radius:15px; padding:20px; margin-bottom:20px; background:linear-gradient(135deg, #0d0d14 0%, #0a0a0f 100%);'>
-            <p style='margin:0 0 10px 0; font-size:1.1em;'>
-                <span style='color:#4fc3f7; font-weight:bold;'>📌 الجذر:</span> 
-                <span style='color:#fff; font-weight:bold;'>{root}</span>
-            </p>
-            <p style='margin:0; line-height:1.8; font-size:1.05em;'>
-                <span style='color:#4CAF50; font-weight:bold;'>🔮 الاستنطاق:</span> 
-                <span style='color:#ddd;'>{insight_text}</span>
-            </p>
+        <div style='border-right: 5px solid {body.get("color", "#4fc3f7")}; background: #0d0d14; padding: 15px; margin-bottom: 10px; border-radius: 0 10px 10px 0;'>
+            <h4 style='margin:0; color:#4fc3f7;'>الجذر: {root}</h4>
+            <p style='margin:10px 0 0 0; color:#e0e0e0; line-height:1.6;'><b>الاستنطاق:</b> {final_text}</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -305,7 +299,7 @@ def display_roots_as_blocks(bodies_data):
 # [7] تهيئة التطبيق
 # ==============================================================================
 
-st.set_page_config(page_title="نبراس السيادي v29.2", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="نبراس السيادي v29.3", page_icon="🛡️", layout="wide")
 
 # CSS النظيف - بدون عناصر عائمة أو أعمدة رأسية
 st.markdown("""
@@ -373,12 +367,12 @@ if 'active_bodies' not in st.session_state:
     st.session_state.active_pool = []
     st.session_state.is_active = False
 
-# الشريط الجانبي النظيف - بدون أعمدة رأسية أو مربعات تحقق
+# الشريط الجانبي النظيف
 with st.sidebar:
     st.markdown(f"""
     <div style='text-align:center; padding:10px;'>
         <h2 style='color:#4fc3f7; margin:0;'>🛡️ نبراس السيادي</h2>
-        <p style='color:#888; margin:5px 0;'>الإصدار v29.2</p>
+        <p style='color:#888; margin:5px 0;'>الإصدار v29.3</p>
         <p style='color:#555; margin:0;'>المستخدم: محمد</p>
     </div>
     ---
@@ -434,11 +428,12 @@ with tabs[0]:
                             "gene": data['gene'],
                             "energy": round(energy, 2),
                             "insight": data['insight'],
+                            "meaning": data['meaning'],
+                            "color": GENE_STYLE[data['gene']]['color'],
                             "x": random.uniform(-10, 10),
                             "y": random.uniform(-10, 10),
                             "vx": sig['vector_x'],
-                            "vy": sig['vector_y'],
-                            "color": GENE_STYLE[data['gene']]['color']
+                            "vy": sig['vector_y']
                         })
                         pool.append(data['root_raw'])
             
@@ -473,12 +468,12 @@ with tabs[0]:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # عرض نتائج الاستنطاق ككتل نصية
-                st.markdown("### 📖 تفاصيل الاستنطاق")
+                # عرض نتائج الاستنطاق ككتل نصية كاملة
+                st.markdown("### 📖 نتائج الاستنطاق الكاملة")
                 display_roots_as_blocks(bodies)
                 
             else:
-                st.warning("⚠️ لم يتم العثور على جذور مطابقة في قاعدة البيانات.")
+                st.error("⚠️ لم يتم العثور على جذور. تأكد من إدخال كلمات صحيحة.")
         else:
             st.warning("⚠️ الرجاء إدخال نص للاستنطاق.")
 
@@ -561,7 +556,7 @@ with tabs[3]:
         dominant = df['gene'].mode()[0] if not df.empty else 'S'
         st.markdown(f"""
         <div class='story-box'>
-            <p style='margin:5px 0;'><b>بيان الاستواء الوجودي v29.2</b></p>
+            <p style='margin:5px 0;'><b>بيان الاستواء الوجودي v29.3</b></p>
             <p style='margin:5px 0;'>✅ تم استنطاق <b>{len(st.session_state.active_pool)}</b> جذراً.</p>
             <p style='margin:5px 0;'>🐪 الهيمنة الجينية: <b style='color:{GENE_STYLE[dominant]["color"]};'>{GENE_STYLE[dominant]['icon']} {GENE_STYLE[dominant]['name']}</b></p>
             <p style='margin:5px 0;'>⚡ مجموع الطاقة: <b>{df['energy'].sum():.1f}</b></p>
