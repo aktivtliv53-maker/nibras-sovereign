@@ -160,5 +160,169 @@
     "bio_link": "Permit-Ear-Listen",
     "structural_analysis": "ألف: أصل. ذال: ذبذبة الاستقبال. نون: سكون العلم.",
     "insight_radar": "الإذن هو نظام تدبير يسمح بسريان طاقات الخير والتمكين في الكون."
+  },
+  {
+    [
+  {
+    "root": "أرب",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Need-Intense-Limb",
+    "structural_analysis": "ألف: أصل. راء: تدفق. باء: وعاء الحاجة.",
+    "insight_radar": "الإربة هي نظام تدبير للاحتياج الفطري الذي يحرك الوجود نحو الخير."
+  },
+  {
+    "root": "أرض",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Earth-Ground",
+    "structural_analysis": "ألف: أصل. راء: تدفق. ضاد: ضبط الاستقرار.",
+    "insight_radar": "الأرض هي سكينة الاحتواء والقرار التي تمكن بذور الخير من النماء."
+  },
+  {
+    "root": "أرك",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Couch-Throne-Stay",
+    "structural_analysis": "ألف: أصل. راء: تدفق. كاف: كمال الاتكاء.",
+    "insight_radar": "الأرائك هي سكينة النعيم والتمكين التام في مقامات الخير والراحة."
+  },
+  {
+    "root": "أزر",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "بقر",
+    "bio_link": "Strengthen-Backing",
+    "structural_analysis": "ألف: أصل. زاي: اهتزاز القوة. راء: تدفق الدعم.",
+    "insight_radar": "الأزر هو تمكين السند والعون لتيسير مهام التمكين والخير."
+  },
+  {
+    "root": "أزز",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Instigate-Incite",
+    "structural_analysis": "ألف: أصل. زاي: اهتزاز. زاي: تكرار الدفع.",
+    "insight_radar": "الأزّ هو حركة توليد طاقة داخلية تدفع المدارات نحو غايات الخير."
+  },
+  {
+    "root": "أزف",
+    "orbit_id": 6,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Approach-Near",
+    "structural_analysis": "ألف: أصل. زاي: اهتزاز. فاء: انفتاح الاقتراب.",
+    "insight_radar": "الآزفة هي نظام تدبير لاقتراب اللحظات الحاسمة لظهور الحق والخير."
+  },
+  {
+    "root": "أسر",
+    "orbit_id": 6,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Bind-Joint-Captive",
+    "structural_analysis": "ألف: أصل. سين: سكون. راء: تدفق الإحكام.",
+    "insight_radar": "الأسر هو نظام تدبير لشد البنيان (شددنا أسرهم) لضمان قوة الخير."
+  },
+  {
+    "root": "أسس",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Found-Base",
+    "structural_analysis": "ألف: أصل. سين: سكون. سين: ثبات القاعدة.",
+    "insight_radar": "التأسيس هو مدار الذات التي تبني على تقوى، منبع كل خير دائم."
+  },
+  {
+    "root": "أسف",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Grieve-Regret-Angry",
+    "structural_analysis": "ألف: أصل. سين: سكون. فاء: انفتاح الألم.",
+    "insight_radar": "الأسف هو مدار عود ينبه لفقد المحبوب، واليقين بالله هو الخير."
+  },
+  {
+    "root": "أسن",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Stagnant-Alter",
+    "structural_analysis": "ألف: أصل. سين: سكون. نون: ثبات التغير.",
+    "insight_radar": "الآسن هو مدار عود ينبه لركود الماء، وجريانه هو حياة الخير واليسر."
+  },
+  {
+    "root": "أسو",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Example-Consolation",
+    "structural_analysis": "ألف: أصل. سين: سكون. واو: وصل المقتدى.",
+    "insight_radar": "الأسوة هي صعود الوعي باتباع مسارات النور لتمكين الخير والتمكين."
+  },
+  {
+    "root": "أشر",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Arrogant-Boastful",
+    "structural_analysis": "ألف: أصل. شين: انتشار. راء: تدفق الزيف.",
+    "insight_radar": "الأشر هو مدار عود ينبه لبطر النعمة، والشكر هو حصن الخير واليسر."
+  },
+  {
+    "root": "أصل",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Root-Origin-Evening",
+    "structural_analysis": "ألف: أصل. صاد: صلابة. لام: اتصال الجذور.",
+    "insight_radar": "الأصل هو مدار الذات الثابتة في يقينها، وهي منبت كل خير."
+  },
+  {
+    "root": "أصر",
+    "orbit_id": 6,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Burden-Covenant-Tie",
+    "structural_analysis": "ألف: أصل. صاد: صلابة. راء: تدفق القيد.",
+    "insight_radar": "الإصر هو نظام تدبير يختبر الالتزام، ووضعه (رفعه) هو تمام اليسر والخير."
+  },
+  {
+    "root": "أفف",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Displeasure-Annoyance",
+    "structural_analysis": "ألف: أصل. فاء: انفتاح. فاء: تكرار الضيق.",
+    "insight_radar": "الأفّ هو مدار عود ينبه لضيق الصبر، واللين هو سكن الخير واليسر."
+  },
+  {
+    "root": "أفق",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Horizon-Climax",
+    "structural_analysis": "ألف: أصل. فاء: انفتاح. قاف: قوة المدى.",
+    "insight_radar": "الآفاق هي صعود الوعي لاستكشاف تجليات الخير الإلهي في الكون."
+  },
+  {
+    "root": "أفك",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Turn-Lie-Divert",
+    "structural_analysis": "ألف: أصل. فاء: انفتاح. كاف: كف الحق.",
+    "insight_radar": "الإفك هو مدار عود ينبه لقلب الحقائق، والاستقامة هي ميزان الخير."
+  },
+  {
+    "root": "أفل",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Set-Disappear",
+    "structural_analysis": "ألف: أصل. فاء: انفتاح. لام: اتصال الغياب.",
+    "insight_radar": "الأفول هو مدار عود ينبه لزوال المؤقت، والبقاء لله هو الخير الدائم."
   }
 ]
