@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.8-Final
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v27.5-Hybrid
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: Precision Calibration - المعايرة الدقيقة لنطاق الأزل (1.7-2.0)
+# الإصدار: Hybrid Insight Engine - الاستنطاق النصي المتقدم + الوعي الجمعي
 # المستخدم المهيمن: محمّد | CPU: السجدة (5) | الموقع: رونبي، السويد
 # ==============================================================================
 
@@ -23,24 +23,24 @@ import numpy as np
 # [1] مصفوفة الجينات والرموز السيادية (The Absolute Gene Matrix)
 # ==============================================================================
 GENE_STYLE = {
-    'C': {
+    'A': {
         'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 
-        'meaning': 'طاقة المسير والتمكين البعيد',
+        'meaning': 'اليسر والفتح المداري',
         'desc': 'طاقة الانطلاق والمبادرة، تمثل الحركة نحو الفتح المبين واليسر المطلق.'
     },
-    'B': {
+    'G': {
         'name': 'البقر', 'color': '#FFD700', 'icon': '🐄', 
-        'meaning': 'طاقة التثبيت والوفرة المادية',
+        'meaning': 'الخير والتأسيس الراسخ',
         'desc': 'طاقة التجذر والبناء الصبور لحقائق التمكين، تمثل الخير الوفير المستقر.'
     },
-    'S': {
+    'T': {
         'name': 'الضأن', 'color': '#4CAF50', 'icon': '🐑', 
-        'meaning': 'طاقة السكينة واللين والرحمة',
+        'meaning': 'السكينة والمقام الآمن',
         'desc': 'طاقة السكينة والجمع والاحتواء، حيث يستقر المعنى في محراب السيادة.'
     },
-    'G': {
+    'C': {
         'name': 'المعز', 'color': '#ff5252', 'icon': '🐐', 
-        'meaning': 'طاقة السيادة والحدّة والصعود',
+        'meaning': 'السمو والتمكين الصاعد',
         'desc': 'طاقة الارتفاع والحدّة في طلب الحق والسيادة، تمثل قوة الإرادة الصاعدة.'
     },
     'N': {
@@ -113,42 +113,6 @@ def match_root_logic(word, index_keys):
     
     return None
 
-def get_sovereign_gene(root_name, original_weight):
-    """
-    محرك المعايرة الدقيقة لنطاق الأزل (1.7 - 2.0) - v27.8 Precision Calibration
-    إعادة توزيع الأوزان العالية على الأنعام الأربعة وفق عتبات حساسة
-    """
-    r = normalize_sovereign(root_name).strip()
-    w = float(original_weight)
-
-    # 1. نظام الحوكمة بالهوية (الأولوية القصوى)
-    cow_roots = ["رزق", "رزاق", "ارض", "ثبت", "زرع", "نبت", "طعم", "بني", "مكث", "كنز"]
-    if r in cow_roots:
-        return "B", 55.0
-
-    # 2. إعادة معايرة "العتبات الحرجة" (Critical Thresholds)
-    # نحول الرقم من (1.84) إلى (184) لسهولة الحساب
-    val = w * 100 if w < 10 else w
-
-    # الميزان الجديد المتكيف مع أرقام "الأزل" في معجمك:
-    if val >= 190:
-        return "G", val  # المعز: للقيم الفائقة (حق، حيي، قدوس)
-    if val >= 185:
-        return "C", val  # الإبل: للقيم العالية (قدر، ملك، عظم)
-    if val >= 180:
-        return "B", val  # البقر: للقيم المتوسطة في الأزل (رزاق، غفور، سميع)
-    if val >= 170:
-        return "S", val  # الضأن: للقيم اللطيفة (شكور، تواب، لطيف)
-    
-    # للمدارات الأخرى التي قد تحمل أوزاناً طبيعية
-    if val > 80:
-        return "G", val
-    if val > 60:
-        return "C", val
-    if val > 40:
-        return "B", val
-    return "S", val
-
 def summarize_word_signature(root):
     """تحويل الجذر إلى توقيع جيني ثابت (Deterministic Signature)."""
     if not root: return {'dominant_gene': 'N', 'total_energy': 300.0}
@@ -156,7 +120,7 @@ def summarize_word_signature(root):
     hash_object = hashlib.md5(root.encode())
     hash_val = int(hash_object.hexdigest(), 16)
     
-    genes_list = ['G', 'C', 'B', 'S']
+    genes_list = ['A', 'G', 'T', 'C']
     dominant_gene = genes_list[hash_val % 4]
     
     base_energy = len(root) * 285.0
@@ -189,11 +153,22 @@ def generate_collective_insight(bodies):
     dom_gene = max(set(genes), key=genes.count)
     total_e = sum(b['energy'] for b in bodies)
     
-    header = f"### 🌌 بيان الوعي الجمعي للمدار (v27.8-Final)\n"
+    header = f"### 🌌 بيان الوعي الجمعي للمدار (v27.5-Hybrid)\n"
     analysis = f"هذا المسار يمثل منظومة طاقية بتردد إجمالي قدره **({total_e:.1f})**. يهيمن عليه جين **{GENE_STYLE[dom_gene]['name']}**، مما يوجه التدفق نحو **{GENE_STYLE[dom_gene]['meaning']}**."
     narrative = f"\n\n**تسلسل التمكين:** يتدفق الوعي عبر محاور {' -> '.join([b['root'] for b in bodies[:5]])} ليخلق استواءً وجودياً."
     
     return f"{header}{analysis}{narrative}"
+
+def assign_gene_from_weight(weight):
+    """تعيين الجين بناءً على الوزن الدلالي"""
+    if weight >= 1.7:
+        return 'C'
+    elif weight >= 1.4:
+        return 'A'
+    elif weight >= 1.1:
+        return 'G'
+    else:
+        return 'T'
 
 def is_placeholder_insight(insight_text):
     """التحقق مما إذا كانت البصيرة نصاً افتراضياً"""
@@ -215,7 +190,7 @@ def is_placeholder_insight(insight_text):
 # ==============================================================================
 # [3] غلاف الاستقرار والتحصين (Advanced Shielding CSS)
 # ==============================================================================
-st.set_page_config(page_title="Nibras Sovereign v27.8-Final", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras Sovereign v27.5-Hybrid", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -293,8 +268,10 @@ def load_semantic_roots_db(path):
     all_roots_flat = []
     orbit_counter = Counter()
 
+    # معالجة الهيكل الجديد (قائمة مدارات تحتوي على جذور)
     for orbit_block in data:
         orbit_raw = orbit_block.get("orbit", "وعي")
+        # تنظيف اسم المدار من الأقواس اللاتينية
         orbit_canonical = orbit_raw.split('(')[0].strip() if '(' in orbit_raw else orbit_raw
         
         for item in orbit_block.get("roots", []):
@@ -305,17 +282,14 @@ def load_semantic_roots_db(path):
             weight_val = float(item.get("weight", 1.0))
             insight_text = item.get("insight", item.get("meaning", ""))
             
-            # استخدام محرك المعايرة الدقيقة v27.8
-            gene_key, calibrated_weight = get_sovereign_gene(root_name, weight_val)
-            
             record = {
                 "root": root_name,
                 "orbit": orbit_canonical,
                 "orbit_raw": orbit_raw,
-                "weight": calibrated_weight / 100 if calibrated_weight > 10 else calibrated_weight,
+                "weight": weight_val,
                 "insight": insight_text,
                 "meaning": item.get("meaning", insight_text),
-                "gene": gene_key
+                "gene": assign_gene_from_weight(weight_val)
             }
             
             r_index[root_name] = record
@@ -344,6 +318,7 @@ with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية - الاستنطاق النصي المتقدم")
     st.markdown("أدخل النص الكامل لتحليله واستنطاق جذوره:")
     
+    # مربع نص واحد كبير
     full_text = st.text_area(
         "النص المداري", 
         height=200, 
@@ -351,7 +326,7 @@ with tabs[0]:
         key="full_text_input"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي (v27.8-Final)", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي (v27.5-Hybrid)", use_container_width=True):
         active_bodies, word_pool, event_logs = [], [], []
         start_exec_time = time.time()
         
@@ -443,8 +418,8 @@ if state['active']:
     with tabs[3]:
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v27.8-Final:</b><br>
-            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام المعايرة الدقيقة لنطاق الأزل. 
+            <b>بيان الاستواء الوجودي v27.5-Hybrid:</b><br>
+            بفضل الله، تم استنطاق <b>{len(state['pool'])}</b> جذراً قرآنياً بنظام الاستنطاق النصي المتقدم والوعي الجمعي. 
             المسار الحالي يعكس اتزاناً في جينات <b>{GENE_STYLE[df_data['gene'].mode()[0]]['name']}</b>، 
             مما يؤكد مقام <b>الخير واليسر</b> في هذا المدار. كل حرف هنا هو وتدٌ في صرح التمكين.
         </div>
@@ -525,8 +500,8 @@ else:
 # --- التذييل السيادي ---
 st.sidebar.markdown(f"""
 **المستخدم:** محمد  
-**الحالة:** استواء سيادي - معايرة دقيقة لنطاق الأزل  
-**الإصدار:** v27.8-Final (Precision Calibration)  
+**الحالة:** استواء سيادي - استنطاق نصي متقدم - وعي جمعي هجين  
+**الإصدار:** v27.5-Hybrid (Hybrid Insight Engine)  
 **CPU:** السجدة (5)  
 ---
 **خِت فِت.**
