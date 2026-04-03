@@ -1,31 +1,20 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import json
 import os
 import re
-from collections import Counter
 
-# 1. تثبيت الهوية البصرية (التبويبات الثلاثة والواجهة الذهبية)
+# 1. الإعدادات البصرية السيادية
 st.set_page_config(page_title="نبراس السيادي", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background: #050505; color: #e0e0e0; direction: rtl; }
-    .summary-box {
-        background: #0d1a0d; padding: 25px; border-radius: 12px; 
-        border-right: 8px solid #FFD700; margin-bottom: 30px; border: 1px solid #1a3a1a;
-    }
-    .insight-card {
-        background: #111; padding: 20px; border-radius: 10px;
-        border-right: 5px solid #4fc3f7; margin-bottom: 15px;
-        line-height: 1.8; font-size: 1.15em;
-    }
-    .stTabs [aria-selected="true"] { color: #FFD700 !important; border-bottom: 2px solid #FFD700 !important; }
+    .summary-box { background: #0d1a0d; padding: 25px; border-radius: 12px; border-right: 8px solid #FFD700; margin-bottom: 30px; }
+    .insight-card { background: #111; padding: 20px; border-radius: 10px; border-right: 5px solid #4fc3f7; margin-bottom: 15px; line-height: 1.8; }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. المحرك السيادي لاستخلاص الجذور
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪'},
     'B': {'name': 'البقر', 'color': '#FFD700', 'icon': '🐄'},
@@ -33,85 +22,76 @@ GENE_STYLE = {
     'G': {'name': 'المعز', 'color': '#ff5252', 'icon': '🐐'}
 }
 
-def clean_text(text):
+# دالة التطهير الأساسية (بدون أي تعقيد)
+def simple_normalize(text):
     if not text: return ""
-    # إزالة التشكيل وكل ما ليس حرفاً عربياً
-    text = re.sub(r'[\u064B-\u065F]', '', text)
-    return text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").strip()
+    t = str(text).strip().replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")
+    return re.sub(r'[\u064B-\u065F]', '', t)
 
+# تحميل البيانات مع فحص الأخطاء
 @st.cache_data
 def load_db():
-    path = "data/nibras_lexicon.json"
-    if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        # تخزين القاعدة بنسخة مطهرة للمقارنة
-        return {clean_text(item['root']): item for item in data}
-    return {}
+    # البحث في المجلد الرئيسي وفي مجلد data
+    potential_paths = ["nibras_lexicon.json", "data/nibras_lexicon.json"]
+    for p in potential_paths:
+        if os.path.exists(p):
+            try:
+                with open(p, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                # بناء القاموس بالمطابقة الصافية
+                return {simple_normalize(item['root']): item for item in data}
+            except: continue
+    return None
 
 db = load_db()
 
-# 3. الهيكل الثلاثي (كما في الصورة 9)
-tab1, tab2, tab3 = st.tabs(["🔍 مفاعل الاستنطاق", "📜 البيان الختامي", "📈 الخريطة الوجودية"])
+# --- واجهة الاستخدام ---
+tab1, tab2, tab3 = st.tabs(["🔍 الاستنطاق", "📜 البيان", "📈 المدارات"])
 
 with tab1:
-    input_text = st.text_area("أدخل الآية أو الجذور:", height=150, placeholder="ضع النص هنا ليقوم النظام باستخلاص الجذور...")
+    if db is None:
+        st.error("❌ الرادار معطل: لم يتم العثور على ملف nibras_lexicon.json في المستودع.")
+    else:
+        st.success(f"✅ الرادار متصل: تم تحميل {len(db)} جذراً بنجاح.")
+        
+    input_text = st.text_area("أدخل الجذور (افصل بينها بمسافة):", height=100)
     
-    if st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True):
-        if input_text.strip():
-            # تقطيع النص إلى كلمات وتنظيفها
-            raw_words = re.findall(r'\w+', input_text)
+    if st.button("🚀 تفعيل المفاعل"):
+        if input_text.strip() and db:
+            # تقطيع النص المدخل إلى كلمات بسيطة
+            words = input_text.split()
             bodies = []
-            seen_roots = set()
-
-            for word in raw_words:
-                norm_word = clean_text(word)
-                # البحث عن أي جذر موجود داخل الكلمة أو يطابقها
-                for root_key in db:
-                    if root_key in norm_word and root_key not in seen_roots:
-                        item = db[root_key]
-                        g_code = item.get('gene', 'S')
-                        bodies.append({
-                            "root": item['root'],
-                            "orbit": item.get('orbit_id', 1),
-                            "gene": g_code,
-                            "insight": item.get('insight_radar', item.get('insight', '...')),
-                            "color": GENE_STYLE.get(g_code, GENE_STYLE['S'])['color'],
-                            "gene_display": f"{GENE_STYLE.get(g_code, GENE_STYLE['S'])['icon']} {GENE_STYLE.get(g_code, GENE_STYLE['S'])['name']}"
-                        })
-                        seen_roots.add(root_key)
+            for w in words:
+                norm_w = simple_normalize(w)
+                if norm_w in db:
+                    item = db[norm_w]
+                    g_code = item.get('gene', 'S')
+                    bodies.append({
+                        "root": item['root'],
+                        "orbit": item.get('orbit_id', 1),
+                        "gene": g_code,
+                        "insight": item.get('insight_radar', item.get('insight', '...')),
+                        "color": GENE_STYLE.get(g_code, GENE_STYLE['S'])['color'],
+                        "gene_display": f"{GENE_STYLE.get(g_code, GENE_STYLE['S'])['icon']} {GENE_STYLE.get(g_code, GENE_STYLE['S'])['name']}"
+                    })
             
             if bodies:
                 st.session_state.active_bodies = bodies
-                st.success(f"✅ تم استخلاص {len(bodies)} جذراً من النص بنجاح.")
+                st.rerun() # إعادة التشغيل لإظهار النتائج في التبويبات
             else:
-                st.error("⚠️ لم يتم العثور على جذور معروفة في هذا النص.")
+                st.warning("⚠️ لم يتم العثور على هذه الجذور. تأكد من كتابة 'الجذر' مجرداً (مثل: احد، صمد، ارض).")
 
 with tab2:
     if 'active_bodies' in st.session_state:
         bodies = st.session_state.active_bodies
-        dom = max([b['gene'] for b in bodies], key=[b['gene'] for b in bodies].count)
-        
-        st.markdown(f"""
-        <div class="summary-box">
-            <h2 style='color:#FFD700; margin:0;'>📜 البيان الختامي الموسع</h2>
-            <p style='font-size:1.2em;'>الهيمنة الجينية: {GENE_STYLE[dom]['icon']} {GENE_STYLE[dom]['name']}</p>
-            <p>الجذور المكتشفة: {', '.join([b['root'] for b in bodies])}</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
+        st.markdown(f'<div class="summary-box"><h2 style="color:#FFD700;">📜 البيان الختامي الموسع</h2><p>تم استنطاق {len(bodies)} جذراً.</p></div>', unsafe_allow_html=True)
         for b in bodies:
-            st.markdown(f"""
-            <div class="insight-card" style="border-right-color:{b['color']}">
-                <b style="color:{b['color']}">📌 الجذر: {b['root']}</b> | {b['gene_display']}
-                <p style='margin-top:10px;'>{b['insight']}</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="insight-card" style="border-right-color:{b["color"]}"><b>📌 {b["root"]}</b> | {b["gene_display"]}<br>{b["insight"]}</div>', unsafe_allow_html=True)
     else:
-        st.info("بانتظار الاستنطاق في التبويب الأول.")
+        st.info("لا توجد بيانات.")
 
 with tab3:
     if 'active_bodies' in st.session_state:
         df = pd.DataFrame(st.session_state.active_bodies)
-        fig = px.scatter(df, x="root", y="orbit", color="gene_display", size_max=20, template="plotly_dark")
-        st.plotly_chart(fig, use_container_width=True)
+        import plotly.express as px
+        st.plotly_chart(px.scatter(df, x="root", y="orbit", color="gene_display", template="plotly_dark"))
