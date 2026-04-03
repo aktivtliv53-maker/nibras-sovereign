@@ -2322,15 +2322,6 @@
     "insight_radar": "الحزن هو مدار عود ينبه لثقل المشاعر، واليسر هو انشراح الصدر بالخير."
   },
   {
-    "root": "حسأ",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Feel-Sense-Perceive",
-    "structural_analysis": "حاء: حياة. سين: سكون. همزة: أصل الإدراك.",
-    "insight_radar": "الإحساس هو حركة التقاط ذبذبات الخير والتمكين في المدارات."
-  },
-  {
     "root": "حسب",
     "orbit_id": 1,
     "energy_type": "ذكر",
@@ -2401,24 +2392,6 @@
     "bio_link": "Gather-Muster",
     "structural_analysis": "حاء: حياة. شين: انتشار. راء: تدفق الجمع.",
     "insight_radar": "الحشر هو حركة سوق المدارات نحو مركز العدل والتمكين والخير."
-  },
-  {
-    "root": "حشرج",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Death rattle",
-    "structural_analysis": "حاء. شين. راء. جيم: تجمع طاقة الخروج.",
-    "insight_radar": "الحشرجة هي مدار عود ينبه للحظة الانتقال لتمكين الروح في عالم الخير."
-  },
-  {
-    "root": "حشش",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Dry grass-Fuel",
-    "structural_analysis": "حاء: حياة. شين: انتشار. شين: تكرار الهشيم.",
-    "insight_radar": "الحشيم هو سكينة المادة التي اكتملت دورتها لتكون وقوداً لنماء خير جديد."
   },
   {
     "root": "حصب",
@@ -2761,15 +2734,6 @@
     "bio_link": "Join-Gather-Acquire",
     "structural_analysis": "حاء: حياة. واو: وصل. زاي: اهتزاز الانحياز.",
     "insight_radar": "التحيز هو حركة انضمام للمركز لتقوية صفوف التمكين والخير."
-  },
-  {
-    "root": "حوش",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Surround-Court",
-    "structural_analysis": "حاء: حياة. واو: وصل. شين: انتشار الحفظ.",
-    "insight_radar": "الحواشي هي سكينة الأطراف التي تحمي لباب الخير والتمكين."
   },
   {
     "root": "حوط",
