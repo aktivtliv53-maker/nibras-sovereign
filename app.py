@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v30.0
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v30.1
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: مرحلة الاستواء - هندسة بصرية متكاملة
+# الإصدار: مرحلة الاستواء الكامل - البيان الختامي الموسع
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
@@ -278,16 +278,33 @@ def load_lexicon_db(path):
     return r_index, all_roots
 
 # ==============================================================================
-# [6] دالة عرض الاستنطاق الكامل — مع ألوان ديناميكية
+# [6] دالة عرض الاستنطاق الكامل + البيان الختامي
 # ==============================================================================
 
 def display_sovereign_results(bodies_list):
-    """عرض الجذور والاستنطاق ككتل نصية كاملة تنتهي بنقطة مع ألوان ديناميكية"""
+    """عرض الجذور والاستنطاق ككتل نصية كاملة مع البيان الختامي في الأعلى"""
     if not bodies_list:
         st.info("لا توجد بيانات حالياً.")
         return
     
-    st.markdown("### 📜 البيان الختامي الموسع")
+    # ========== البيان الختامي الجماعي ==========
+    total_energy = sum(b.get('energy', 0) for b in bodies_list)
+    genes_count = Counter(b.get('gene', 'S') for b in bodies_list)
+    dominant_gene = max(genes_count, key=genes_count.get)
+    gene_info = GENE_STYLE.get(dominant_gene, GENE_STYLE['S'])
+    
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, #0a1a0a 0%, #051005 100%); padding: 25px; border-radius: 20px; border-right: 5px solid {gene_info["color"]}; margin-bottom: 30px;'>
+        <h3 style='margin:0 0 15px 0; color:#FFD700;'>📜 البيان الختامي الموسع</h3>
+        <p style='margin:8px 0;'>✅ تم استنطاق <b>{len(bodies_list)}</b> جذراً.</p>
+        <p style='margin:8px 0;'>🐪 الهيمنة الجينية: <b style='color:{gene_info["color"]};'>{gene_info['icon']} {gene_info['name']}</b></p>
+        <p style='margin:8px 0;'>⚡ مجموع الطاقة: <b>{total_energy:.1f}</b></p>
+        <p style='margin:8px 0;'>📚 الجذور المستنطقة: <b>{', '.join([b.get('root', '—') for b in bodies_list])}</b></p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # ========== تفاصيل كل جذر على حدة ==========
+    st.markdown("### 🔍 تفاصيل الاستنطاق")
 
     for i, res in enumerate(bodies_list):
         root_name = res.get("root", "—")
@@ -325,7 +342,7 @@ def display_sovereign_results(bodies_list):
 # [7] تهيئة التطبيق
 # ==============================================================================
 
-st.set_page_config(page_title="نبراس السيادي v30.0", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="نبراس السيادي v30.1", page_icon="🛡️", layout="wide")
 
 # CSS النظيف - بدون عناصر عائمة أو أعمدة رأسية
 st.markdown("""
@@ -398,7 +415,7 @@ with st.sidebar:
     st.markdown(f"""
     <div style='text-align:center; padding:10px;'>
         <h2 style='color:#4fc3f7; margin:0;'>🛡️ نبراس السيادي</h2>
-        <p style='color:#888; margin:5px 0;'>الإصدار v30.0</p>
+        <p style='color:#888; margin:5px 0;'>الإصدار v30.1</p>
         <p style='color:#555; margin:0;'>المستخدم: محمد</p>
     </div>
     ---
@@ -476,7 +493,7 @@ with tabs[0]:
                                   showlegend=False, xaxis_visible=False, yaxis_visible=False)
                 st.plotly_chart(fig, use_container_width=True)
                 
-                # عرض البيان الختامي الموسع فوراً
+                # عرض البيان الختامي الموسع + تفاصيل الاستنطاق
                 display_sovereign_results(bodies)
                 
             else:
@@ -577,22 +594,6 @@ with tabs[5]:
     st.markdown("### 🧠 الوعي الفوقي - البيان الجمعي")
     
     if st.session_state.is_active and st.session_state.active_bodies:
-        total_energy = sum(b['energy'] for b in st.session_state.active_bodies)
-        genes_count = Counter(b['gene'] for b in st.session_state.active_bodies)
-        dominant_gene = max(genes_count, key=genes_count.get)
-        gene_info = GENE_STYLE[dominant_gene]
-        
-        st.markdown(f"""
-        <div class='story-box'>
-            <h3 style='margin:0 0 15px 0; color:#FFD700;'>🌌 بيان الوعي الجمعي</h3>
-            <p style='margin:8px 0;'><b>عدد الجذور المستنطقة:</b> {len(st.session_state.active_bodies)}</p>
-            <p style='margin:8px 0;'><b>مجموع الطاقة:</b> {total_energy:.1f}</p>
-            <p style='margin:8px 0;'><b>الهيمنة الجينية:</b> <span style='color:{gene_info["color"]};'>{gene_info['icon']} {gene_info['name']}</span></p>
-            <p style='margin:8px 0;'><b>الجذور المستنطقة:</b> {', '.join(st.session_state.active_pool)}</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("#### 📖 تفاصيل الاستنطاق الكاملة")
         display_sovereign_results(st.session_state.active_bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
