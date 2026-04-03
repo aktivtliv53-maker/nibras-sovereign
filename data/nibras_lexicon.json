@@ -5,1213 +5,160 @@
     "energy_type": "أنثى",
     "carrier_type": "بقر",
     "bio_link": "Pasture-Growth",
-    "structural_analysis": "ألف: امتداد. باء: وعاء. باء: تكثيف.",
-    "insight_radar": "الأب هو طاقة الإنبات الأرضي التي تمد الكائنات بالخير واليسر."
+    "structural_analysis": "ألف: أصل البداية. باء: وعاء. باء: تكرار النماء.",
+    "insight_radar": "الأبّ هو تمكين النبات والرزق الذي يفيض بالخير واليسر لكل الكائنات."
   },
   {
     "root": "أبد",
     "orbit_id": 6,
     "energy_type": "ذكر",
     "carrier_type": "إبل",
-    "bio_link": "Eternity",
-    "structural_analysis": "ألف: امتداد. باء: وعاء. دال: استمرار.",
-    "insight_radar": "الأبد هو نظام التدبير الزماني الذي لا ينقطع فيه تدفق النور."
+    "bio_link": "Eternal-Everlasting",
+    "structural_analysis": "ألف: أصل. باء: وعاء. دال: ديمومة الامتداد.",
+    "insight_radar": "الأبد هو نظام تدبير للخلود والاستمرار في مدارات الخير والتمكين."
   },
   {
     "root": "أبق",
-    "orbit_id": 5,
+    "orbit_id": 7,
     "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Escape-Flow",
-    "structural_analysis": "ألف: انطلاق. باء: وعاء. قاف: قوة/تحديد.",
-    "insight_radar": "الإباق هو حركة انسياب خارج المدار المعتاد لإعادة اكتشاف القصد."
+    "carrier_type": "إبل",
+    "bio_link": "Escape-Runaway",
+    "structural_analysis": "ألف: أصل. باء: وعاء. قاف: قوة الانفصال.",
+    "insight_radar": "الإباق هو مدار عود ينبه للانفصال عن المركز، والعودة هي تمام الخير."
   },
   {
     "root": "أبل",
     "orbit_id": 3,
-    "energy_type": "ذكر",
+    "energy_type": "أنثى",
     "carrier_type": "بقر",
-    "bio_link": "Resilience",
-    "structural_analysis": "ألف: امتداد. باء: وعاء. لام: اتصال.",
-    "insight_radar": "الإبل هي كائن التمكين الصبور الذي يحمل الأمانة عبر المسافات بيسر."
+    "bio_link": "Camel-Abundance",
+    "structural_analysis": "ألف: أصل. باء: وعاء. لام: اتصال القوة.",
+    "insight_radar": "الإبل هي تمكين صابر يحمل أثقال الخير واليسر عبر المسارات الصعبة."
   },
   {
     "root": "أبى",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Refusal-Bound",
-    "structural_analysis": "ألف: انطلاق. باء: وعاء. ياء: امتداد.",
-    "insight_radar": "الإباء هو حركة الوعي التي تضع حداً للامتزاج لضمان نقاء الذات."
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Refuse-Reject",
+    "structural_analysis": "ألف: أصل. باء: وعاء. ياء: امتداد الرفض.",
+    "insight_radar": "الإباء هو مدار عود يختبر التسليم، والقبول بالحق هو مفتاح التمكين والخير."
   },
   {
     "root": "أتم",
-    "orbit_id": 7,
+    "orbit_id": 1,
     "energy_type": "ذكر",
     "carrier_type": "إبل",
-    "bio_link": "Completion",
-    "structural_analysis": "ألف: امتداد. تاء: تمام. ميم: احتواء.",
-    "insight_radar": "الإتمام هو مدار العود الذي يغلق دائرة النعمة لتصبح خيراً محضاً."
+    "bio_link": "Complete-Perfect",
+    "structural_analysis": "ألف: أصل. تاء: تمام. ميم: إحاطة الكمال.",
+    "insight_radar": "التمام هو مدار الذات التي استكملت نورها، وهو جوهر الخير واليسر."
   },
   {
     "root": "أثر",
     "orbit_id": 2,
-    "energy_type": "مزدوج",
+    "energy_type": "ذكر",
     "carrier_type": "إبل",
-    "bio_link": "Legacy-Trace",
-    "structural_analysis": "ألف: امتداد. ثاء: انتشار. راء: تدفق.",
-    "insight_radar": "الأثر هو صعود الوعي عبر تتبع ما تبقى من أنوار السابقين."
-  },
-  {
-    "root": "أثث",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Furnish",
-    "structural_analysis": "ألف: امتداد. ثاء: انتشار. ثاء: تكثيف.",
-    "insight_radar": "الأثاث هو سكينة الامتلاء التي تجعل المستقر مكاناً للخير والراحة."
-  },
-  {
-    "root": "أثم",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Friction-Return",
-    "structural_analysis": "ألف: امتداد. ثاء: انتشار. ميم: احتواء.",
-    "insight_radar": "الإثم هو مدار عود قسري ناتج عن احتكاك الوعي بالباطل لتنقيته."
+    "bio_link": "Trace-Influence",
+    "structural_analysis": "ألف: أصل. ثاء: ثبات. راء: تدفق البقاء.",
+    "insight_radar": "الأثر هو صعود الوعي عبر تخليد علامات الخير والتمكين في الوجود."
   },
   {
     "root": "أجج",
     "orbit_id": 5,
     "energy_type": "ذكر",
     "carrier_type": "معز",
-    "bio_link": "Ignition",
-    "structural_analysis": "ألف: انطلاق. جيم: جمع. جيم: قوة.",
-    "insight_radar": "الأجيج هو حركة اشتعال الطاقة التي تحول الساكن إلى حياة متدفقة."
+    "bio_link": "Blaze-Saltwater",
+    "structural_analysis": "ألف: أصل. جيم: جمال القوة. جيم: تكرار الوهج.",
+    "insight_radar": "الأجاج هو حركة تطهيرية تسبق العذوبة، وهو قوة تدفع نحو الخير."
   },
   {
     "root": "أجر",
     "orbit_id": 3,
-    "energy_type": "مزدوج",
+    "energy_type": "أنثى",
     "carrier_type": "بقر",
-    "bio_link": "Reward-Feedback",
-    "structural_analysis": "ألف: امتداد. جيم: جمع. راء: تدفق.",
-    "insight_radar": "الأجر هو تمكين الوعي من ثمار سعيه، تدفق مستحق من الخير."
+    "bio_link": "Reward-Wage",
+    "structural_analysis": "ألف: أصل. جيم: جمال. راء: تدفق العطاء.",
+    "insight_radar": "الأجر هو تمكين الاستحقاق المالي والمعنوي الذي يثمر خيراً ويسراً."
   },
   {
     "root": "أجل",
     "orbit_id": 6,
     "energy_type": "ذكر",
     "carrier_type": "إبل",
-    "bio_link": "Deadline",
-    "structural_analysis": "ألف: امتداد. جيم: جمع. لام: اتصال.",
-    "insight_radar": "الأجل هو نظام التدبير الذي يحدد نقاط التحول في المسار الوجودي."
+    "bio_link": "Term-Delay",
+    "structural_analysis": "ألف: أصل. جيم: جمال التوقيت. لام: اتصال النهاية.",
+    "insight_radar": "الأجل هو نظام تدبير للمواقيت لضمان ترتيب مسارات الخير والتمكين."
   },
   {
     "root": "أحد",
     "orbit_id": 1,
     "energy_type": "ذكر",
     "carrier_type": "إبل",
-    "bio_link": "Oneness",
-    "structural_analysis": "ألف: امتداد. حاء: احتواء. دال: استمرار.",
-    "insight_radar": "الأحد هو مدار الذات المطلق، حيث تتلاشى الكثرة في وحدة النور."
+    "bio_link": "One-Unique",
+    "structural_analysis": "ألف: أصل البداية. حاء: حياة. دال: ديمومة الوحدانية.",
+    "insight_radar": "الأحد هو مدار الذات المتفردة، منبع كل تمكين وخير مطلق."
   },
   {
     "root": "أخذ",
-    "orbit_id": 6,
+    "orbit_id": 5,
     "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Seizure-Hold",
-    "structural_analysis": "ألف: امتداد. خاء: خفاء. ذال: وحدة/بروز.",
-    "insight_radar": "الأخذ هو نظام التدبير الذي يحقق الحيازة والاتصال بالمقدرات."
+    "carrier_type": "معز",
+    "bio_link": "Take-Seize",
+    "structural_analysis": "ألف: أصل. خاء: خوف/خفاء الضبط. ذال: ذوبان الحيازة.",
+    "insight_radar": "الأخذ هو حركة تمكين لامتلاك أدوات الخير واليسر في المسار."
   },
   {
     "root": "أخر",
-    "orbit_id": 7,
+    "orbit_id": 6,
     "energy_type": "مزدوج",
     "carrier_type": "إبل",
-    "bio_link": "Latter-End",
-    "structural_analysis": "ألف: امتداد. خاء: خفاء. راء: تدفق.",
-    "insight_radar": "الآخر هو مدار العود الذي يجمع النهايات ليبدأ منها صعوداً جديداً."
+    "bio_link": "Last-Delay",
+    "structural_analysis": "ألف: أصل. خاء: خفاء. راء: تدفق الترتيب.",
+    "insight_radar": "الآخر هو نظام تدبير لترتيب النهايات، وهو يفتح أبواب الخير الدائم."
   },
   {
     "root": "أخو",
     "orbit_id": 4,
     "energy_type": "أنثى",
     "carrier_type": "ضأن",
-    "bio_link": "Brotherhood",
-    "structural_analysis": "ألف: امتداد. خاء: خفاء. واو: وصل.",
-    "insight_radar": "الأخوة هي سكينة الرابطة الخفية التي تجمع النفوس على مائدة الخير."
+    "bio_link": "Brother-Link",
+    "structural_analysis": "ألف: أصل. خاء: خفاء الحماية. واو: وصل الرحم.",
+    "insight_radar": "الأخوة هي سكينة الترابط والالتحام التي توفر الأمان والخير."
+  },
+  {
+    "root": "أدد",
+    "orbit_id": 7,
+    "energy_type": "مزدوج",
+    "carrier_type": "إبل",
+    "bio_link": "Terrible-Strange",
+    "structural_analysis": "ألف: أصل. دال: ديمومة. دال: تكرار الغرابة.",
+    "insight_radar": "الأدّ هو مدار عود ينبه لعظمة الفعل الصادم، والهدف هو لفت الانتباه للخير."
   },
   {
     "root": "أدم",
     "orbit_id": 1,
-    "energy_type": "مزدوج",
+    "energy_type": "ذكر",
     "carrier_type": "إبل",
-    "bio_link": "Humanity-Skin",
-    "structural_analysis": "ألف: امتداد. دال: استمرار. ميم: احتواء.",
-    "insight_radar": "آدم هو مدار الذات المتجسد، الوعاء الأول لاستقبال سر التمكين."
+    "bio_link": "Human-Skin",
+    "structural_analysis": "ألف: أصل. دال: ديمومة. ميم: إحاطة البشرية.",
+    "insight_radar": "آدم هو مدار الذات الخليفة المستخلفة لتمكين الخير في الوجود."
   },
   {
     "root": "أدى",
     "orbit_id": 5,
     "energy_type": "ذكر",
     "carrier_type": "معز",
-    "bio_link": "Delivery",
-    "structural_analysis": "ألف: امتداد. دال: استمرار. ياء: وصل.",
-    "insight_radar": "الأداء هو حركة إيصال الأمانة إلى مستقرها بيسر وفضل."
+    "bio_link": "Perform-Pay",
+    "structural_analysis": "ألف: أصل. دال: ديمومة. ياء: امتداد الوفاء.",
+    "insight_radar": "الأداء هو حركة إتمام الأمانات والعهود لتيسير مسارات الخير."
   },
   {
     "root": "أذن",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Permission",
-    "structural_analysis": "ألف: امتداد. ذال: بروز. نون: استقرار.",
-    "insight_radar": "الإذن هو صعود الوعي لمرحلة القبول الكوني لسريان الفعل."
-  },
-  {
-    "root": "أذى",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Irritation-Calibration",
-    "structural_analysis": "ألف: امتداد. ذال: بروز. ياء: عودة.",
-    "insight_radar": "الأذى هو مدار عود طفيف لتنبيه الوعي وحماية الجوهر من العسر."
-  },
-  {
-    "root": "أرب",
     "orbit_id": 6,
     "energy_type": "ذكر",
     "carrier_type": "إبل",
-    "bio_link": "Requirement",
-    "structural_analysis": "ألف: امتداد. راء: تدفق. باء: وعاء.",
-    "insight_radar": "الإربة هي نظام تدبير الحاجة التي تدفع الكائن للبحث عن التمكين."
-  },
-  {
-    "root": "أرض",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Habitat",
-    "structural_analysis": "ألف: امتداد. راء: تدفق. ضاد: احتواء.",
-    "insight_radar": "الأرض هي مقام التمكين الأكبر، الوعاء الجامع لكل صور الخير واليسر."
-  },
-  {
-    "root": "أزز",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Agitation",
-    "structural_analysis": "ألف: انطلاق. زاي: اهتزاز. زاي: تكثيف اهتزاز.",
-    "insight_radar": "الأز هو حركة دفع طاقية قوية تحفز الوعي للنهوض والعمل."
-  },
-  {
-    "root": "أزر",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Reinforcement",
-    "structural_analysis": "ألف: امتداد. زاي: قوة. راء: تدفق.",
-    "insight_radar": "الأزر هو تمكين القوة عبر الالتصاق والمدد لتقوية البنيان."
-  },
-  {
-    "root": "أزف",
-    "orbit_id": 6,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Imminence",
-    "structural_analysis": "ألف: امتداد. زاي: اهتزاز. فاء: انفتاح.",
-    "insight_radar": "الأزف هو نظام تدبير يقرب المسافات الزمانية إعلاناً عن تجلٍ جديد."
-  },
-  {
-    "root": "أسر",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Binding",
-    "structural_analysis": "ألف: امتداد. سين: نظام. راء: تدفق.",
-    "insight_radar": "الأسر هو نظام تدبير يضبط الروابط ويحكم إغلاق الكيان لغرض التمكين."
-  },
-  {
-    "root": "أسس",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Foundation",
-    "structural_analysis": "ألف: امتداد. سين: نظام. سين: تكثيف النظام.",
-    "insight_radar": "التأسيس هو تمكين القواعد الأولى التي يرتفع عليها صرح الخير."
-  },
-  {
-    "root": "أسف",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Regret-Calibration",
-    "structural_analysis": "ألف: امتداد. سين: نظام. فاء: انفتاح.",
-    "insight_radar": "الأسف هو مدار عود شعوري يهدف لتصحيح النوايا واستعادة اليسر."
-  },
-  {
-    "root": "أسن",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Stagnation-Stillness",
-    "structural_analysis": "ألف: امتداد. سين: نظام. نون: استقرار.",
-    "insight_radar": "الآسن هو سكينة زائدة أدت لركود المادة، تنبيه لتجديد حركة النور."
-  },
-  {
-    "root": "أسى",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Console",
-    "structural_analysis": "ألف: امتداد. سين: نظام. ياء: وصل.",
-    "insight_radar": "الأسى هو سكينة التضامن القلبي التي تداوي جراح الروح بالخير."
-  },
-  {
-    "root": "أصل",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Origin",
-    "structural_analysis": "ألف: امتداد. صاد: صلابة. لام: اتصال.",
-    "insight_radar": "الأصل هو تمكين الجذر الثابت الذي يفيض منه النماء صعوداً."
-  },
-  {
-    "root": "أفف",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Exhale-Discontent",
-    "structural_analysis": "ألف: انطلاق. فاء: انفتاح. فاء: تكرار الانفتاح.",
-    "insight_radar": "الأف هو حركة دفع للهواء تعبر عن ضيق المسار، دعوة لطلب السعة واليسر."
-  },
-  {
-    "root": "أفق",
-    "orbit_id": 2,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Horizon",
-    "structural_analysis": "ألف: امتداد. فاء: انفتاح. قاف: قوة/تحديد.",
-    "insight_radar": "الأفق هو صعود الوعي لمشاهدة حدود التجلي الإلهي في الآفاق."
-  },
-  {
-    "root": "أفك",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Perversion-Flip",
-    "structural_analysis": "ألف: امتداد. فاء: انفتاح. كاف: كف/قلب.",
-    "insight_radar": "الإفك هو مدار عود منحرف عن الحقيقة، قلب للمعاني يحتاج لتقويم بالحق."
-  },
-  {
-    "root": "أفل",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Setting-Eclipse",
-    "structural_analysis": "ألف: امتداد. فاء: انفتاح. لام: اتصال.",
-    "insight_radar": "الأفول هو مدار العود الذي يغيب فيه الظاهر ليبحث الوعي عن الباقي (الخير)."
-  },
-  {
-    "root": "أكل",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Consumption",
-    "structural_analysis": "ألف: امتداد. كاف: احتواء. لام: اتصال.",
-    "insight_radar": "الأكل هو تمكين الكائن من استيعاب طاقة المادة لتحويلها إلى حياة."
-  },
-  {
-    "root": "ألا",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Bounty-Grace",
-    "structural_analysis": "ألف: امتداد. لام: اتصال. ألف: امتداد ثانٍ.",
-    "insight_radar": "الآلاء هي صعود الوعي في مدارات النعم المشهودة لتعظيم المنعم."
-  },
-  {
-    "root": "ألف",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Intimacy",
-    "structural_analysis": "ألف: امتداد. لام: اتصال. فاء: انفتاح.",
-    "insight_radar": "الألفة هي سكينة القلوب التي تجمعت على المودة واليسر."
-  },
-  {
-    "root": "ألم",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Pain-Sensor",
-    "structural_analysis": "ألف: امتداد. لام: اتصال. ميم: احتواء.",
-    "insight_radar": "الألم هو مدار عود حسي ينبه الكائن لوجود خلل يستوجب الإصلاح والخير."
-  },
-  {
-    "root": "أله",
-    "orbit_id": 1,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Deity",
-    "structural_analysis": "ألف: امتداد. لام: اتصال. هاء: تنزيه/هبوط.",
-    "insight_radar": "الإله هو مدار الذات الأوحد، مغناطيس الوجود الذي تتجه إليه كل القلوب."
-  },
-  {
-    "root": "أمل",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Hope",
-    "structural_analysis": "ألف: امتداد. ميم: احتواء. لام: اتصال.",
-    "insight_radar": "الأمل هو صعود الوعي نحو غدٍ مليء باليسر والخير رغم العوائق."
-  },
-  {
-    "root": "أمن",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Security",
-    "structural_analysis": "ألف: امتداد. ميم: احتواء. نون: استقرار.",
-    "insight_radar": "الأمان هو سكينة الروح والجسد، استقرار في حوزة النور واليسر."
-  },
-  {
-    "root": "أمة",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Community-Womb",
-    "structural_analysis": "ألف: امتداد. ميم: احتواء. تاء: تحديد.",
-    "insight_radar": "الأمة هي تمكين الجمع الوجودي تحت راية واحدة وقصد مشترك للخير."
-  },
-  {
-    "root": "أمر",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Command",
-    "structural_analysis": "ألف: امتداد. ميم: احتواء. راء: تدفق.",
-    "insight_radar": "الأمر هو نظام التدبير العلوي الذي يوجه حركة الوجود وفق مشيئة النور."
-  },
-  {
-    "root": "أمل",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Dictation-Defer",
-    "structural_analysis": "ألف: امتداد. ميم: احتواء. لام: امتداد.",
-    "insight_radar": "الإملاء هو نظام تدبير يمنح فرصة زمنية للوعي قبل الاستحقاق."
-  },
-  {
-    "root": "أنى",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Maturity-Time",
-    "structural_analysis": "ألف: امتداد. نون: استقرار. ياء: تمام.",
-    "insight_radar": "الآناء هي نظام تدبير زمني يشير لنضج اللحظة والوصول لليسر."
-  },
-  {
-    "root": "أنس",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Sociability",
-    "structural_analysis": "ألف: امتداد. نون: استقرار. سين: سيولة/ألفة.",
-    "insight_radar": "الأنس هو سكينة اللقاء وتبدد الوحشة في مدارات الخير واليسر."
-  },
-  {
-    "root": "أنف",
-    "orbit_id": 1,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Pride-Pioneer",
-    "structural_analysis": "ألف: امتداد. نون: استقرار. فاء: انفتاح.",
-    "insight_radar": "الأنف هو مدار الذات الشامخ، نقطة الانطلاق الأولى والتمييز."
-  },
-  {
-    "root": "أهل",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Kinship",
-    "structural_analysis": "ألف: امتداد. هاء: هبوط/استقرار. لام: اتصال.",
-    "insight_radar": "الأهل هم سكينة الاحتواء الحميم والارتباط الأصيل في دار الخير."
-  },
-  {
-    "root": "أوب",
-    "orbit_id": 7,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Return-Signal",
-    "structural_analysis": "ألف: امتداد. واو: وصل. باء: وعاء.",
-    "insight_radar": "الأوب هو مدار العود المتكرر للمركز لضمان استمرار التدفق الخيّر."
-  },
-  {
-    "root": "أود",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Burden-Bend",
-    "structural_analysis": "ألف: امتداد. واو: وصل. دال: استمرار.",
-    "insight_radar": "الآود هو نظام تدبير يختبر قوة التحمل، وتجاوزه بيسر هو دليل التمكين."
-  },
-  {
-    "root": "أول",
-    "orbit_id": 1,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Primary-Source",
-    "structural_analysis": "ألف: امتداد. واو: وصل. لام: اتصال.",
-    "insight_radar": "الأول هو مدار الذات في نقطة الصفر، منطلق كل خير ووجود."
-  },
-  {
-    "root": "أوى",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Shelter",
-    "structural_analysis": "ألف: امتداد. واو: وصل. ياء: تمام.",
-    "insight_radar": "الإيواء هو سكينة اللجوء إلى حصن التمكين طلباً للأمان واليسر."
-  },
-  {
-    "root": "أيد",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Support-Power",
-    "structural_analysis": "ألف: امتداد. ياء: حياة. دال: استمرار.",
-    "insight_radar": "التأييد هو تمكين الذات بمدد إلهي يضاعف القوة واليسر."
-  },
-  {
-    "root": "أيك",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Thicket-Density",
-    "structural_analysis": "ألف: امتداد. ياء: حياة. كاف: كف/احتواء.",
-    "insight_radar": "الأيكة هي تمكين النماء الكثيف الذي يوفر الظل والخير."
-  },
-  {
-    "root": "أيم",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Single-Status",
-    "structural_analysis": "ألف: امتداد. ياء: حياة. ميم: احتواء.",
-    "insight_radar": "الأيامى هم في مدار عود اجتماعي يهدف لإعادة التوازن والسكينة عبر الوصل."
-  },
-  {
-    "root": "أية",
-    "orbit_id": 2,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Sign-Indicator",
-    "structural_analysis": "ألف: امتداد. ياء: حياة. تاء: تحديد.",
-    "insight_radar": "الآية هي صعود الوعي عبر إشارة نورانية تكشف عن مراد الحق."
- },
-  {
-    "root": "بأر",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Well-Depth",
-    "structural_analysis": "باء: وعاء. ألف: امتداد. راء: تدفق.",
-    "insight_radar": "البئر هو تمكين العمق لاستخراج مادة الحياة واليسر من باطن الأرض."
-  },
-  {
-    "root": "بأس",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Power-Force",
-    "structural_analysis": "باء: وعاء. ألف: امتداد. سين: سيادة/قوة.",
-    "insight_radar": "البأس هو نظام تدبير القوة الرادعة التي تحمي مدارات الخير والتمكين."
-  },
-  {
-    "root": "بتر",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Sever-Cut",
-    "structural_analysis": "باء: انقطاع. تاء: تمام. راء: انصراف.",
-    "insight_radar": "الأبتر هو مدار عود حاسم يقطع دابر الباطل ليبقى الخير المحض."
-  },
-  {
-    "root": "بثث",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Diffusion",
-    "structural_analysis": "باء: وعاء. ثاء: انتشار. ثاء: تكثيف الانتشار.",
-    "insight_radar": "البث هو حركة نشر النور والترددات الوجودية في كل الاتجاهات بيسر."
-  },
-  {
-    "root": "بجس",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Gush-Flow",
-    "structural_analysis": "باء: وعاء. جيم: جمع. سين: سيولة.",
-    "insight_radar": "الانبجاس هو حركة تدفق الخير الفجائي من مكمن الصمت إلى الوجود."
-  },
-  {
-    "root": "بحث",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Investigation",
-    "structural_analysis": "باء: وعاء. حاء: احتواء. ثاء: انتشار/بروز.",
-    "insight_radar": "البحث هو صعود الوعي للكشف عن الأسرار المكنونة في طبقات الأرض."
-  },
-  {
-    "root": "بحر",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Expanse",
-    "structural_analysis": "باء: وعاء. حاء: حياة/اتساع. راء: تدفق.",
-    "insight_radar": "البحر هو مقام التمكين المائي الشامل الذي يحمل أسرار الرزق واليسر."
-  },
-  {
-    "root": "بخس",
-    "orbit_id": 6,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Depreciate",
-    "structural_analysis": "باء: وعاء. خاء: خفاء. سين: نقص/سيولة.",
-    "insight_radar": "البخس هو خلل في نظام تدبير القيمة يستوجب معايرة ميزان الحق."
-  },
-  {
-    "root": "بخل",
-    "orbit_id": 7,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Stinginess-Block",
-    "structural_analysis": "باء: وعاء. خاء: خفاء. لام: انغلاق/اتصال.",
-    "insight_radar": "البخل هو مدار عود منغلق يمنع تدفق الخير، وهو تعسير يقابله تيسير العطاء."
-  },
-  {
-    "root": "بدأ",
-    "orbit_id": 1,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Origin",
-    "structural_analysis": "باء: وعاء. دال: استمرار. ألف: امتداد.",
-    "insight_radar": "البدء هو مدار الذات في لحظة التكوين الأولى، منطلق كل تدفق خيّر."
-  },
-  {
-    "root": "بدع",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Innovation",
-    "structural_analysis": "باء: وعاء. دال: استمرار. عين: عمق/بروز.",
-    "insight_radar": "البديع هو حركة الخلق على غير مثال سابق، تفجر الخير بجمال فريد."
-  },
-  {
-    "root": "بدل",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Change-Swap",
-    "structural_analysis": "باء: وعاء. دال: استمرار. لام: اتصال/تحول.",
-    "insight_radar": "التبديل هو مدار العود التطويري، إبدال العسر باليسر والسيئة بالخيرة."
-  },
-  {
-    "root": "بدن",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Physical-Body",
-    "structural_analysis": "باء: وعاء. دال: استمرار. نون: استقرار.",
-    "insight_radar": "البدن هو تمكين الروح في قالب مادي كثيف ليتحقق سعي الخير في الأرض."
-  },
-  {
-    "root": "بدو",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Appearing",
-    "structural_analysis": "باء: وعاء. دال: استمرار. واو: وصل/ظهور.",
-    "insight_radar": "البدو هو حركة البروز من الخفاء إلى الجلاء في مساحات السعة واليسر."
-  },
-  {
-    "root": "بذر",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Disseminate",
-    "structural_analysis": "باء: وعاء. ذال: بروز. راء: تدفق.",
-    "insight_radar": "التبذير هو حركة إنفاق زائدة تحتاج لتوجيه طاقتها نحو مدارات الخير المثمر."
-  },
-  {
-    "root": "برأ",
-    "orbit_id": 1,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Creation-Purity",
-    "structural_analysis": "باء: وعاء. راء: تدفق. ألف: امتداد.",
-    "insight_radar": "البراء هو مدار الذات النقي من العيوب، وفعل الخلق بتقدير وجمال."
-  },
-  {
-    "root": "برج",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Manifestation",
-    "structural_analysis": "باء: وعاء. راء: تدفق. جيم: جمع/بروز.",
-    "insight_radar": "البروج هي صعود الوعي لمعاينة مراكز القوة والنور في القبة السماوية."
-  },
-  {
-    "root": "برد",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Cold-Comfort",
-    "structural_analysis": "باء: وعاء. راء: تدفق. دال: استقرار/برودة.",
-    "insight_radar": "البرد هو سكينة الانطفاء الحراري التي تمنح الروح سلاماً ويسراً."
-  },
-  {
-    "root": "برر",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Piety-Land",
-    "structural_analysis": "باء: وعاء. راء: تدفق. راء: تكرار التدفق.",
-    "insight_radar": "البر هو سكينة العطاء المتصل والسعة التي تجمع كل أنواع الخير."
-  },
-  {
-    "root": "برز",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Emergence",
-    "structural_analysis": "باء: وعاء. راء: تدفق. زاي: اهتزاز/قوة.",
-    "insight_radar": "البروز هو حركة الخروج للميدان لإعلان وجود الحق والتمكين بيسر."
-  },
-  {
-    "root": "برق",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Flash-Light",
-    "structural_analysis": "باء: وعاء. راء: تدفق. قاف: قوة/تحديد.",
-    "insight_radar": "البرق هو حركة خاطفة من النور الكثيف تنبه الوعي لعظمة التدبير."
-  },
-  {
-    "root": "برك",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Blessing-Static",
-    "structural_analysis": "باء: وعاء. راء: تدفق. كاف: كف/ثبات.",
-    "insight_radar": "البركة هو تمكين الخير وثباته في الشيء حتى ينمو ويفيض باليسر."
-  },
-  {
-    "root": "برم",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Tying-Scheme",
-    "structural_analysis": "باء: وعاء. راء: تدفق. ميم: إحاطة.",
-    "insight_radar": "الإبرام هو نظام تدبير محكم لفتل الأمور وإمضاء القدر بالحق."
-  },
-  {
-    "root": "برهن",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Evidence",
-    "structural_analysis": "باء: وعاء. راء: تدفق. هاء: تنبيه. نون: استقرار.",
-    "insight_radar": "البرهان هو صعود الوعي عبر حجة نورانية قاطعة تثبت وجه الحق واليسر."
-  },
-  {
-    "root": "بزغ",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Rising-Break",
-    "structural_analysis": "باء: وعاء. زاي: اهتزاز. غين: غياب/خفاء.",
-    "insight_radar": "البزوغ هو حركة انشقاق النور من رحم الظلام لبداية مدار جديد من الخير."
-  },
-  {
-    "root": "بسط",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Expand",
-    "structural_analysis": "باء: وعاء. سين: سيولة. طاء: إحاطة.",
-    "insight_radar": "البسط هو حركة اتساع الرزق والتمكين ليشمل كل المدارات بيسر."
-  },
-  {
-    "root": "بسق",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Lofty-High",
-    "structural_analysis": "باء: وعاء. سين: سيولة/سمو. قاف: قوة/تحديد.",
-    "insight_radar": "البسوق هو صعود النماء في الأشجار والأنفس بلوغاً للكمال والخير."
-  },
-  {
-    "root": "بسل",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Confiscate",
-    "structural_analysis": "باء: وعاء. سين: نظام. لام: اتصال/حبس.",
-    "insight_radar": "الإبسال هو نظام تدبير يرهن الكائن بعمله ليعرف قيمة اليسر المفقود."
-  },
-  {
-    "root": "بسم",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Smile-Grace",
-    "structural_analysis": "باء: وعاء. سين: سيولة. ميم: إحاطة.",
-    "insight_radar": "التبسم هو سكينة الفرح الداخلي التي تظهر على المحيا فتشيع الخير."
-  },
-  {
-    "root": "بسر",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Unripe-Gloom",
-    "structural_analysis": "باء: وعاء. سين: نظام. راء: تدفق.",
-    "insight_radar": "البسور هو مدار عود انقباضي يعكس حالة الوعي قبل استعادة اليسر."
-  },
-  {
-    "root": "بشر",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Glad Tidings-Skin",
-    "structural_analysis": "باء: وعاء. شين: انتشار. راء: تدفق.",
-    "insight_radar": "البشرى هي حركة انتقال الخبر الخيّر الذي يغير ملامح الوعاء (الجلد/النفس)."
-  },
-  {
-    "root": "بصص",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Sparkle-Sight",
-    "structural_analysis": "باء: وعاء. صاد: تركيز. صاد: تكثيف التركيز.",
-    "insight_radar": "البصيص هو صعود أول خيوط النور الكاشفة للمسار."
-  },
-  {
-    "root": "بصر",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Vision",
-    "structural_analysis": "باء: وعاء. صاد: تركيز. راء: تدفق.",
-    "insight_radar": "البصر هو صعود الوعي لإدراك صور الوجود وتدبر آيات الخير."
-  },
-  {
-    "root": "بصل",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Layered Bulb",
-    "structural_analysis": "باء: وعاء. صاد: صلابة/طبقات. لام: اتصال.",
-    "insight_radar": "البصل هو تمكين النماء الطبقي في باطن الأرض لغذاء مادي خيّر."
-  },
-  {
-    "root": "بضع",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Segment-Deal",
-    "structural_analysis": "باء: وعاء. ضاد: احتواء. عين: عمق/قطع.",
-    "insight_radar": "البضع هو نظام تدبير يجزئ الكثرة لتقريب المسافات أو ضبط العقود."
-  },
-  {
-    "root": "بطأ",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Delay",
-    "structural_analysis": "باء: وعاء. طاء: إحاطة/ثقل. ألف: امتداد.",
-    "insight_radar": "التبطيء هو مدار عود متثاقل يستوجب شحذ الهمة لاستعادة سرعة الخير."
-  },
-  {
-    "root": "بطر",
-    "orbit_id": 7,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Arrogance-Reckless",
-    "structural_analysis": "باء: وعاء. طاء: إحاطة. راء: تدفق.",
-    "insight_radar": "البطر هو انحراف في مدار النعمة يؤدي لنسيان المنعم ومصدر اليسر."
-  },
-  {
-    "root": "بطش",
-    "orbit_id": 6,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Assault-Grip",
-    "structural_analysis": "باء: وعاء. طاء: إحاطة. شين: انتشار/قوة.",
-    "insight_radar": "البطش هو نظام تدبير القوة القاهرة لإعادة التوازن وضبط المعتدين."
-  },
-  {
-    "root": "بطل",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Nullify-Falsehood",
-    "structural_analysis": "باء: وعاء. طاء: إحاطة. لام: اتصال/زوال.",
-    "insight_radar": "الباطل هو مدار عود زائف لا حقيقة له، يضمحل أمام سطوع الحق واليسر."
-  },
-  {
-    "root": "بطن",
-    "orbit_id": 1,
-    "energy_type": "أنثى",
-    "carrier_type": "إبل",
-    "bio_link": "Inward-Interior",
-    "structural_analysis": "باء: وعاء. طاء: إحاطة. نون: استقرار/خفاء.",
-    "insight_radar": "الباطن هو مدار الذات في وجهه الخفي، مكمن الأسرار ومنطلق النور."
-  },
-  {
-    "root": "بعث",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Resurrection",
-    "structural_analysis": "باء: وعاء. عين: عمق/بروز. ثاء: انتشار.",
-    "insight_radar": "البعث هو حركة إحياء ما سكن لإعادة تفعيله في مدارات الخير الجديدة."
-  },
-  {
-    "root": "بعثر",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Scattered-Upend",
-    "structural_analysis": "باء: وعاء. عين: عمق. ثاء: انتشار. راء: تدفق.",
-    "insight_radar": "البعثرة هي حركة تقليب الأوعية لإخراج المخبوء وتجديد المشهد."
-  },
-  {
-    "root": "بعد",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Distance-Away",
-    "structural_analysis": "باء: وعاء. عين: عمق. دال: استمرار/بعد.",
-    "insight_radar": "البعد هو مدار انزياح عن المركز، والعودة منه هي القرب من منبع اليسر."
-  },
-  {
-    "root": "بعر",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Camel-Waste",
-    "structural_analysis": "باء: وعاء. عين: عمق. راء: تدفق.",
-    "insight_radar": "البعير هو كائن التمكين المرتبط بالأرض والقدرة على حمل الأثقال بيسر."
-  },
-  {
-    "root": "بعض",
-    "orbit_id": 6,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Portion-Some",
-    "structural_analysis": "باء: وعاء. عين: عمق. ضاد: احتواء.",
-    "insight_radar": "البعض هو نظام تدبير يوزع الأدوار والحصص ليتكامل نسيج الخير."
-  },
-  {
-    "root": "بعل",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Husband-Elevated Land",
-    "structural_analysis": "باء: وعاء. عين: عمق/سيادة. لام: اتصال.",
-    "insight_radar": "البعل هو تمكين القوامة والسيادة في الأرض والأسرة لضمان الاستقرار."
-  },
-  {
-    "root": "بغت",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Sudden Surprise",
-    "structural_analysis": "باء: وعاء. غين: خفاء. تاء: تمام/مباغتة.",
-    "insight_radar": "البغتة هي حركة تجلٍ مفاجئ تختبر جهوزية الوعي ومدى اتصاله بالحق."
-  },
-  {
-    "root": "بغض",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Hatred-Aversion",
-    "structural_analysis": "باء: وعاء. غين: خفاء. ضاد: انقباض.",
-    "insight_radar": "البغضاء هو مدار عود شعوري منقبض، وتطهيره يفتح أبواب المودة واليسر."
-  },
-  {
-    "root": "بغل",
-    "orbit_id": 3,
-    "energy_type": "مزدوج",
-    "carrier_type": "بقر",
-    "bio_link": "Mule-Hybrind",
-    "structural_analysis": "باء: وعاء. غين: خفاء. لام: اتصال.",
-    "insight_radar": "البغال هي كائنات تمكين وسيطة سُخرت لخدمة الإنسان وحمل الأثقال."
-  },
-  {
-    "root": "بغى",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Seeking-Oppression",
-    "structural_analysis": "باء: وعاء. غين: خفاء/تجاوز. ياء: امتداد.",
-    "insight_radar": "البغي هو حركة تجاوز المدار (ظلماً) أو السعي الحثيث لطلب الفضل والخير."
-  },
-  {
-    "root": "بقر",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Cattle-Slit",
-    "structural_analysis": "باء: وعاء. قاف: قوة. راء: تدفق.",
-    "insight_radar": "البقر هو كائن التمكين الأرضي الأكبر، حامل طاقة الحرث والرزق الوفير."
-  },
-  {
-    "root": "بقع",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Spot-Plot",
-    "structural_analysis": "باء: وعاء. قاف: قوة/تحديد. عين: عمق/مكان.",
-    "insight_radar": "البقعة هي مقام تمكين جغرافي محدد بارك الله فيه لغرض خيّر."
-  },
-  {
-    "root": "بقل",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Vegetable-Herbs",
-    "structural_analysis": "باء: وعاء. قاف: قوة. لام: اتصال/إنبات.",
-    "insight_radar": "البقل هو تمكين النماء الخضري الأولي الذي يمد الجسد بالخير واليسر."
-  },
-  {
-    "root": "بقى",
-    "orbit_id": 1,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Remain-Enduring",
-    "structural_analysis": "باء: وعاء. قاف: قوة/ثبات. ياء: امتداد.",
-    "insight_radar": "البقاء هو مدار الذات في وجهه الأزلي، ثبات الجوهر والخير رغم فناء الصور."
-  },
-  {
-    "root": "بكر",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Early Morning-Virgin",
-    "structural_analysis": "باء: وعاء. كاف: كف/تحديد. راء: تدفق.",
-    "insight_radar": "البكرة هي حركة انطلاق الطاقة الأولى في اليوم، وقت فيض اليسر والبركة."
-  },
-  {
-    "root": "بكم",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Mute-Silent",
-    "structural_analysis": "باء: وعاء. كاف: كف. ميم: إحاطة.",
-    "insight_radar": "البكم هو سكينة اضطرارية تمنع النطق، دعوة لاستنطاق الوعي بالحق والخير."
-  },
-  {
-    "root": "بكى",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Weeping",
-    "structural_analysis": "باء: وعاء. كاف: كف. ياء: سيولة/تدفق.",
-    "insight_radar": "البكاء هو سكينة الفيض القلبي التي تطهر النفس وتستجلب مدد اليسر."
-  },
-  {
-    "root": "بلد",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Town-Land",
-    "structural_analysis": "باء: وعاء. لام: اتصال. دال: استمرار/استقرار.",
-    "insight_radar": "البلد هو مقام التمكين الآمن، الحيز الذي يجمع النفوس على مائدة الخير."
-  },
-  {
-    "root": "بلس",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Despair-Gloom",
-    "structural_analysis": "باء: وعاء. لام: اتصال. سين: سكون/يأس.",
-    "insight_radar": "الإبلاس هو مدار عود يائس ناتج عن انقطاع الرجاء، وعلاجه استعادة نور الخير."
-  },
-  {
-    "root": "بلع",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Swallow",
-    "structural_analysis": "باء: وعاء. لام: اتصال. عين: عمق/امتصاص.",
-    "insight_radar": "البلع هو تمكين الأرض من استيعاب الفائض (ماء أو مادة) لإعادة توازنه بيسر."
-  },
-  {
-    "root": "بلغ",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Reach-Mature",
-    "structural_analysis": "باء: وعاء. لام: اتصال. غين: غاية/وصول.",
-    "insight_radar": "البلوغ هو صعود الوعي أو المادة لمرحلة النضج والكمال والخير."
-  },
-  {
-    "root": "بلو",
-    "orbit_id": 6,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Test-Trial",
-    "structural_analysis": "باء: وعاء. لام: اتصال. واو: وصل/امتحان.",
-    "insight_radar": "البلاء هو نظام تدبير يختبر جوهر الكائن بالخير أو الشدة لصقله."
-  },
-  {
-    "root": "بنى",
-    "orbit_id": 3,
-    "energy_type": "ذكر",
-    "carrier_type": "بقر",
-    "bio_link": "Building",
-    "structural_analysis": "باء: وعاء. نون: استقرار. ياء: امتداد/بناء.",
-    "insight_radar": "البناء هو تمكين الهياكل والأنفس صعوداً لتشكيل صرح وجودي خيّر."
-  },
-  {
-    "root": "بنان",
-    "orbit_id": 1,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Fingertip-Detail",
-    "structural_analysis": "باء: وعاء. نون: استقرار. نون: تكرار التفصيل.",
-    "insight_radar": "البنان هو مدار الذات في أدق تفاصيله، رمز الهوية والتمكين الفردي."
-  },
-  {
-    "root": "بهر",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Dazzle-Overwhelm",
-    "structural_analysis": "باء: وعاء. هاء: تنبيه. راء: تدفق.",
-    "insight_radar": "البهار هو حركة غلبة النور التي تذهل الوعي وتأسره بجمال التقدير."
-  },
-  {
-    "root": "بهج",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "Delight-Splendor",
-    "structural_analysis": "باء: وعاء. هاء: تنزيه. جيم: جمع/جمال.",
-    "insight_radar": "البهجة هي سكينة الجمال الذي يسر الناظرين ويفيض بالخير واليسر."
-  },
-  {
-    "root": "بهل",
-    "orbit_id": 6,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Invoke Curse/Solemnly",
-    "structural_analysis": "باء: وعاء. هاء: تنبيه. لام: اتصال/فصل.",
-    "insight_radar": "الابتهال هو نظام تدبير الاتصال العميق لطلب الفصل بالحق والخير."
-  },
-  {
-    "root": "بهم",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Cattle-Mystery",
-    "structural_analysis": "باء: وعاء. هاء: خفاء. ميم: إحاطة.",
-    "insight_radar": "البهيمة هي كائنات التمكين التي لا تنطق ولكنها تسبح بلسان الحال واليسر."
-  },
-  {
-    "root": "بهت",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Slander-Astonish",
-    "structural_analysis": "باء: وعاء. هاء: مباغتة. تاء: تمام.",
-    "insight_radar": "البهتان هو مدار عود منهار أمام سطوع الحجة، زيف يتبدد أمام نور الخير."
-  },
-  {
-    "root": "بؤو",
-    "orbit_id": 7,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Return-Incur",
-    "structural_analysis": "باء: وعاء. واو: وصل. ألف/همزة: عودة.",
-    "insight_radar": "البوء هو مدار عود يقرر المآل والاستحقاق بناءً على المسار السابق."
-  },
-  {
-    "root": "بوب",
-    "orbit_id": 5,
-    "energy_type": "ذكر",
-    "carrier_type": "معز",
-    "bio_link": "Door-Portal",
-    "structural_analysis": "باء: وعاء. واو: وصل. باء: وعاء ثانٍ.",
-    "insight_radar": "الباب هو حركة الانتقال بين المدارات، بوابة فتح الخير واليسر."
-  },
-  {
-    "root": "بور",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Perish-Uncultivated",
-    "structural_analysis": "باء: وعاء. واو: وصل. راء: انصراف/هدر.",
-    "insight_radar": "البوار هو مدار عود قاحل ناتج عن هدر طاقة التمكين، وعلاجه الاستثمار في الخير."
-  },
-  {
-    "root": "بول",
-    "orbit_id": 3,
-    "energy_type": "أنثى",
-    "carrier_type": "بقر",
-    "bio_link": "Condition-Mind",
-    "structural_analysis": "باء: وعاء. واو: وصل. لام: اتصال.",
-    "insight_radar": "البال هو تمكين الوعي وهدوء الفكر الذي يمهد الطريق لليسر."
-  },
-  {
-    "root": "بيت",
-    "orbit_id": 4,
-    "energy_type": "أنثى",
-    "carrier_type": "ضأن",
-    "bio_link": "House-Night staying",
-    "structural_analysis": "باء: وعاء. ياء: حياة/سكون. تاء: تحديد/ثبات.",
-    "insight_radar": "البيت هو سكينة المستقر الروحي والمادي الذي يحضن الخير والألفة."
-  },
-  {
-    "root": "بيد",
-    "orbit_id": 7,
-    "energy_type": "مزدوج",
-    "carrier_type": "إبل",
-    "bio_link": "Perish-Vanish",
-    "structural_analysis": "باء: وعاء. ياء: حياة. دال: انقطاع/فناء.",
-    "insight_radar": "البيد هو مدار فناء الصور المادية ليبقى جوهر المسار الخيّر."
-  },
-  {
-    "root": "بيض",
-    "orbit_id": 1,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "White-Egg",
-    "structural_analysis": "باء: وعاء. ياء: حياة/نور. ضاد: بروز.",
-    "insight_radar": "البياض هو مدار الذات في أقصى درجات صفائها وإشراق نورها."
-  },
-  {
-    "root": "بيع",
-    "orbit_id": 5,
-    "energy_type": "مزدوج",
-    "carrier_type": "معز",
-    "bio_link": "Trade-Pledge",
-    "structural_analysis": "باء: وعاء. ياء: حياة/وصل. عين: عمق/تداول.",
-    "insight_radar": "البيع هو حركة تداول النفع والعهد التي تنمي مسارات الخير والتمكين بيسر."
-  },
-  {
-    "root": "بين",
-    "orbit_id": 2,
-    "energy_type": "ذكر",
-    "carrier_type": "إبل",
-    "bio_link": "Clarity-Distinction",
-    "structural_analysis": "باء: وعاء. ياء: حياة. نون: استقرار/وضوح.",
-    "insight_radar": "البيان هو صعود الوعي لمرحلة الوضوح التام والقدرة على كشف الحقائق."
+    "bio_link": "Permit-Ear-Listen",
+    "structural_analysis": "ألف: أصل. ذال: ذبذبة الاستقبال. نون: سكون العلم.",
+    "insight_radar": "الإذن هو نظام تدبير يسمح بسريان طاقات الخير والتمكين في الكون."
   }
 ]
