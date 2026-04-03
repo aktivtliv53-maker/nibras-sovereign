@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.3
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v30.0
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: النافذة السيادية - عرض كامل فوري بلا قص
+# الإصدار: مرحلة الاستواء - هندسة بصرية متكاملة
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
@@ -36,6 +36,17 @@ GENE_STYLE = {
     'G': {'name': 'المعز', 'color': '#ff5252', 'icon': '🐐', 'meaning': 'طاقة السيادة والحدّة والصعود'},
     'N': {'name': 'إشراق', 'color': '#00ffcc', 'icon': '✨', 'meaning': 'الانبثاق الهجين الصافي'}
 }
+
+# ==============================================================================
+# [1.5] لوحة ألوان سيادية — تدرّجات جاهزة
+# ==============================================================================
+GENE_COLORS = [
+    "#4fc3f7", "#ffb74d", "#81c784", "#ba68c8",
+    "#e57373", "#64b5f6", "#ffd54f", "#4db6ac"
+]
+
+def pick_color(index):
+    return GENE_COLORS[index % len(GENE_COLORS)]
 
 # ==============================================================================
 # [2] قاموس هندسة الحروف (للاستنطاق الهندسي)
@@ -267,39 +278,54 @@ def load_lexicon_db(path):
     return r_index, all_roots
 
 # ==============================================================================
-# [6] دالة العرض المطورة (لضمان عدم القص)
+# [6] دالة عرض الاستنطاق الكامل — مع ألوان ديناميكية
 # ==============================================================================
 
-def display_roots_as_blocks(bodies_data):
-    """عرض الجذور والاستنطاق ككتل نصية كاملة تنتهي بنقطة."""
-    if not bodies_data:
-        st.info("لا توجد بيانات مستنطقة حالياً.")
+def display_sovereign_results(bodies_list):
+    """عرض الجذور والاستنطاق ككتل نصية كاملة تنتهي بنقطة مع ألوان ديناميكية"""
+    if not bodies_list:
+        st.info("لا توجد بيانات حالياً.")
         return
     
-    for body in bodies_data:
-        root = body.get('root', '')
-        # جلب النص الكامل من الحقل المتاح
-        insight_text = body.get('insight', body.get('meaning', ''))
-        
-        # إذا كان النص مقصوصاً أو فارغاً، نستخدم الاستنطاق الهندسي كبديل
-        if not insight_text or "..." in insight_text:
-            insight_text = generate_geometric_insight(root)
-            
-        final_text = ensure_dot(insight_text)
-        
-        # قالب العرض السيادي
-        st.markdown(f"""
-        <div style='border-right: 5px solid {body.get("color", "#4fc3f7")}; background: #0d0d14; padding: 15px; margin-bottom: 10px; border-radius: 0 10px 10px 0;'>
-            <h4 style='margin:0; color:#4fc3f7;'>الجذر: {root}</h4>
-            <p style='margin:10px 0 0 0; color:#e0e0e0; line-height:1.6;'><b>الاستنطاق:</b> {final_text}</p>
+    st.markdown("### 📜 البيان الختامي الموسع")
+
+    for i, res in enumerate(bodies_list):
+        root_name = res.get("root", "—")
+        insight_content = res.get("insight") or res.get("meaning") or ""
+
+        # معالجة النصوص الناقصة أو المقصوصة
+        if not insight_content or "..." in str(insight_content):
+            insight_content = generate_geometric_insight(root_name)
+
+        final_text = ensure_dot(insight_content)
+
+        # اختيار اللون: إمّا من البيانات أو من اللوحة
+        gene_color = res.get("color") or pick_color(i)
+
+        block = f"""
+        <div style="
+            border-right: 4px solid {gene_color};
+            padding: 12px 18px;
+            margin-bottom: 18px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 6px;
+        ">
+            <div style="color:{gene_color}; font-weight:bold; font-size:1.15em;">
+                📌 الجذر: {root_name}
+            </div>
+            <div style="color:#ddd; line-height:1.8; margin-top:6px;">
+                🔮 <b>الاستنطاق:</b> {final_text}
+            </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
+
+        st.markdown(block, unsafe_allow_html=True)
 
 # ==============================================================================
 # [7] تهيئة التطبيق
 # ==============================================================================
 
-st.set_page_config(page_title="نبراس السيادي v29.3", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="نبراس السيادي v30.0", page_icon="🛡️", layout="wide")
 
 # CSS النظيف - بدون عناصر عائمة أو أعمدة رأسية
 st.markdown("""
@@ -372,7 +398,7 @@ with st.sidebar:
     st.markdown(f"""
     <div style='text-align:center; padding:10px;'>
         <h2 style='color:#4fc3f7; margin:0;'>🛡️ نبراس السيادي</h2>
-        <p style='color:#888; margin:5px 0;'>الإصدار v29.3</p>
+        <p style='color:#888; margin:5px 0;'>الإصدار v30.0</p>
         <p style='color:#555; margin:0;'>المستخدم: محمد</p>
     </div>
     ---
@@ -415,7 +441,7 @@ with tabs[0]:
             bodies = []
             pool = []
             
-            for word in words:
+            for idx, word in enumerate(words):
                 root_key = extract_root_from_word(word, r_index.keys())
                 if root_key:
                     data = r_index.get(root_key)
@@ -429,7 +455,7 @@ with tabs[0]:
                             "energy": round(energy, 2),
                             "insight": data['insight'],
                             "meaning": data['meaning'],
-                            "color": GENE_STYLE[data['gene']]['color'],
+                            "color": pick_color(idx),
                             "x": random.uniform(-10, 10),
                             "y": random.uniform(-10, 10),
                             "vx": sig['vector_x'],
@@ -450,27 +476,8 @@ with tabs[0]:
                                   showlegend=False, xaxis_visible=False, yaxis_visible=False)
                 st.plotly_chart(fig, use_container_width=True)
                 
-                # بيان الوعي الجمعي
-                st.markdown("---")
-                st.markdown("### 🌌 بيان الوعي الجمعي")
-                
-                total_energy = sum(b['energy'] for b in bodies)
-                genes_count = Counter(b['gene'] for b in bodies)
-                dominant_gene = max(genes_count, key=genes_count.get)
-                gene_info = GENE_STYLE[dominant_gene]
-                
-                st.markdown(f"""
-                <div class='story-box'>
-                    <p style='margin:5px 0;'>✅ تم استنطاق <b>{len(bodies)}</b> جذراً.</p>
-                    <p style='margin:5px 0;'>🐪 الهيمنة الجينية: <b style='color:{gene_info["color"]};'>{gene_info['icon']} {gene_info['name']}</b></p>
-                    <p style='margin:5px 0;'>⚡ مجموع الطاقة: <b>{total_energy:.1f}</b></p>
-                    <p style='margin:5px 0;'>📚 الجذور المستنطقة: <b>{', '.join(pool)}</b></p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # عرض نتائج الاستنطاق ككتل نصية كاملة
-                st.markdown("### 📖 نتائج الاستنطاق الكاملة")
-                display_roots_as_blocks(bodies)
+                # عرض البيان الختامي الموسع فوراً
+                display_sovereign_results(bodies)
                 
             else:
                 st.error("⚠️ لم يتم العثور على جذور. تأكد من إدخال كلمات صحيحة.")
@@ -551,28 +558,17 @@ with tabs[2]:
 
 # ==================== التبويب 3: البيان الختامي ====================
 with tabs[3]:
+    st.markdown("### 📜 البيان الختامي")
     if st.session_state.is_active and st.session_state.active_bodies:
-        df = pd.DataFrame(st.session_state.active_bodies)
-        dominant = df['gene'].mode()[0] if not df.empty else 'S'
-        st.markdown(f"""
-        <div class='story-box'>
-            <p style='margin:5px 0;'><b>بيان الاستواء الوجودي v29.3</b></p>
-            <p style='margin:5px 0;'>✅ تم استنطاق <b>{len(st.session_state.active_pool)}</b> جذراً.</p>
-            <p style='margin:5px 0;'>🐪 الهيمنة الجينية: <b style='color:{GENE_STYLE[dominant]["color"]};'>{GENE_STYLE[dominant]['icon']} {GENE_STYLE[dominant]['name']}</b></p>
-            <p style='margin:5px 0;'>⚡ مجموع الطاقة: <b>{df['energy'].sum():.1f}</b></p>
-            <p style='margin:5px 0;'>📚 الجذور: <b>{', '.join(st.session_state.active_pool)}</b></p>
-        </div>
-        """, unsafe_allow_html=True)
+        display_sovereign_results(st.session_state.active_bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
 
 # ==================== التبويب 4: الميزان السيادي ====================
 with tabs[4]:
     st.markdown("### ⚖️ ميزان النزاهة الجذرية")
-    st.markdown("عرض كامل للاستنطاقات بدون قص:")
-    
     if st.session_state.is_active and st.session_state.active_bodies:
-        display_roots_as_blocks(st.session_state.active_bodies)
+        display_sovereign_results(st.session_state.active_bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
 
@@ -597,6 +593,6 @@ with tabs[5]:
         """, unsafe_allow_html=True)
         
         st.markdown("#### 📖 تفاصيل الاستنطاق الكاملة")
-        display_roots_as_blocks(st.session_state.active_bodies)
+        display_sovereign_results(st.session_state.active_bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل في التبويب الأول.")
