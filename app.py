@@ -1,3 +1,10 @@
+أفهمك تماماً يا محمد، من خلال الصور التي أرفقتها، الفجوة واضحة:
+ 1. **في الصورة الثالثة (v29.0):** كان العرض يتم عبر **جدول (Table)**، وهو ما يسبب "البتر" وظهور النقاط ... في خانة الاستنطاق.
+ 2. **في الصورة الرابعة:** بدأنا ننتقل إلى **"نظام الكروت"**، لكن الواجهة تفتقر إلى "الهيبة" والبيان الختامي الملون الذي اتفقنا عليه.
+أنت تريد **المحتوى الكامل** (بدون بتر) مع **الواجهة السيادية** (الصندوق الذهبي والخطوط الواضحة).
+إليك التعديل النهائي لملف app.py ليعيد الواجهة كما كانت في خيالك وبنفس القوة البرمجية، مع التأكد من أن "البيان الختامي" يظهر كقطعة واحدة مهيبة:
+### 🛡️ النسخة السيادية (v34.0) - إعادة الواجهة والبيان
+```python
 # -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
@@ -8,31 +15,33 @@ import re
 from collections import Counter
 
 # ==============================================================================
-# [1] إعدادات الهوية البصرية - منع القص نهائياً
+# [1] الواجهة السيادية - إعادة الهيبة البصرية
 # ==============================================================================
-st.set_page_config(page_title="نبراس السيادي v33.0", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="نبراس السيادي", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background: #050505; color: #e0e0e0; direction: rtl; }
-    /* صندوق البيان الختامي الموسع */
+    /* صندوق البيان الختامي الموسع - كما في وصفك */
     .summary-box {
-        background: linear-gradient(135deg, #0a1a0a 0%, #051005 100%);
-        padding: 30px; border-radius: 20px; border-right: 6px solid #FFD700;
-        margin-bottom: 35px; border: 1px solid #1a3a1a;
+        background: linear-gradient(135deg, #0d1a0d 0%, #000000 100%);
+        padding: 30px; border-radius: 15px; 
+        border: 2px solid #1a3a1a; border-right: 8px solid #FFD700;
+        margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
-    /* كروت الاستنطاق الفردي */
+    /* كروت الاستنطاق - تمنع البتر نهائياً */
     .insight-card {
-        background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px;
-        border-right: 5px solid #4fc3f7; margin-bottom: 20px; 
-        line-height: 1.8; font-size: 1.1em;
+        background: #111; padding: 20px; border-radius: 10px;
+        border-right: 5px solid #4fc3f7; margin-bottom: 20px;
+        border-bottom: 1px solid #222;
     }
-    h3 { color: #FFD700; }
+    .root-header { font-size: 1.4em; font-weight: bold; margin-bottom: 10px; }
+    .insight-text { font-size: 1.15em; line-height: 1.8; color: #ccc; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [2] المحرك الهندسي والجيني
+# [2] المحرك الهيكلي
 # ==============================================================================
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪'},
@@ -43,13 +52,7 @@ GENE_STYLE = {
 
 def normalize_root(text):
     if not text: return ""
-    s = str(text).strip().replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")
-    return re.sub(r'[\u064B-\u065F]', '', s)
-
-def ensure_dot(text):
-    if not text: return "."
-    s = str(text).strip()
-    return s if s.endswith('.') else s + "."
+    return re.sub(r'[\u064B-\u065F]', '', str(text).strip().replace("أ", "ا").replace("إ", "ا").replace("آ", "ا"))
 
 @st.cache_data
 def load_db():
@@ -62,43 +65,43 @@ def load_db():
 db = load_db()
 
 # ==============================================================================
-# [3] دالة العرض السيادية - (هنا يكمن الحل)
+# [3] عرض النتائج (البيان الختامي + الكروت)
 # ==============================================================================
-def display_sovereign_results(bodies_list):
-    if not bodies_list: return
+def display_nibras_interface(bodies):
+    if not bodies: return
     
-    # 1. الجزء العلوي: البيان الختامي الموسع (الإحصائيات والجين المهيمن)
-    genes_count = Counter(b['gene'] for b in bodies_list)
-    dominant_gene = max(genes_count, key=genes_count.get)
-    g_info = GENE_STYLE.get(dominant_gene, GENE_STYLE['S'])
+    # حساب الهيمنة الجينية
+    genes = [b['gene'] for b in bodies]
+    dominant = max(set(genes), key=genes.count)
+    g_info = GENE_STYLE.get(dominant, GENE_STYLE['S'])
     
+    # 1. البيان الختامي الموسع (Header)
     st.markdown(f"""
     <div class="summary-box">
-        <h2 style='margin-top:0; color:#FFD700;'>📜 البيان الختامي الموسع</h2>
-        <p style='font-size:1.2em;'>✅ تم استنطاق <b>{len(bodies_list)}</b> جذراً في هذا المدار.</p>
-        <p style='font-size:1.2em;'>🐪 الهيمنة الجينية الحالية: <b style='color:{g_info["color"]}'>{g_info['icon']} {g_info['name']}</b></p>
-        <p style='font-size:1.2em;'>📚 المسار المكتشف: <b>{', '.join([b['root'] for b in bodies_list])}</b></p>
+        <h2 style='color:#FFD700; margin-top:0;'>📜 البيان الختامي الموسع</h2>
+        <div style='display: flex; gap: 40px; margin-top: 15px;'>
+            <div>✅ الجذور المستنطقة: <b>{len(bodies)}</b></div>
+            <div>🐪 الهيمنة: <b style='color:{g_info["color"]}'>{g_info['icon']} {g_info['name']}</b></div>
+            <div>⚡ المسار: <b>{', '.join([b['root'] for b in bodies])}</b></div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # 2. الجزء السفلي: تفاصيل الاستنطاق الكاملة (بدون قص)
-    st.markdown("### 🔍 تفاصيل الاستنطاق المداري")
-    for b in bodies_list:
+    # 2. كروت الاستنطاق الفردية (Content)
+    for b in bodies:
         st.markdown(f"""
         <div class="insight-card" style="border-right-color: {b['color']}">
-            <b style="color:{b['color']}; font-size:1.3em;">📌 الجذر: {b['root']}</b> 
-            <span style="color:#888; margin-right:10px;">| {b['gene_display']}</span>
-            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:15px 0;">
-            <div style="color:#eee; font-size:1.1em;">
-                <b>الاستنطاق:</b> {ensure_dot(b['insight'])}
+            <div class="root-header" style="color: {b['color']}">📌 الجذر: {b['root']} | {b['gene_display']}</div>
+            <div class="insight-text">
+                <b>الاستنطاق:</b> {b['insight']}{'.' if not b['insight'].endswith('.') else ''}
             </div>
         </div>
         """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [4] الواجهة والتنفيذ
+# [4] التنفيذ الرئيسي
 # ==============================================================================
-input_text = st.text_area("أدخل النص للاستنطاق:", height=120, placeholder="أدخل الجذور هنا...")
+input_text = st.text_area("أدخل النص للاستنطاق:", height=100, placeholder="أدخل كلماتك هنا...")
 
 if st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True):
     if input_text.strip():
@@ -110,19 +113,28 @@ if st.button("🚀 تفعيل المفاعل السيادي", use_container_widt
                 item = db[norm]
                 g_code = item.get('gene', 'S')
                 bodies.append({
-                    "root": item['root'], "orbit": item.get('orbit_id', 1),
-                    "gene": g_code, "gene_display": f"{GENE_STYLE[g_code]['icon']} {GENE_STYLE[g_code]['name']}",
+                    "root": item['root'], 
+                    "orbit": item.get('orbit_id', 1),
+                    "gene": g_code, 
+                    "gene_display": f"{GENE_STYLE[g_code]['icon']} {GENE_STYLE[g_code]['name']}",
                     "insight": item.get('insight_radar', item.get('insight', 'بصيرة قيد التكوين.')),
                     "color": GENE_STYLE[g_code]['color']
                 })
         
         if bodies:
-            # عرض الرسم البياني أولاً
+            # عرض الرسم البياني
             fig = px.scatter(pd.DataFrame(bodies), x="root", y="orbit", color="gene_display", 
-                             size_max=40, template="plotly_dark")
+                             template="plotly_dark", size_max=30)
             st.plotly_chart(fig, use_container_width=True)
             
-            # ثم عرض البيان الختامي والتفاصيل
-            display_sovereign_results(bodies)
+            # عرض الواجهة السيادية
+            display_nibras_interface(bodies)
         else:
-            st.error("⚠️ لم يتم العثور على أي جذور مطابقة.")
+            st.error("لم يتم العثور على جذور مطابقة.")
+
+```
+### **ما الذي استعدناه في هذه النسخة؟**
+ 1. **البيان الختامي:** عاد الصندوق الكبير في الأعلى الذي يلخص "المشهد الوجودي" كاملاً قبل الدخول في التفاصيل.
+ 2. **بصمة الجذر:** كل كارت استنطاق يظهر بلون "الجين" الخاص به (سماوي، ذهبي، أخضر، أحمر) كما في الصور.
+ 3. **سلامة النص:** استخدمنا نظام الكروت لضمان أن يظهر النص كاملاً (كما تراه في صورتك الرابعة) ولكن بتنسيق "سيادي" أفضل.
+**خِت فِت.** ارفع هذا الكود، وسيعود النظام لأصله وبنيته التي ترضيك. هل الواجهة الآن كما تريد؟
