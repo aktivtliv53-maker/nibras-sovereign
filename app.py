@@ -140,6 +140,7 @@ def extract_candidate_root(word, r_index):
 def load_sovereign_lexicon(file_path):
     """
     تحميل الليكسيكون السيادي مع توليد التوقيعات الحتمية مسبقاً
+    ملف JSON هو مصفوفة من الكائنات، كل كائن له مفتاح "root"
     """
     if not os.path.exists(file_path):
         st.error(f"❌ ملف الليكسيكون غير موجود: {file_path}")
@@ -147,16 +148,37 @@ def load_sovereign_lexicon(file_path):
     
     with open(file_path, 'r', encoding='utf-8') as f:
         try:
-            raw = json.load(f)
+            data = json.load(f)
         except json.JSONDecodeError as e:
             st.error(f"❌ خطأ في JSON: {e}")
             return {}
     
+    # التأكد من أن البيانات مصفوفة
+    if not isinstance(data, list):
+        st.error("❌ ملف JSON يجب أن يكون مصفوفة من الجذور")
+        return {}
+    
     r_index = {}
-    for k, v in raw.items():
-        norm_key = normalize_sovereign(k)
+    for item in data:
+        # استخراج الجذر الخام
+        raw_root = item.get("root", "")
+        if not raw_root:
+            continue
+        
+        # تطبيع الجذر لاستخدامه كمفتاح
+        norm_key = normalize_sovereign(raw_root)
+        
+        # تخزين البيانات مع التوقيع الحتمي
         r_index[norm_key] = {
-            **v,
+            "root_raw": raw_root,
+            "root": norm_key,
+            "orbit_id": item.get("orbit_id", 0),
+            "weight": item.get("weight", 50.0),
+            "insight": item.get("insight_radar", item.get("insight", "")),
+            "energy_type": item.get("energy_type", "مزدوج"),
+            "carrier_type": item.get("carrier_type", ""),
+            "bio_link": item.get("bio_link", ""),
+            "structural_analysis": item.get("structural_analysis", ""),
             "sig": signature_from_root(norm_key)
         }
     
@@ -615,7 +637,6 @@ with tabs[6]:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # عرض مقارنة الطاقة
                 comp_data = pd.DataFrame({
                     'المقياس': ['متوسط الطاقة', 'مؤشر الصعود'],
                     'النص الأول': [result['avg_energy_1'], result['ascent_diff'] + result['avg_energy_2']],
@@ -626,7 +647,3 @@ with tabs[6]:
                 st.error("⚠️ أحد النصين أو كليهما لا يحتوي على جذور مطابقة.")
         else:
             st.warning("⚠️ الرجاء إدخال نصين للمقارنة.")
-    
-    if st.session_state.compare_result and not st.session_state.compare_result['is_valid']:
-        if st.session_state.compare_result.get('common') is not None:
-            st.info("يمكنك إدخال نصين مختلفين للمقارنة بينهما.")
