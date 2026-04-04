@@ -34,10 +34,11 @@ ARABIC_DIACRITICS_PATTERN=re.compile(r'[\u0617-\u061A\u064B-\u0652]')
 def normalize_lexicon_root(r):
     return r.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ة","ه").replace("ى","ي").strip()
 
-def normalize_sovereign(t):
-    t=ARABIC_DIACRITICS_PATTERN.sub('',t)
-    t=t.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ى","ي").replace("ة","ه")
-    return re.sub(r'[^\u0621-\u063A\u064B-\u0652\s]',' ',t).strip()
+# 🔥🔥🔥 الإصلاح هنا — النسخة الصحيحة
+def normalize_sovereign(text):
+    text = ARABIC_DIACRITICS_PATTERN.sub('', text)
+    text = text.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ى","ي").replace("ة","ه")
+    return re.sub(r'[^\u0621-\u064A\s]', ' ', text).strip()
 
 def ensure_dot(t): return t if t.endswith('.') else t+'.'
 
@@ -139,101 +140,123 @@ tabs=st.tabs([
  "🔍 الاستنطاق المداري","🌌 الرنين الجيني","📈 اللوحة الوجودية الحرارية",
  "📜 البيان الختامي","⚖️ الميزان السيادي","🧠 الوعي الفوقي"
 ])
-
 # ===================== DYNAMIC LAYERS =====================
 def apply_context_orbit_adjustment(bodies):
-    freq=Counter(b['root'] for b in bodies)
-    maxf=max(freq.values()) if freq else 1
+    freq = Counter(b['root'] for b in bodies)
+    maxf = max(freq.values()) if freq else 1
     for b in bodies:
-        f=freq[b['root']]
-        b['orbit_id_context']=b['orbit_id']+(1 if f>=maxf and b['orbit_id']>0 else 0)
+        f = freq[b['root']]
+        b['orbit_id_context'] = b['orbit_id'] + (1 if f >= maxf and b['orbit_id'] > 0 else 0)
     return bodies
 
-def apply_dynamic_energy(bodies,text_len):
-    freq=Counter(b['root'] for b in bodies)
-    factor=max(1,min(3,text_len/50))
+def apply_dynamic_energy(bodies, text_len):
+    freq = Counter(b['root'] for b in bodies)
+    factor = max(1, min(3, text_len / 50))
     for b in bodies:
-        sig=signature_from_root(b['root'])
-        base=b['base_energy']
-        f=freq[b['root']]
-        dyn=base*(1+0.05*(f-1))*factor + sig['total_energy']*0.05
-        b['energy']=round(dyn,2)
+        sig = signature_from_root(b['root'])
+        base = b['base_energy']
+        f = freq[b['root']]
+        dyn = base * (1 + 0.05 * (f - 1)) * factor + sig['total_energy'] * 0.05
+        b['energy'] = round(dyn, 2)
     return bodies
 
 def compute_collective_consciousness(bodies):
-    genes=Counter(b['gene'] for b in bodies)
-    total=sum(b['energy'] for b in bodies)
-    uniq=len(set(b['root'] for b in bodies))
-    ascent=genes.get('G',0)+genes.get('C',0)
-    calm=genes.get('S',0)
-    material=genes.get('B',0)
-    tension=ascent*1.2 + material*0.8 - calm
-    harmony=calm*1.3 + uniq*0.2
+    genes = Counter(b['gene'] for b in bodies)
+    total = sum(b['energy'] for b in bodies)
+    uniq = len(set(b['root'] for b in bodies))
+    ascent = genes.get('G', 0) + genes.get('C', 0)
+    calm = genes.get('S', 0)
+    material = genes.get('B', 0)
+    tension = ascent * 1.2 + material * 0.8 - calm
+    harmony = calm * 1.3 + uniq * 0.2
     return {
-        "total_energy":total,"genes_count":genes,"unique_roots":uniq,
-        "tension_level":round(tension,2),"harmony_level":round(harmony,2)
+        "total_energy": total,
+        "genes_count": genes,
+        "unique_roots": uniq,
+        "tension_level": round(tension, 2),
+        "harmony_level": round(harmony, 2)
     }
 
 def compute_ascent_vector(bodies):
-    vals=[b.get('orbit_id_context',b['orbit_id']) for b in bodies if b['orbit_id']]
-    if not vals: return 0.0
-    return round(sum(vals)/len(vals)-5,2)
+    vals = [b.get('orbit_id_context', b['orbit_id']) for b in bodies if b['orbit_id']]
+    if not vals:
+        return 0.0
+    return round(sum(vals) / len(vals) - 5, 2)
 
-def compute_gene_spectrum(bodies,window=4):
-    spec=[]
-    for i in range(0,len(bodies),window):
-        chunk=bodies[i:i+window]
-        genes=[b['gene'] for b in chunk]
-        if genes: spec.append(Counter(genes).most_common(1)[0][0])
+def compute_gene_spectrum(bodies, window=4):
+    spec = []
+    for i in range(0, len(bodies), window):
+        chunk = bodies[i:i + window]
+        genes = [b['gene'] for b in chunk]
+        if genes:
+            spec.append(Counter(genes).most_common(1)[0][0])
     return spec
 
 # ===================== TAB 0: الاستنطاق =====================
 with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية — v29.1")
-    full_text=st.text_area("أدخل النص للاستنطاق:",height=150)
+    full_text = st.text_area("أدخل النص للاستنطاق:", height=150)
 
-    if st.button("🚀 تفعيل المفاعل السيادي",use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True):
         if full_text.strip():
-            clean=normalize_sovereign(full_text)
-            words=clean.split()
-            bodies=[]
+            clean = normalize_sovereign(full_text)
+            words = clean.split()
+            bodies = []
+
             for w in words:
-                key=match_root_logic(w,r_index.keys())
+                key = match_root_logic(w, r_index.keys())
                 if key:
-                    d=r_index[key]
-                    sig=signature_from_root(key)
-                    base=d['raw_energy']
-                    gi=GENE_STYLE[d['gene']]
-                    energy=base + sig['total_energy']*0.15
+                    d = r_index[key]
+                    sig = signature_from_root(key)
+                    base = d['raw_energy']
+                    gi = GENE_STYLE[d['gene']]
+                    energy = base + sig['total_energy'] * 0.15
+
                     bodies.append({
-                        "root":d['root_raw'],"orbit":d['orbit'],
-                        "orbit_id":d['orbit_id'],"gene":d['gene'],
-                        "gene_name":gi['name'],"gene_icon":gi['icon'],
-                        "energy":round(energy,2),"base_energy":round(energy,2),
-                        "insight":d['insight'],"color":gi['color'],
-                        "x":random.uniform(-10,10),"y":random.uniform(-10,10)
+                        "root": d['root_raw'],
+                        "orbit": d['orbit'],
+                        "orbit_id": d['orbit_id'],
+                        "gene": d['gene'],
+                        "gene_name": gi['name'],
+                        "gene_icon": gi['icon'],
+                        "energy": round(energy, 2),
+                        "base_energy": round(energy, 2),
+                        "insight": d['insight'],
+                        "color": gi['color'],
+                        "x": random.uniform(-10, 10),
+                        "y": random.uniform(-10, 10)
                     })
 
             if bodies:
-                bodies=apply_context_orbit_adjustment(bodies)
-                bodies=apply_dynamic_energy(bodies,len(full_text))
-                st.session_state.orbit_bodies=bodies
-                st.session_state.orbit_active=True
+                bodies = apply_context_orbit_adjustment(bodies)
+                bodies = apply_dynamic_energy(bodies, len(full_text))
 
-                df=pd.DataFrame(bodies)
-                fig=px.scatter(df,x="x",y="y",text="root",size="energy",color="gene",
-                    color_discrete_map={g:GENE_STYLE[g]['color'] for g in GENE_STYLE},
-                    range_x=[-35,35],range_y=[-35,35])
-                fig.update_layout(height=500,paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',showlegend=False,
-                    xaxis_visible=False,yaxis_visible=False)
-                st.plotly_chart(fig,use_container_width=True)
+                st.session_state.orbit_bodies = bodies
+                st.session_state.orbit_active = True
 
-                total=sum(b['energy'] for b in bodies)
-                genes=Counter(b['gene'] for b in bodies)
-                dom=max(genes,key=genes.get)
-                cc=compute_collective_consciousness(bodies)
-                asc=compute_ascent_vector(bodies)
+                df = pd.DataFrame(bodies)
+                fig = px.scatter(
+                    df, x="x", y="y", text="root", size="energy", color="gene",
+                    color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
+                    range_x=[-35, 35], range_y=[-35, 35]
+                )
+
+                fig.update_layout(
+                    height=500,
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    showlegend=False,
+                    xaxis_visible=False,
+                    yaxis_visible=False
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+
+                total = sum(b['energy'] for b in bodies)
+                genes = Counter(b['gene'] for b in bodies)
+                dom = max(genes, key=genes.get)
+                cc = compute_collective_consciousness(bodies)
+                asc = compute_ascent_vector(bodies)
 
                 st.markdown(f"""
                 <div class="story-box">
@@ -244,12 +267,13 @@ with tabs[0]:
                     التوتر: <b>{cc['tension_level']}</b><br>
                     متجه الصعود: <b>{asc}</b>
                 </div>
-                """,unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
                 display_insight_cards(bodies)
+
             else:
                 st.error("⚠️ لم يتم العثور على جذور.")
-                # ===================== TAB 1: الرنين الجيني =====================
+             # ===================== TAB 1: الرنين الجيني =====================
 with tabs[1]:
     st.markdown("### 🌌 الرنين الجيني")
     roots_sorted = sorted([r['root_raw'] for r in all_roots])
@@ -351,7 +375,8 @@ with tabs[4]:
         display_insight_cards(st.session_state.orbit_bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
-        # ===================== TAB 5: الوعي الفوقي + الطيف الجيني =====================
+
+# ===================== TAB 5: الوعي الفوقي + الطيف الجيني =====================
 with tabs[5]:
     st.markdown("### 🧠 الوعي الفوقي — البيان الجمعي + الطيف الجيني")
 
