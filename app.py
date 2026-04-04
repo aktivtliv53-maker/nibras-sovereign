@@ -34,7 +34,7 @@ ARABIC_DIACRITICS_PATTERN=re.compile(r'[\u0617-\u061A\u064B-\u0652]')
 def normalize_lexicon_root(r):
     return r.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ة","ه").replace("ى","ي").strip()
 
-# 🔥🔥🔥 الإصلاح هنا — النسخة الصحيحة
+# 🔥🔥🔥 التطبيع المصحّح 100%
 def normalize_sovereign(text):
     text = ARABIC_DIACRITICS_PATTERN.sub('', text)
     text = text.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ى","ي").replace("ة","ه")
@@ -67,20 +67,20 @@ def load_lexicon_db(path):
     data=json.load(open(path,'r',encoding='utf-8'))
     r_index={}; all_roots=[]; orbit_counter=Counter()
     for item in data:
-        raw=item.get("root",""); 
+        raw=item.get("root","")
         if not raw: continue
         norm=normalize_lexicon_root(raw)
         orbit=item.get("orbit_id",0)
         weight=float(item.get("weight",50))
         gene,cal=get_sovereign_gene(raw,weight,orbit)
         insight=item.get("insight_radar",item.get("insight",""))
-        r_index[norm]={
-            "root_raw":raw,"root":norm,
+        r_index[raw]={
+            "root_raw":raw,"root_norm":norm,
             "orbit_id":orbit,"orbit":f"المدار {orbit}",
             "weight":weight,"raw_energy":cal,
             "insight":ensure_dot(insight),"gene":gene
         }
-        all_roots.append(r_index[norm])
+        all_roots.append(r_index[raw])
         orbit_counter[f"المدار {orbit}"]+=1
     return r_index,all_roots,orbit_counter
 
@@ -89,22 +89,47 @@ def smart_extract_root(w):
     w=normalize_sovereign(w)
     if len(w)<=3: return w
     for p in ["ال","وال","بال","كال","فال","س","و","ف","ل","ب","ك"]:
-        if w.startswith(p) and len(w)-len(p)>=3: w=w[len(p):]; break
+        if w.startswith(p) and len(w)-len(p)>=3:
+            w=w[len(p):]
+            break
     for s in ["هما","كما","كم","كن","نا","ها","هم","هن","ان","ون","ين","ات","ة","ه","ي","ا"]:
-        if w.endswith(s) and len(w)-len(s)>=3: w=w[:-len(s)]; break
+        if w.endswith(s) and len(w)-len(s)>=3:
+            w=w[:-len(s)]
+            break
     return w
 
-def match_root_logic(word,keys):
-    w=normalize_sovereign(word)
-    if len(w)<2: return None
-    n=normalize_lexicon_root(w)
-    if n in keys: return n
-    for p in ["ال","و","ف","ب","ك","ل","س"]:
+# 🔥🔥🔥 دالة المطابقة الجديدة — تعمل مع الليكسيكون كما هو
+def match_root_logic(word, keys):
+    w = normalize_sovereign(word)
+    if len(w) < 2:
+        return None
+
+    # النسخة الأصلية كما في الليكسيكون
+    if w in keys:
+        return w
+
+    # النسخة المطبّعة
+    norm = normalize_lexicon_root(w)
+    if norm in keys:
+        return norm
+
+    # إزالة السوابق
+    for p in ["ال","و","ف","ب","ك","ل","س","بال","كال","وال"]:
         if w.startswith(p) and len(w)-len(p)>=3:
-            c=normalize_lexicon_root(w[len(p):])
-            if c in keys: return c
-    s=normalize_lexicon_root(smart_extract_root(word))
-    return s if s in keys else None
+            cut = w[len(p):]
+            if cut in keys:
+                return cut
+            if normalize_lexicon_root(cut) in keys:
+                return normalize_lexicon_root(cut)
+
+    # إزالة اللواحق
+    extracted = smart_extract_root(word)
+    if extracted in keys:
+        return extracted
+    if normalize_lexicon_root(extracted) in keys:
+        return normalize_lexicon_root(extracted)
+
+    return None
 
 def display_insight_cards(bodies):
     for b in bodies:
@@ -280,8 +305,7 @@ with tabs[1]:
     sel = st.selectbox("اختر جذراً:", roots_sorted)
 
     if sel:
-        norm = normalize_lexicon_root(sel)
-        d = r_index.get(norm)
+        d = r_index.get(sel)
         if d:
             gi = GENE_STYLE[d['gene']]
             st.markdown(f"""
