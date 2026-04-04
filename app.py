@@ -36,6 +36,27 @@ st.markdown("""
     [data-testid="stToolbar"] {display: none;}
     [data-testid="stDecoration"] {display: none;}
     
+    /* ========== إصلاح عمود الحروف المبعثرة ========== */
+    /* منع تمدد الحروف العمودي في العناوين والجانب */
+    h1, h2, h3, .stMarkdown, .st-emotion-cache-1v0mbdj, .st-emotion-cache-1wivap2 {
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        white-space: nowrap !important;
+    }
+    
+    /* إخفاء أي نصوص زائدة تخرج عن حدود الحاويات */
+    [data-testid="stSidebar"] div, [data-testid="stAppViewContainer"] {
+        overflow: hidden !important;
+    }
+    
+    /* إصلاح خاص بالعناوين الجانبية */
+    .sidebar-title, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        display: block;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+    }
+    
     /* تخصيص الخلفية والخط */
     @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
     [data-testid="stAppViewContainer"] { 
@@ -375,12 +396,13 @@ if 'orbit_bodies' not in st.session_state:
 
 r_index, all_roots, orbit_counter = load_lexicon_db("data/nibras_lexicon.json")
 
+# الشريط الجانبي مع عنوان محصن ضد التمدد العمودي
 with st.sidebar:
-    st.markdown(f"""
-    <div style='text-align:center;'>
-        <h2 style='color:#4fc3f7;'>🛡️ نبراس السيادي</h2>
-        <p>الإصدار v31.0 - الميثاقي</p>
-        <p>المستخدم: محمد</p>
+    st.markdown("""
+    <div style="width: 100%; text-align: center; overflow: hidden; white-space: nowrap;">
+        <h2 style="color:#4fc3f7; margin:0; padding:0;">🛡️ نبراس السيادي</h2>
+        <p style="margin:0; padding:0;">الإصدار v31.0 - الميثاقي</p>
+        <p style="margin:0; padding:0;">المستخدم: محمد</p>
     </div>
     ---
     <div>
