@@ -34,7 +34,6 @@ ARABIC_DIACRITICS_PATTERN=re.compile(r'[\u0617-\u061A\u064B-\u0652]')
 def normalize_lexicon_root(r):
     return r.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ة","ه").replace("ى","ي").strip()
 
-# 🔥🔥🔥 التطبيع المصحّح 100%
 def normalize_sovereign(text):
     text = ARABIC_DIACRITICS_PATTERN.sub('', text)
     text = text.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ى","ي").replace("ة","ه")
@@ -63,71 +62,77 @@ def signature_from_root(root):
 # ===================== LOAD DB =====================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
-    if not os.path.exists(path): return {},[],Counter()
-    data=json.load(open(path,'r',encoding='utf-8'))
-    r_index={}; all_roots=[]; orbit_counter=Counter()
+    if not os.path.exists(path):
+        return {}, [], Counter()
+
+    data = json.load(open(path,'r',encoding='utf-8'))
+    r_index = {}
+    all_roots = []
+    orbit_counter = Counter()
+
     for item in data:
-        raw=item.get("root","")
-        if not raw: continue
-        norm=normalize_lexicon_root(raw)
-        orbit=item.get("orbit_id",0)
-        weight=float(item.get("weight",50))
-        gene,cal=get_sovereign_gene(raw,weight,orbit)
-        insight=item.get("insight_radar",item.get("insight",""))
-        r_index[raw]={
-            "root_raw":raw,"root_norm":norm,
-            "orbit_id":orbit,"orbit":f"المدار {orbit}",
-            "weight":weight,"raw_energy":cal,
-            "insight":ensure_dot(insight),"gene":gene
+        raw = item.get("root","")
+        if not raw:
+            continue
+
+        norm = normalize_lexicon_root(raw)
+        orbit = item.get("orbit_id",0)
+        weight = float(item.get("weight",50))
+        gene, cal = get_sovereign_gene(raw,weight,orbit)
+        insight = item.get("insight_radar", item.get("insight",""))
+
+        # 🔥 المفتاح = الجذر المطبّع
+        r_index[norm] = {
+            "root_raw": raw,
+            "root_norm": norm,
+            "orbit_id": orbit,
+            "orbit": f"المدار {orbit}",
+            "weight": weight,
+            "raw_energy": cal,
+            "insight": ensure_dot(insight),
+            "gene": gene
         }
-        all_roots.append(r_index[raw])
-        orbit_counter[f"المدار {orbit}"]+=1
-    return r_index,all_roots,orbit_counter
+
+        all_roots.append(r_index[norm])
+        orbit_counter[f"المدار {orbit}"] += 1
+
+    return r_index, all_roots, orbit_counter
 
 # ===================== ROOT EXTRACTION =====================
 def smart_extract_root(w):
-    w=normalize_sovereign(w)
-    if len(w)<=3: return w
+    w = normalize_sovereign(w)
+    if len(w) <= 3:
+        return w
     for p in ["ال","وال","بال","كال","فال","س","و","ف","ل","ب","ك"]:
-        if w.startswith(p) and len(w)-len(p)>=3:
-            w=w[len(p):]
+        if w.startswith(p) and len(w)-len(p) >= 3:
+            w = w[len(p):]
             break
     for s in ["هما","كما","كم","كن","نا","ها","هم","هن","ان","ون","ين","ات","ة","ه","ي","ا"]:
-        if w.endswith(s) and len(w)-len(s)>=3:
-            w=w[:-len(s)]
+        if w.endswith(s) and len(w)-len(s) >= 3:
+            w = w[:-len(s)]
             break
     return w
 
-# 🔥🔥🔥 دالة المطابقة الجديدة — تعمل مع الليكسيكون كما هو
 def match_root_logic(word, keys):
     w = normalize_sovereign(word)
     if len(w) < 2:
         return None
 
-    # النسخة الأصلية كما في الليكسيكون
-    if w in keys:
-        return w
-
-    # النسخة المطبّعة
     norm = normalize_lexicon_root(w)
     if norm in keys:
         return norm
 
-    # إزالة السوابق
     for p in ["ال","و","ف","ب","ك","ل","س","بال","كال","وال"]:
-        if w.startswith(p) and len(w)-len(p)>=3:
+        if w.startswith(p) and len(w)-len(p) >= 3:
             cut = w[len(p):]
-            if cut in keys:
-                return cut
-            if normalize_lexicon_root(cut) in keys:
-                return normalize_lexicon_root(cut)
+            ncut = normalize_lexicon_root(cut)
+            if ncut in keys:
+                return ncut
 
-    # إزالة اللواحق
     extracted = smart_extract_root(word)
-    if extracted in keys:
-        return extracted
-    if normalize_lexicon_root(extracted) in keys:
-        return normalize_lexicon_root(extracted)
+    nex = normalize_lexicon_root(extracted)
+    if nex in keys:
+        return nex
 
     return None
 
@@ -154,9 +159,10 @@ with st.sidebar:
     st.markdown("<h2 style='text-align:center;color:#4fc3f7'>🛡️ نبراس السيادي</h2>",unsafe_allow_html=True)
     st.markdown("الإصدار v29.1 — ثلاثية الصعود + الطيف الجيني")
     st.markdown("المستخدم: محمد")
-    st.markdown("---")
+    st.markmarkdown("---")
     st.markdown(f"📚 إجمالي الجذور: {len(r_index)}")
-    for k,v in orbit_counter.items(): st.markdown(f"🔹 {k}: {v}")
+    for k,v in orbit_counter.items():
+        st.markdown(f"🔹 {k}: {v}")
     st.markdown("---")
     st.markdown("خِت فِت.")
 
@@ -178,7 +184,7 @@ def apply_dynamic_energy(bodies, text_len):
     freq = Counter(b['root'] for b in bodies)
     factor = max(1, min(3, text_len / 50))
     for b in bodies:
-        sig = signature_from_root(b['root'])
+        sig = signature_from_root(b['root_norm'])
         base = b['base_energy']
         f = freq[b['root']]
         dyn = base * (1 + 0.05 * (f - 1)) * factor + sig['total_energy'] * 0.05
@@ -232,13 +238,14 @@ with tabs[0]:
                 key = match_root_logic(w, r_index.keys())
                 if key:
                     d = r_index[key]
-                    sig = signature_from_root(key)
+                    sig = signature_from_root(d['root_norm'])
                     base = d['raw_energy']
                     gi = GENE_STYLE[d['gene']]
                     energy = base + sig['total_energy'] * 0.15
 
                     bodies.append({
                         "root": d['root_raw'],
+                        "root_norm": d['root_norm'],
                         "orbit": d['orbit'],
                         "orbit_id": d['orbit_id'],
                         "gene": d['gene'],
@@ -305,7 +312,8 @@ with tabs[1]:
     sel = st.selectbox("اختر جذراً:", roots_sorted)
 
     if sel:
-        d = r_index.get(sel)
+        # نبحث عن أول عنصر يطابق root_raw
+        d = next((r for r in all_roots if r['root_raw'] == sel), None)
         if d:
             gi = GENE_STYLE[d['gene']]
             st.markdown(f"""
@@ -427,7 +435,6 @@ with tabs[5]:
         </div>
         """, unsafe_allow_html=True)
 
-        # 🌈 الطيف الجيني
         spectrum = compute_gene_spectrum(bodies, window=4)
 
         if spectrum:
