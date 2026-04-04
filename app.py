@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v30.3
-# المسمى: The Final Stable Engine - المحرك المستقر النهائي
+# Nibras Sovereign System - v30.4 Final Stable Edition (سدرة المنتهى)
 # ==============================================================================
 
 import streamlit as st
@@ -15,7 +14,7 @@ import plotly.graph_objects as go
 from collections import Counter
 
 # ==============================================================================
-# [1] الميثاق الدستوري
+# [1] الميثاق الدستوري (GENE STYLE)
 # ==============================================================================
 GENE_STYLE = {
     "N": {"color": "#FFFFFF", "icon": "🌟", "name": "إشراق مُستحق"},
@@ -26,7 +25,7 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [2] النواة الحتمية
+# [2] النواة الحتمية (Deterministic Core)
 # ==============================================================================
 def signature_from_root(root_norm):
     if not root_norm:
@@ -40,7 +39,7 @@ def signature_from_root(root_norm):
     }
 
 def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, sig):
-    base_e = base_w * 100 if base_w < 10 else base_w
+    base_e = float(base_w) * 100 if float(base_w) < 10 else float(base_w)
     rep_boost = 1.0 + math.log1p(max(0, count - 1)) * 0.35
     mode_f = 1.0 if mode == "direct" else 0.92
     morph_f = 1.0 + (max(2, morph_rank) - 2) * 0.05
@@ -49,349 +48,165 @@ def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, sig):
 
 def resolve_sovereign_gene(orbit_id, morph_rank, sig, energy):
     orb = int(orbit_id or 0)
-    if orb >= 7:
-        base = "S"
-    elif orb >= 5:
-        base = "G"
-    elif orb >= 3:
-        base = "B"
-    else:
-        base = "C"
+    base = "S" if orb >= 7 else "G" if orb >= 5 else "B" if orb >= 3 else "C"
     if sig['n_factor'] >= 92 and (orb >= 5 or morph_rank >= 6 or energy >= 85):
         return "N"
     return base
 
 def compute_ascent_vector(bodies):
-    if not bodies:
-        return 0.0
+    if not bodies: return 0.0
     weights = {"N": 2.5, "S": 1.8, "G": 1.0, "B": 0.2, "C": -0.5}
-    total = sum((weights.get(b['gene'], 0) * (b['energy'] / 100)) for b in bodies)
+    total = sum((weights[b['gene']] * (b['energy'] / 100)) for b in bodies)
     return round(total / len(bodies), 3)
 
 # ==============================================================================
-# [3] الحواس والإمداد
+# [3] التطهير السيادي + محرك الاستخراج
 # ==============================================================================
 def normalize_sovereign(text):
-    if not text:
-        return ""
+    if not text: return ""
     text = str(text).strip()
     text = re.sub(r'[\u0617-\u061A\u064B-\u0652]', '', text)
-    text = text.replace('أ', 'ا').replace('إ', 'ا').replace('آ', 'ا')
-    text = text.replace('ى', 'ي').replace('ئ', 'ي').replace('ؤ', 'و')
-    text = text.replace('ة', 'ه')
+    replacements = {'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ى': 'ي', 'ئ': 'ي', 'ؤ': 'و', 'ة': 'ه'}
+    for k, v in replacements.items(): text = text.replace(k, v)
     return re.sub(r'[^\w\s\u0600-\u06FF]', ' ', text).strip()
 
 def match_root_from_word(word, r_index):
     w = normalize_sovereign(word)
-    if not w:
-        return None
-    if w in r_index:
-        return w
-    if w.startswith('ال') and len(w) > 4:
-        w2 = w[2:]
-        if w2 in r_index:
-            return w2
-    for prefix in ['و', 'ف', 'ب', 'ك', 'ل', 'س']:
-        if w.startswith(prefix) and len(w) > len(prefix) + 2:
-            w2 = w[len(prefix):]
-            if w2 in r_index:
-                return w2
-    for suffix in ['ة', 'ه', 'ي', 'ا', 'ت', 'ن', 'و']:
-        if w.endswith(suffix) and len(w) > 3:
-            w2 = w[:-len(suffix)]
-            if w2 in r_index:
-                return w2
-    return None
+    if not w: return None, 0
+    if w in r_index: return w, 10
+    prefixes = ['ال', 'و', 'ف', 'ب', 'ل']
+    for p in prefixes:
+        if w.startswith(p) and len(w) > len(p) + 2:
+            sub = w[len(p):]
+            if sub in r_index: return sub, 7
+    suffixes = ['ون', 'ين', 'ات', 'ها', 'هم', 'كم', 'نا']
+    for s in suffixes:
+        if w.endswith(s) and len(w) > len(s) + 2:
+            sub = w[:-len(s)]
+            if sub in r_index: return sub, 7
+    return None, 0
 
-def load_sovereign_lexicon(file_path):
-    if not os.path.exists(file_path):
-        st.error(f"❌ ملف الليكسيكون غير موجود: {file_path}")
-        return {}
-    with open(file_path, 'r', encoding='utf-8') as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError as e:
-            st.error(f"❌ خطأ في JSON: {e}")
-            return {}
-    if not isinstance(data, list):
-        st.error("❌ ملف JSON يجب أن يكون مصفوفة")
-        return {}
+# ==============================================================================
+# [4] محمل البيانات السيادي
+# ==============================================================================
+def load_sovereign_lexicon(path):
+    if not os.path.exists(path): return {}
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
     r_index = {}
     for item in data:
-        raw_root = item.get("root", "")
-        if not raw_root:
-            continue
-        norm_key = normalize_sovereign(raw_root)
-        r_index[norm_key] = {
-            "root_raw": raw_root,
-            "root": norm_key,
+        root_raw = item.get("root", "")
+        if not root_raw: continue
+        norm = normalize_sovereign(root_raw)
+        r_index[norm] = {
+            "root_raw": root_raw,
             "orbit_id": item.get("orbit_id", 0),
             "weight": item.get("weight", 50.0),
             "insight": item.get("insight_radar", item.get("insight", "")),
-            "sig": signature_from_root(norm_key)
+            "sig": signature_from_root(norm)
         }
     return r_index
 
 # ==============================================================================
-# [4] المحرك الموحد
+# [5] المحرك الموحد
 # ==============================================================================
-def analyze_text_sovereign(full_text, r_index):
-    clean_text = normalize_sovereign(full_text)
-    words = clean_text.split()
-    matched_details = []
-    for pos, word in enumerate(words):
-        root_key = match_root_from_word(word, r_index)
-        if root_key:
-            matched_details.append({"rk": root_key, "pos": pos, "word": word})
-    if not matched_details:
+def analyze_text_sovereign(text, r_index):
+    clean = normalize_sovereign(text)
+    words = clean.split()
+    meta = []
+    for pos, w in enumerate(words):
+        rk, m_rank = match_root_from_word(w, r_index)
+        if rk:
+            meta.append({"rk": rk, "pos": pos, "m_rank": m_rank})
+    if not meta:
         return {"bodies": [], "unique_roots": [], "ascent": 0.0}
-    counts = Counter([m['rk'] for m in matched_details])
+    counts = Counter([m['rk'] for m in meta])
     bodies = []
-    for m in matched_details:
-        data = r_index.get(m['rk'])
-        if not data:
-            continue
-        energy = compute_dynamic_energy(
-            base_w=data.get('weight', 10),
-            count=counts[m['rk']],
-            mode="direct",
-            morph_rank=5,
-            orbit_id=data.get('orbit_id', 0),
-            sig=data['sig']
-        )
-        gene = resolve_sovereign_gene(
-            orbit_id=data.get('orbit_id', 0),
-            morph_rank=5,
-            sig=data['sig'],
-            energy=energy
-        )
+    for m in meta:
+        data = r_index[m['rk']]
+        energy = compute_dynamic_energy(data['weight'], counts[m['rk']], "direct", m['m_rank'], data['orbit_id'], data['sig'])
+        gene = resolve_sovereign_gene(data['orbit_id'], m['m_rank'], data['sig'], energy)
         bodies.append({
             "root_norm": m['rk'],
-            "root_raw": data.get('root_raw', m['rk']),
+            "root_raw": data['root_raw'],
             "energy": energy,
             "gene": gene,
             "sig": data['sig'],
-            "style": GENE_STYLE.get(gene, GENE_STYLE['C']),
-            "orbit_id": data.get('orbit_id', 0),
-            "pos": m['pos'],
-            "insight": data.get('insight', '')
+            "style": GENE_STYLE[gene],
+            "orbit_id": data['orbit_id'],
+            "insight": data['insight']
         })
-    unique_roots = list(set([b['root_norm'] for b in bodies]))
-    ascent = compute_ascent_vector(bodies)
     return {
         "bodies": bodies,
-        "unique_roots": unique_roots,
-        "ascent": ascent,
-        "total_words": len(words),
-        "matched_count": len(matched_details)
-    }
-
-def structural_compare(text1, text2, r_index):
-    res1 = analyze_text_sovereign(text1, r_index)
-    res2 = analyze_text_sovereign(text2, r_index)
-    valid = bool(res1['bodies'] and res2['bodies'])
-    return {
-        "is_valid": valid,
-        "ascent_diff": round(res1['ascent'] - res2['ascent'], 3) if valid else None,
-        "common": list(set(res1['unique_roots']) & set(res2['unique_roots'])),
-        "avg_energy_1": round(sum(b['energy'] for b in res1['bodies']) / len(res1['bodies']), 2) if res1['bodies'] else 0,
-        "avg_energy_2": round(sum(b['energy'] for b in res2['bodies']) / len(res2['bodies']), 2) if res2['bodies'] else 0
+        "unique_roots": list(counts.keys()),
+        "ascent": compute_ascent_vector(bodies)
     }
 
 # ==============================================================================
-# [5] واجهة التجسيد
+# [6] الواجهة (الرادار + الكروت)
 # ==============================================================================
 def render_insight_radar(bodies):
-    if not bodies:
-        return
+    if not bodies: return
     df = pd.DataFrame([{
-        'r': b['root_norm'],
-        'x': b['sig']['x'],
-        'y': b['sig']['y'],
-        'e': b['energy'],
-        'c': b['style']['color']
+        'r': b['root_norm'], 'x': b['sig']['x'], 'y': b['sig']['y'],
+        'e': b['energy'], 'c': b['style']['color']
     } for b in bodies])
     fig = go.Figure(go.Scatter(
-        x=df['x'], y=df['y'],
-        mode='markers+text',
-        text=df['r'],
+        x=df['x'], y=df['y'], mode='markers+text', text=df['r'],
         textposition="top center",
         marker=dict(size=df['e']/3, color=df['c'], line=dict(width=1, color='white'))
     ))
-    fig.update_layout(
-        template="plotly_dark", height=500,
-        margin=dict(l=0, r=0, b=0, t=0),
-        xaxis=dict(range=[-20,20], visible=False),
-        yaxis=dict(range=[-20,20], visible=False)
-    )
+    fig.update_layout(template="plotly_dark", height=500)
     st.plotly_chart(fig, use_container_width=True)
 
-def render_sovereign_cards(bodies, limit=12):
-    if not bodies:
-        return
-    for b in bodies[:limit]:
+def render_sovereign_cards(bodies):
+    for b in bodies:
         st.markdown(f"""
-        <div style='border-right:4px solid {b["style"]["color"]}; padding:12px; margin-bottom:12px; background:#0d0d14; border-radius:0 8px 8px 0;'>
+        <div style='border-right:4px solid {b["style"]["color"]}; padding:15px; margin-bottom:12px; background:#0d0d14; border-radius:0 10px 10px 0;'>
             <h4 style='color:{b["style"]["color"]}; margin:0;'>{b["style"]["icon"]} {b["root_norm"]}</h4>
-            <small>طاقة: {b["energy"]:.1f} | جين: {b["gene"]} | مدار: {b.get("orbit_id", "?")}</small>
-            <p style='color:#ddd; margin-top:8px;'>{b.get("insight", "")[:150]}...</p>
+            <small style='color:#888;'>طاقة: {b["energy"]} | جين: {b["gene"]} | مدار: {b["orbit_id"]}</small>
+            <p style='color:#bbb; margin-top:8px; font-size:0.9em;'>{b["insight"]}</p>
         </div>
         """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [6] تهيئة التطبيق
+# [7] التطبيق
 # ==============================================================================
-st.set_page_config(page_title="Nibras v30.3", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras v30.4", page_icon="🛡️", layout="wide")
 
-st.markdown("""
-<style>
-    [data-testid="stAppViewContainer"] { background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%); color: #e0e0e0; font-family: 'Amiri', serif; direction: rtl; }
-    .stTabs [aria-selected="true"] { color: #FFD700 !important; border-bottom: 2px solid #FFD700 !important; }
-    .story-box { background: linear-gradient(135deg, rgba(10,21,10,0.85) 0%, rgba(1,1,3,0.95) 100%); padding: 25px; border-radius: 20px; border-right: 5px solid #FFD700; margin-bottom: 20px; }
-</style>
-""", unsafe_allow_html=True)
+r_index = load_sovereign_lexicon("data/nibras_lexicon.json")
 
-@st.cache_data(ttl=3600)
-def get_lexicon():
-    return load_sovereign_lexicon("data/nibras_lexicon.json")
+st.sidebar.markdown("<h1 style='color:#FFD700;'>🛡️ نِبْرَاس</h1>", unsafe_allow_html=True)
+st.sidebar.info(f"📊 الجذور المحملة: {len(r_index)}")
 
-r_index = get_lexicon()
-
-if 'analysis_result' not in st.session_state:
-    st.session_state.analysis_result = None
-
-with st.sidebar:
-    st.markdown(f"""
-    <div style='text-align:center;'><h1 style='color:#FFD700;'>🛡️ نبراس</h1><p>v30.3</p></div>
-    ---
-    📊 إجمالي الجذور: **{len(r_index)}**
-    """, unsafe_allow_html=True)
-    if r_index:
-        st.markdown(f"🔍 عينة: {', '.join(list(r_index.keys())[:8])}")
-    st.markdown("---\nخِت فِت.")
-
-tabs = st.tabs(["🔍 الاستنطاق", "🌌 الرنين", "📈 اللوحة", "📜 البيان", "⚖️ الميزان", "🧠 الوعي", "⚖️ المقارن"])
+tabs = st.tabs(["🔍 الاستنطاق", "⚖️ المقارن", "🌌 الجذر"])
 
 with tabs[0]:
-    st.markdown("### 📍 الاستنطاق المداري")
-    input_text = st.text_area("أدخل النص:", height=120, placeholder="مثال: أحد أبى أثر")
-    if st.button("🚀 تفعيل المفاعل", use_container_width=True):
-        if input_text.strip():
-            result = analyze_text_sovereign(input_text, r_index)
-            st.session_state.analysis_result = result
-            if result['bodies']:
-                ascent = result['ascent']
-                if ascent > 0:
-                    st.success(f"🚀 مؤشر الصعود: {ascent}")
-                elif ascent < 0:
-                    st.warning(f"📌 مؤشر الصعود: {ascent}")
-                else:
-                    st.info(f"⚖️ مؤشر الصعود: {ascent}")
-                st.info(f"📊 {result['total_words']} كلمة → {result['matched_count']} جذر")
-                render_insight_radar(result['bodies'])
-                st.markdown("### 📜 البيان الختامي")
-                genes_count = Counter(b['gene'] for b in result['bodies'])
-                dom_gene = max(genes_count, key=genes_count.get)
-                st.markdown(f"""
-                <div class="story-box">
-                    ✅ {len(result['bodies'])} جذر<br>
-                    🧬 الهيمنة: {GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}<br>
-                    📚 الجذور: {', '.join(result['unique_roots'][:8])}
-                </div>
-                """, unsafe_allow_html=True)
-                render_sovereign_cards(result['bodies'])
-                st.success("✅ تم الاستنطاق")
-            else:
-                st.error("⚠️ لم يتم العثور على جذور")
-                st.info(f"الجذور المتاحة: {', '.join(list(r_index.keys())[:15])}")
+    st.markdown("### 📍 الاستنطاق")
+    txt = st.text_area("أدخل النص:", height=150)
+    if st.button("🚀 تحليل"):
+        res = analyze_text_sovereign(txt, r_index)
+        if res['bodies']:
+            st.success(f"🚀 مؤشر الصعود: {res['ascent']}")
+            render_insight_radar(res['bodies'])
+            render_sovereign_cards(res['bodies'])
         else:
-            st.warning("⚠️ أدخل نصاً")
+            st.error("لا توجد جذور مطابقة.")
 
 with tabs[1]:
-    st.markdown("### 🌌 الرنين الجيني")
-    cols = st.columns(5)
-    for i, (code, info) in enumerate(GENE_STYLE.items()):
-        with cols[i]:
-            st.markdown(f"<div style='text-align:center;'><h2>{info['icon']}</h2><h4 style='color:{info['color']};'>{info['name']}</h4></div>", unsafe_allow_html=True)
-    if r_index:
-        selected = st.selectbox("اختر جذراً:", options=sorted(r_index.keys()))
-        if selected:
-            d = r_index[selected]
-            st.markdown(f"""
-            <div style='border:1px solid #2979FF; padding:20px; border-radius:15px;'>
-                <h3 style='color:#FFD700;'>📌 {d['root_raw']}</h3>
-                <p>المدار: {d.get('orbit_id', '?')} | الوزن: {d.get('weight', 1.0)}</p>
-                <p>{d.get('insight', '')}</p>
-            </div>
-            """, unsafe_allow_html=True)
+    st.markdown("### ⚖️ المقارنة")
+    t1 = st.text_area("النص الأول")
+    t2 = st.text_area("النص الثاني")
+    if st.button("مقارنة"):
+        c1 = analyze_text_sovereign(t1, r_index)
+        c2 = analyze_text_sovereign(t2, r_index)
+        st.metric("فرق الصعود", round(c1['ascent'] - c2['ascent'], 3))
 
 with tabs[2]:
-    if st.session_state.analysis_result and st.session_state.analysis_result['bodies']:
-        df = pd.DataFrame([{'الجذر': b['root_norm'], 'الطاقة': b['energy'], 'الجين': b['gene']} for b in st.session_state.analysis_result['bodies']])
-        st.dataframe(df, use_container_width=True)
-        st.bar_chart(df.set_index('الجذر')['الطاقة'])
-    else:
-        st.info("⚙️ انتظر تفعيل المفاعل")
+    st.markdown("### 🌌 استكشاف الجذر")
+    root = st.selectbox("اختر جذراً:", sorted(r_index.keys()))
+    if root:
+        d = r_index[root]
+        st.write(d)
 
-with tabs[3]:
-    if st.session_state.analysis_result and st.session_state.analysis_result['bodies']:
-        result = st.session_state.analysis_result
-        st.markdown(f"""
-        <div class="story-box">
-            <h3 style='color:#FFD700;'>📜 البيان الختامي</h3>
-            <p>عدد الجذور: {len(result['bodies'])}</p>
-            <p>مجموع الطاقة: {sum(b['energy'] for b in result['bodies']):.1f}</p>
-            <p>مؤشر الصعود: {result['ascent']}</p>
-            <p>الجذور: {', '.join(result['unique_roots'])}</p>
-        </div>
-        """, unsafe_allow_html=True)
-        render_sovereign_cards(result['bodies'])
-    else:
-        st.info("⚙️ انتظر تفعيل المفاعل")
-
-with tabs[4]:
-    if st.session_state.analysis_result and st.session_state.analysis_result['bodies']:
-        render_sovereign_cards(st.session_state.analysis_result['bodies'])
-    else:
-        st.info("⚙️ انتظر تفعيل المفاعل")
-
-with tabs[5]:
-    if st.session_state.analysis_result and st.session_state.analysis_result['bodies']:
-        result = st.session_state.analysis_result
-        genes_count = Counter(b['gene'] for b in result['bodies'])
-        st.markdown(f"""
-        <div class="story-box">
-            <h3 style='color:#FFD700;'>🌌 بيان الوعي الجمعي</h3>
-            <p>عدد الجذور: {len(result['bodies'])}</p>
-            <p>مؤشر الصعود: {result['ascent']}</p>
-            {''.join([f'<p>{GENE_STYLE[g]["icon"]} {GENE_STYLE[g]["name"]}: {c}</p>' for g, c in genes_count.items()])}
-        </div>
-        """, unsafe_allow_html=True)
-        render_insight_radar(result['bodies'])
-    else:
-        st.info("⚙️ انتظر تفعيل المفاعل")
-
-with tabs[6]:
-    st.markdown("### ⚖️ المقارن البنيوي")
-    col1, col2 = st.columns(2)
-    with col1:
-        t1 = st.text_area("النص الأول:", height=100)
-    with col2:
-        t2 = st.text_area("النص الثاني:", height=100)
-    if st.button("🔍 قارن"):
-        if t1.strip() and t2.strip():
-            res = structural_compare(t1, t2, r_index)
-            if res['is_valid']:
-                st.markdown(f"""
-                <div class="story-box">
-                    <h3 style='color:#FFD700;'>📊 نتائج المقارنة</h3>
-                    <p>فرق مؤشر الصعود: {res['ascent_diff']}</p>
-                    <p>الجذور المشتركة: {', '.join(res['common']) if res['common'] else 'لا يوجد'}</p>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.error("أحد النصين لا يحتوي على جذور")
-        else:
-            st.warning("أدخل نصين")
-
-st.markdown("---\n<p style='text-align:center;'>خِت فِت.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#555;'>خِت فِت.</p>", unsafe_allow_html=True)
