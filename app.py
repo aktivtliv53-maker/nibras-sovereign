@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.5
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v30.0
 # مَبنيٌّ على بروتوكول "الأمانة" و "الاستحقاق الجيني الحتمي"
-# الإصدار: الطبقات المتقدمة - الصرف والطاقة الديناميكية ومؤشر الصعود
+# الإصدار: الميثاقي - تحرير الجذر والحتمية الكاملة
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
@@ -22,7 +22,7 @@ from itertools import combinations
 # ==============================================================================
 # [1] إعدادات الهوية السيادية المحصنة
 # ==============================================================================
-st.set_page_config(page_title="Nibras v29.5", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras v30.0", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -90,7 +90,7 @@ def ensure_dot(text):
     return s
 
 # ==============================================================================
-# [4] الطبقة الصرفية والمؤشر (Morphological Layer & Ascent Vector)
+# [4] دوال التطهير الصرفي (Morphological Purity)
 # ==============================================================================
 COMMON_PREFIXES = ["وال", "بال", "كال", "فال", "لل", "ال", "و", "ف", "ب", "ك", "ل", "س"]
 COMMON_SUFFIXES = ["يات", "ات", "ون", "ين", "ان", "وا", "نا", "ها", "هم", "هن", "كم", "ني", "ة", "ه", "ي"]
@@ -108,99 +108,274 @@ def strip_affixes_ar(word: str):
     return w
 
 def infer_morphological_pattern(word: str):
-    w = word.replace("أ", "ا").replace("إ", "ا")
+    """
+    يعيد:
+    - اسم النمط الصرفي
+    - morph_rank = رتبة صرفية داخلية (ليست مداراً)
+    """
+    w = word.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")
+
     if w.startswith("است"):
         return "استفعال", 8
     if w.startswith("افت"):
-        return "افتعال", 5
+        return "افتعال", 6
+    if w.startswith("ان"):
+        return "انفعال", 5
+    if w.startswith("ت"):
+        return "تفعيل/تفعل", 4
     if len(w) == 3:
-        return "فعل ثلاثي", 1
+        return "فعل ثلاثي", 2
+    if len(w) == 4:
+        return "رباعي/مزيد خفيف", 3
+
     return "مزيد/مركب", 3
 
 def extract_candidate_root(word, index_keys):
-    w_norm = word.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ة", "ه").replace("ى", "ي")
+    """
+    يعيد:
+    root_key, mode, pattern_name, morph_rank
+    mode:
+      - direct
+      - stripped
+      - unresolved
+    """
+    w_norm = (
+        word.replace("أ", "ا")
+            .replace("إ", "ا")
+            .replace("آ", "ا")
+            .replace("ة", "ه")
+            .replace("ى", "ي")
+    )
+
+    pattern_name, morph_rank = infer_morphological_pattern(w_norm)
+
     if w_norm in index_keys:
-        return w_norm, "direct", *infer_morphological_pattern(w_norm)
+        return w_norm, "direct", pattern_name, morph_rank
+
     stripped = strip_affixes_ar(w_norm)
     if stripped in index_keys:
-        return stripped, "stripped", *infer_morphological_pattern(w_norm)
-    return None, "unresolved", *infer_morphological_pattern(w_norm)
+        return stripped, "stripped", pattern_name, morph_rank
 
-def compute_ascent_vector(bodies):
-    """حساب مؤشر الصعود والانحدار: المدارات 5-8 صعود، 1-4 انحدار/تثبيت"""
-    if not bodies:
-        return 0
-    scores = [(b.get('orbit_id', 4) - 4.5) * b.get('energy', 100) for b in bodies]
-    return round(sum(scores) / len(bodies), 2)
+    return None, "unresolved", pattern_name, morph_rank
 
 # ==============================================================================
-# [5] محرك الطاقة الديناميكية والرنين (Dynamic Energy & Resonance)
+# [5] التوقيع الجذري الحتمي (Deterministic Coordinates)
 # ==============================================================================
-def compute_dynamic_energy(base_w, root, count, mode, orbit_hint):
-    """حساب الطاقة الديناميكية مع عوامل التكرار والنمط الصرفي"""
-    h = int(hashlib.md5(root.encode()).hexdigest(), 16) if root else 0
-    sig_boost = (h % 100) * 0.1
-    repetition_boost = 1.0 + math.log1p(max(0, count - 1)) * 0.35
-    mode_factor = {"direct": 1.0, "stripped": 0.9, "unresolved": 0.6}.get(mode, 0.7)
-    energy = (base_w * 100 * repetition_boost * mode_factor) + sig_boost
-    return round(energy, 2)
-
-def build_resonance_network(bodies):
-    """بناء شبكة الرنين بين الجذور المستنطقة"""
-    edges = []
-    for a, b in combinations(range(len(bodies)), 2):
-        ra, rb = bodies[a], bodies[b]
-        dist = abs(ra.get('pos', a) - rb.get('pos', b))
-        if dist < 6:
-            strength = (1.0 / max(1, dist)) * (1.2 if ra.get('gene') == rb.get('gene') else 1.0)
-            edges.append({
-                "source": ra.get('root', '?'),
-                "target": rb.get('root', '?'),
-                "strength": round(strength, 3)
-            })
-    return sorted(edges, key=lambda x: x['strength'], reverse=True)
-
-# ==============================================================================
-# [6] محرك الاستحقاق الجيني - الربط المداري الحتمي
-# ==============================================================================
-def get_sovereign_gene(root_name, original_weight, orbit_id=0):
+def signature_from_root(root: str):
     """
-    محرك الاستحقاق الجيني - الربط المداري الحتمي
-    تصنيف المدارات:
-    - المدارات 1-2: طاقة المسير والبدايات (إبل - C)
-    - المدارات 3-4: طاقة التثبيت والوفرة (بقر - B)
-    - المدارات 5-6: طاقة السيادة والصعود (معز - G)
-    - المدارات 7-8 وما فوق: طاقة السكينة والجمع (ضأن - S)
+    توقيع جذري حتمي شامل:
+    - position_x / position_y : إحداثيات ثابتة
+    - n_factor               : عامل الإشراق الخام
+    - energy_bias            : انحياز طاقي بسيط ثابت
+    - resonance_bias         : انحياز رنيني بسيط ثابت
     """
-    orbit = int(orbit_id)
-    
-    if orbit in [1, 2]:
-        gene_key = "C"
-    elif orbit in [3, 4]:
-        gene_key = "B"
-    elif orbit in [5, 6]:
-        gene_key = "G"
-    elif orbit >= 7:
-        gene_key = "S"
-    else:
-        gene_key = "N"
-    
-    calibrated_energy = original_weight * 100 if original_weight < 10 else original_weight
-    return gene_key, calibrated_energy
+    if not root:
+        return {
+            'position_x': 0.0,
+            'position_y': 0.0,
+            'n_factor': 0,
+            'energy_bias': 0.0,
+            'resonance_bias': 1.0
+        }
 
-def signature_from_root(root):
-    """توقيع جيني ثابت لكل جذر للحركة المدارية"""
-    if not root: 
-        return {'total_energy': 300.0, 'vector_x': 0, 'vector_y': 0}
-    h = int(hashlib.md5(root.encode()).hexdigest(), 16)
+    h = int(hashlib.md5(root.encode('utf-8')).hexdigest(), 16)
+
+    # إحداثيات ثابتة بين -18 و +18 تقريبًا
+    position_x = ((h % 360) - 180) / 10.0
+    position_y = (((h >> 8) % 360) - 180) / 10.0
+
+    # عامل الإشراق الخام (0-99)
+    n_factor = (h >> 16) % 100
+
+    # انحياز طاقي ثابت صغير: من -4 إلى +4
+    energy_bias = (((h >> 24) % 81) - 40) / 10.0
+
+    # انحياز رنيني ثابت: من 0.90 إلى 1.10
+    resonance_bias = 0.90 + (((h >> 32) % 21) / 100.0)
+
     return {
-        'total_energy': len(root) * 285.0 + (h % 150),
-        'vector_x': (h % 30 - 15) / 120.0,
-        'vector_y': ((h >> 4) % 30 - 15) / 120.0
+        'position_x': round(position_x, 3),
+        'position_y': round(position_y, 3),
+        'n_factor': n_factor,
+        'energy_bias': round(energy_bias, 3),
+        'resonance_bias': round(resonance_bias, 3)
     }
 
 # ==============================================================================
-# [7] تحميل قاعدة البيانات
+# [6] الاستحقاق الجيني الميثاقي (Sovereign Gene Resolution)
+# ==============================================================================
+def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
+    """
+    القرار الجيني الميثاقي:
+    1) المدار يرشّح العائلة الأساسية
+    2) الرتبة الصرفية تضيف قابلية الارتفاع
+    3) التوقيع الجذري يحدد النبرة الدقيقة
+    4) الإشراق N لا يحدث إلا باستحقاق مركب (وليس عتبة عمياء فقط)
+    """
+    orbit = int(orbit_id or 0)
+
+    # 1) ترشيح مداري أساسي
+    if orbit in [1, 2]:
+        base_gene = "C"
+    elif orbit in [3, 4]:
+        base_gene = "B"
+    elif orbit in [5, 6]:
+        base_gene = "G"
+    elif orbit >= 7:
+        base_gene = "S"
+    else:
+        base_gene = "N"
+
+    # 2) إشارات الاستحقاق المركّب
+    n_factor = root_sig.get('n_factor', 0)
+
+    high_orbit = orbit >= 5
+    strong_morph = morph_rank >= 6
+    strong_energy = base_energy >= 85
+    luminous_sig = n_factor >= 92
+    near_luminous_sig = n_factor >= 86
+
+    # 3) قانون الإشراق المركب
+    # إشراق كامل (N) إذا اجتمع التوقيع العالي مع أحد عوامل الاستحقاق العليا
+    if luminous_sig and (high_orbit or strong_morph or strong_energy):
+        return "N"
+
+    # إشراق جزئي ناعم: إن كان التوقيع قريباً من الإشراق، والمدار علوي، والطاقة جيدة
+    # هنا لا نقفز إلى N إلا إذا اجتمعت 3 إشارات معاً
+    if near_luminous_sig and high_orbit and strong_energy and strong_morph:
+        return "N"
+
+    # 4) تعديلات ناعمة داخل الطبقات (اختياري لكن ميثاقي)
+    # لو المدار متوسط (B) لكن الصرف عالٍ والتوقيع جيد، يمكن رفعه إلى G
+    if base_gene == "B" and morph_rank >= 7 and n_factor >= 80:
+        return "G"
+
+    # لو المدار سفلي (C) لكن الصرف متوسط قوي والطاقة مرتفعة، يمكن رفعه إلى B
+    if base_gene == "C" and morph_rank >= 5 and strong_energy:
+        return "B"
+
+    return base_gene
+
+# ==============================================================================
+# [7] الطاقة الديناميكية الميثاقية
+# ==============================================================================
+def compute_dynamic_energy(base_w, root, count, mode, morph_rank, orbit_id, root_sig):
+    """
+    الطاقة الديناميكية الميثاقية:
+    - base_w          : الوزن الأساسي من الليكسيكون
+    - count           : التكرار الحقيقي
+    - mode            : direct / stripped
+    - morph_rank      : الرتبة الصرفية
+    - orbit_id        : المدار المعجمي
+    - root_sig        : التوقيع الجذري
+    """
+    # طاقة الأساس
+    base_energy = base_w * 100 if base_w < 10 else base_w
+
+    # عامل التكرار الحقيقي
+    repetition_boost = 1.0 + math.log1p(max(0, count - 1)) * 0.35
+
+    # عامل الثقة الاشتقاقية
+    mode_factor = {
+        "direct": 1.00,
+        "stripped": 0.92,
+        "unresolved": 0.60
+    }.get(mode, 0.85)
+
+    # عامل الصرف (ارتفاع بسيط لا يكسر الميزان)
+    morph_factor = 1.0 + (max(1, morph_rank) - 1) * 0.025
+
+    # عامل المدار (رفع طفيف للمدارات العليا)
+    orbit = int(orbit_id or 0)
+    orbit_factor = 1.0 + max(0, orbit - 4) * 0.03
+
+    # انحياز التوقيع (صغير حتى لا يصبح hash عبثياً)
+    sig_energy_bias = root_sig.get('energy_bias', 0.0)
+
+    energy = (base_energy * repetition_boost * mode_factor * morph_factor * orbit_factor) + sig_energy_bias
+
+    return round(max(1.0, energy), 2)
+
+# ==============================================================================
+# [8] مؤشر الصعود الموزون (Ascent Vector)
+# ==============================================================================
+def compute_ascent_vector(bodies):
+    """
+    الصعود الآن يعتمد على:
+    - الجين النهائي
+    - الطاقة الفعلية
+    - المدار
+    """
+    if not bodies:
+        return 0
+
+    gene_weights = {
+        "N": 2.2,
+        "S": 1.5,
+        "G": 1.0,
+        "B": -0.4,
+        "C": -0.9
+    }
+
+    total = 0.0
+    for b in bodies:
+        g_weight = gene_weights.get(b.get('gene', 'B'), 0.0)
+        orbit_bonus = max(0, (b.get('orbit_id', 0) - 4)) * 0.05
+        total += (g_weight + orbit_bonus) * b.get('energy', 0)
+
+    return round(total / len(bodies), 2)
+
+# ==============================================================================
+# [9] شبكة الرنين الموزونة (Resonance Network)
+# ==============================================================================
+def build_resonance_network(bodies):
+    """
+    الرنين يتأثر بـ:
+    - قرب الموضع النصي
+    - تقارب الجين
+    - الإشراق (N)
+    - الانحياز الرنيني للتوقيع
+    """
+    edges = []
+
+    for a, b in combinations(range(len(bodies)), 2):
+        ra, rb = bodies[a], bodies[b]
+
+        # قرب النص
+        dist = abs(ra.get('pos', a) - rb.get('pos', b))
+        if dist >= 8:
+            continue
+
+        # قاعدة القرب
+        proximity = 1.0 / max(1, dist)
+
+        # تشابه الجين
+        same_gene_bonus = 1.20 if ra.get('gene') == rb.get('gene') else 1.0
+
+        # إشراق
+        n_bonus = 1.15 if ('N' in [ra.get('gene'), rb.get('gene')]) else 1.0
+
+        # انحيازات التوقيع
+        ra_rb = ra.get('resonance_bias', 1.0) * rb.get('resonance_bias', 1.0)
+
+        # تقارب مداري
+        orbit_gap = abs(ra.get('orbit_id', 0) - rb.get('orbit_id', 0))
+        orbit_bonus = 1.12 if orbit_gap <= 1 else 1.0
+
+        strength = proximity * same_gene_bonus * n_bonus * ra_rb * orbit_bonus
+
+        edges.append({
+            "source": ra.get('root', '?'),
+            "target": rb.get('root', '?'),
+            "strength": round(strength, 3),
+            "distance": dist,
+            "gene_pair": f"{ra.get('gene','?')}-{rb.get('gene','?')}"
+        })
+
+    return sorted(edges, key=lambda x: x['strength'], reverse=True)
+
+# ==============================================================================
+# [10] تحميل قاعدة البيانات (Lexicon Preparation)
 # ==============================================================================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
@@ -232,7 +407,20 @@ def load_lexicon_db(path):
         orbit_id = item.get("orbit_id", 0)
         weight_val = float(item.get("weight", 50.0))
         
-        gene_key, calibrated_energy = get_sovereign_gene(raw_root, weight_val, orbit_id)
+        # طاقة أساسية فقط عند التحميل (بدون حسم الجين النهائي)
+        calibrated_energy = weight_val * 100 if weight_val < 10 else weight_val
+
+        # جين مرشح أساسي (للعرض القاعدي فقط)
+        if orbit_id in [1, 2]:
+            base_gene = "C"
+        elif orbit_id in [3, 4]:
+            base_gene = "B"
+        elif orbit_id in [5, 6]:
+            base_gene = "G"
+        elif orbit_id >= 7:
+            base_gene = "S"
+        else:
+            base_gene = "N"
         
         orbit_name = f"المدار {orbit_id}" if orbit_id else "وعي"
         insight_text = item.get("insight_radar", item.get("insight", ""))
@@ -242,10 +430,10 @@ def load_lexicon_db(path):
             "root": normalized,
             "orbit_id": orbit_id,
             "orbit": orbit_name,
-            "weight": calibrated_energy / 100 if calibrated_energy > 100 else calibrated_energy,
-            "raw_energy": calibrated_energy,
+            "weight": weight_val,                      # الوزن الأصلي كما في الليكسيكون
+            "raw_energy": calibrated_energy,           # الطاقة الأساسية المعيارية
             "insight": ensure_dot(insight_text),
-            "gene": gene_key
+            "gene_base": base_gene                     # الجين القاعدي (مرشح أولي)
         }
         all_roots.append(r_index[normalized])
         orbit_counter[orbit_name] += 1
@@ -253,27 +441,36 @@ def load_lexicon_db(path):
     return r_index, all_roots, orbit_counter
 
 # ==============================================================================
-# [8] دوال العرض
+# [11] دوال العرض
 # ==============================================================================
 def display_insight_cards(bodies):
-    """عرض الاستنطاق ككروت"""
+    """عرض الاستنطاق ككروت ميثاقية موسعة"""
     if not bodies:
         return
+
     for res in bodies:
+        gene_base = res.get('gene_base', res.get('gene', 'N'))
+        base_info = GENE_STYLE.get(gene_base, GENE_STYLE['N'])
+
         st.markdown(f"""
         <div class="insight-card" style="border-right-color: {res['color']}">
-            <b style="color:{res['color']}; font-size:1.2em;">📌 الجذر: {res['root']}</b> | 
-            🧬 الجين: {res['icon']} {res['gene_name']} | 
-            ⚡ الطاقة: <span class="energy-badge">{res['energy']:.1f}</span> |
-            🔄 المصدر: {res.get('source', res['root'])} | 
-            📐 النمط: {res.get('pattern', 'مباشر')}
+            <b style="color:{res['color']}; font-size:1.2em;">📌 الجذر: {res['root']}</b> |
+            🧬 الجين النهائي: {res['icon']} {res['gene_name']} |
+            🧱 الجين القاعدي: {base_info['icon']} {base_info['name']} |
+            ⚡ الطاقة: <span class="energy-badge">{res['energy']:.1f}</span><br>
+            🔄 المصدر: {res.get('source', res['root'])} |
+            📐 النمط: {res.get('pattern', 'مباشر')} |
+            🪜 الرتبة الصرفية: {res.get('morph_rank', '-')} |
+            ✨ عامل الإشراق: {res.get('sig_n_factor', '-')}<br>
+            🛰️ المدار: {res.get('orbit', 'وعي')} |
+            📍 الموضع: ({res.get('x', 0)}, {res.get('y', 0)})
             <hr style="border:0.5px solid #333; margin:10px 0;">
             <p>🔮 {res['insight']}</p>
         </div>
         """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [9] تهيئة حالة الجلسة
+# [12] تهيئة حالة الجلسة
 # ==============================================================================
 if 'orbit_bodies' not in st.session_state:
     st.session_state.orbit_bodies = []
@@ -282,22 +479,22 @@ if 'orbit_bodies' not in st.session_state:
 # تحميل قاعدة البيانات
 r_index, all_roots, orbit_counter = load_lexicon_db("data/nibras_lexicon.json")
 
-# الشريط الجانبي
+# الشريط الجانبي (محدث)
 with st.sidebar:
     st.markdown(f"""
     <div style='text-align:center;'>
         <h2 style='color:#4fc3f7;'>🛡️ نبراس السيادي</h2>
-        <p>الإصدار v29.5 - الطبقات المتقدمة</p>
+        <p>الإصدار v30.0 - الميثاقي</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
     <div>
-        <p>📊 إحصائيات القاعدة:</p>
-        <p>📚 إجمالي الجذور: {len(r_index)}</p>
-        <p>🐪 الإبل (مدارات 1-2): {len([r for r in r_index.values() if r['gene'] == 'C'])}</p>
-        <p>🐄 البقر (مدارات 3-4): {len([r for r in r_index.values() if r['gene'] == 'B'])}</p>
-        <p>🐑 الضأن (مدارات 7+): {len([r for r in r_index.values() if r['gene'] == 'S'])}</p>
-        <p>🐐 المعز (مدارات 5-6): {len([r for r in r_index.values() if r['gene'] == 'G'])}</p>
+        <p>📊 إحصائيات القاعدة (الجينات القاعدية):</p>
+        <p>🐪 الإبل (مدارات 1-2): {len([r for r in r_index.values() if r.get('gene_base') == 'C'])}</p>
+        <p>🐄 البقر (مدارات 3-4): {len([r for r in r_index.values() if r.get('gene_base') == 'B'])}</p>
+        <p>🐑 الضأن (مدارات 7+): {len([r for r in r_index.values() if r.get('gene_base') == 'S'])}</p>
+        <p>🐐 المعز (مدارات 5-6): {len([r for r in r_index.values() if r.get('gene_base') == 'G'])}</p>
+        <p>✨ إشراق (مرشح قاعدي): {len([r for r in r_index.values() if r.get('gene_base') == 'N'])}</p>
     </div>
     ---
     <div>
@@ -309,7 +506,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [10] التبويبات السيادية
+# [13] التبويبات السيادية
 # ==============================================================================
 tabs = st.tabs([
     "🔍 الاستنطاق المداري", 
@@ -322,9 +519,9 @@ tabs = st.tabs([
     "📈 المنحنى الزمني"
 ])
 
-# --- التبويب 0: الاستنطاق (المعالجة المطورة v29.5) ---
+# --- التبويب 0: الاستنطاق (بلوك التفعيل المحدث) ---
 with tabs[0]:
-    st.markdown("### 📍 هندسة المسارات المدارية - الطبقات المتقدمة v29.5")
+    st.markdown("### 📍 هندسة المسارات المدارية - النسخة الميثاقية v30.0")
     
     full_text = st.text_area(
         "أدخل النص للاستنطاق:", 
@@ -333,118 +530,172 @@ with tabs[0]:
         key="input_area"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي v29.5", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي v30.0", use_container_width=True):
         if full_text.strip():
             clean_text = normalize_sovereign(full_text)
             words = clean_text.split()
-            
+
             bodies = []
-            word_pool = []
+            unique_roots = []
+            all_matched_roots = []
             temp_meta = []
-            
+
             # ================================================================
-            # مفاعل المعالجة المطور v29.5 - مع الطبقة الصرفية
+            # المرحلة 1: المسح الأولي واستخراج المطابقات الحقيقية
             # ================================================================
             for pos, word in enumerate(words):
-                rk, mode, pat, p_oid = extract_candidate_root(word, r_index.keys())
+                rk, mode, pattern_name, morph_rank = extract_candidate_root(word, r_index.keys())
+
                 temp_meta.append({
-                    "word": word, "pos": pos, "rk": rk, 
-                    "mode": mode, "pat": pat, "p_oid": p_oid
+                    "word": word,
+                    "pos": pos,
+                    "rk": rk,
+                    "mode": mode,
+                    "pattern_name": pattern_name,
+                    "morph_rank": morph_rank
                 })
-                if rk and rk not in word_pool:
-                    word_pool.append(rk)
-            
-            counts = Counter(word_pool)
-            
+
+                if rk:
+                    all_matched_roots.append(rk)
+                    if rk not in unique_roots:
+                        unique_roots.append(rk)
+
+            # العد الحقيقي للتكرار
+            counts = Counter(all_matched_roots)
+
+            # ================================================================
+            # المرحلة 2: بناء الأجسام المدارية وفق الميثاق v30
+            # ================================================================
             for m in temp_meta:
-                if m['rk']:
-                    data = r_index.get(m['rk'])
-                    if data:
-                        # حساب الطاقة الديناميكية
-                        dynamic_energy = compute_dynamic_energy(
-                            data['weight'], m['rk'], 
-                            counts[m['rk']], m['mode'], m['p_oid']
-                        )
-                        gene_info = GENE_STYLE.get(data['gene'], GENE_STYLE['S'])
-                        
-                        bodies.append({
-                            "root": data['root_raw'],
-                            "orbit": data['orbit'],
-                            "orbit_id": data.get('orbit_id', 0),
-                            "gene": data['gene'],
-                            "gene_name": gene_info['name'],
-                            "icon": gene_info['icon'],
-                            "energy": dynamic_energy,
-                            "insight": data['insight'],
-                            "color": gene_info['color'],
-                            "pos": m['pos'],
-                            "mode": m['mode'],
-                            "pattern": m['pat'],
-                            "source": m['word'],
-                            "x": random.uniform(-10, 10),
-                            "y": random.uniform(-10, 10),
-                            "vx": 0,
-                            "vy": 0
-                        })
-            
+                if not m['rk']:
+                    continue
+
+                data = r_index.get(m['rk'])
+                if not data:
+                    continue
+
+                sig = signature_from_root(m['rk'])
+
+                # الطاقة الديناميكية الحقيقية
+                dynamic_energy = compute_dynamic_energy(
+                    base_w=data['weight'],
+                    root=m['rk'],
+                    count=counts[m['rk']],
+                    mode=m['mode'],
+                    morph_rank=m['morph_rank'],
+                    orbit_id=data.get('orbit_id', 0),
+                    root_sig=sig
+                )
+
+                # الجين النهائي الميثاقي
+                final_gene = resolve_sovereign_gene(
+                    orbit_id=data.get('orbit_id', 0),
+                    morph_rank=m['morph_rank'],
+                    root_sig=sig,
+                    base_energy=dynamic_energy
+                )
+
+                gene_info = GENE_STYLE.get(final_gene, GENE_STYLE['N'])
+
+                # تموضع حتمي: التوقيع + انزياح مداري طفيف
+                orbit_shift_x = (data.get('orbit_id', 0) - 4) * 1.4 if data.get('orbit_id', 0) else 0
+                orbit_shift_y = (m['morph_rank'] - 3) * 0.8
+
+                bodies.append({
+                    "root": data['root_raw'],
+                    "root_norm": m['rk'],
+                    "orbit": data['orbit'],
+                    "orbit_id": data.get('orbit_id', 0),
+                    "gene": final_gene,
+                    "gene_base": data.get('gene_base', 'N'),
+                    "gene_name": gene_info['name'],
+                    "icon": gene_info['icon'],
+                    "energy": dynamic_energy,
+                    "insight": data['insight'],
+                    "color": gene_info['color'],
+                    "pos": m['pos'],
+                    "mode": m['mode'],
+                    "pattern": m['pattern_name'],
+                    "morph_rank": m['morph_rank'],
+                    "source": m['word'],
+                    "x": round(sig['position_x'] + orbit_shift_x, 3),
+                    "y": round(sig['position_y'] + orbit_shift_y, 3),
+                    "sig_n_factor": sig['n_factor'],
+                    "sig_energy_bias": sig['energy_bias'],
+                    "resonance_bias": sig['resonance_bias']
+                })
+
+            # ================================================================
+            # العرض
+            # ================================================================
             if bodies:
                 st.session_state.orbit_bodies = bodies
                 st.session_state.orbit_active = True
-                
-                # مؤشر الصعود والانحدار السيادي
+
+                # مؤشر الصعود
                 ascent_score = compute_ascent_vector(bodies)
                 ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
+
                 st.markdown(f"""
                 <div class="{ascent_class}" style='padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center;'>
-                    <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي</h3>
+                    <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v30</h3>
                     <p style='font-size: 2em; margin:5px; font-weight:bold;'>{ascent_score}</p>
                     <p style='margin:0;'>{'صعود طاقي نحو المعاني العلوية' if ascent_score > 0 else 'تثبيت مادي في الجذور الأرضية' if ascent_score < 0 else 'توازن بين الصعود والثبات'}</p>
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # رسم بياني ثابت
+
+                # خريطة حتمية
                 df = pd.DataFrame(bodies)
-                fig = px.scatter(df, x="x", y="y", text="root", size="energy", color="gene",
-                                 color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
-                                 range_x=[-35, 35], range_y=[-35, 35])
+                fig = px.scatter(
+                    df,
+                    x="x",
+                    y="y",
+                    text="root",
+                    size="energy",
+                    color="gene",
+                    color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
+                    range_x=[-30, 30],
+                    range_y=[-30, 30]
+                )
                 fig.update_layout(
-                    height=450, 
-                    paper_bgcolor='rgba(0,0,0,0)', 
+                    height=500,
+                    paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    showlegend=False, 
-                    xaxis_visible=False, 
+                    showlegend=False,
+                    xaxis_visible=False,
                     yaxis_visible=False,
                     margin=dict(l=0, r=0, t=0, b=0)
                 )
                 st.plotly_chart(fig, use_container_width=True)
-                
+
                 # البيان الختامي الموسع
                 st.markdown("### 📜 البيان الختامي الموسع")
                 total_e = sum(b['energy'] for b in bodies)
                 genes_count = Counter(b['gene'] for b in bodies)
                 dom_gene = max(genes_count, key=genes_count.get)
-                
+
                 orbits_detail = Counter(f"المدار {b['orbit_id']}" for b in bodies if b.get('orbit_id'))
-                
+                n_count = sum(1 for b in bodies if b['gene'] == 'N')
+
                 st.markdown(f"""
                 <div class="story-box">
-                    ✅ تم استنطاق <b>{len(bodies)}</b> جذراً.<br>
-                    🐪 الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
+                    ✅ تم استنطاق <b>{len(bodies)}</b> جسماً جذرياً.<br>
+                    🧬 الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
+                    ✨ حالات الإشراق (N): <b>{n_count}</b><br>
                     ⚡ مجموع الطاقة الديناميكية: <b>{total_e:.1f}</b><br>
-                    📚 الجذور: <b>{', '.join(word_pool)}</b><br>
+                    📚 الجذور الفريدة: <b>{', '.join(unique_roots)}</b><br>
                     🎯 توزيع المدارات: {', '.join([f'{k}({v})' for k, v in orbits_detail.items()])}
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # عرض كروت الاستنطاق
+
                 display_insight_cards(bodies)
-                st.success("✅ تم الاستنطاق بنجاح.")
+                st.success("✅ تم الاستنطاق الميثاقي بنجاح (v30.0).")
             else:
                 st.error("⚠️ لم يتم العثور على جذور مطابقة.")
         else:
             st.warning("⚠️ الرجاء إدخال نص.")
 
-# --- التبويب 1: الرنين الجيني ---
+# --- التبويب 1: الرنين الجيني (محدث) ---
 with tabs[1]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق المداري")
     cols = st.columns(4)
@@ -468,13 +719,13 @@ with tabs[1]:
             norm = normalize_lexicon_root(selected)
             found = r_index.get(norm)
             if found:
-                gi = GENE_STYLE[found['gene']]
+                gi = GENE_STYLE.get(found.get('gene_base', 'N'), GENE_STYLE['N'])
                 st.markdown(f"""
                 <div class='insight-card' style='border-right-color:{gi["color"]}'>
                     <b style='color:{gi["color"]}'>📌 الجذر: {found['root_raw']}</b><br>
-                    🧬 الجين: {gi['icon']} {gi['name']}<br>
+                    🧬 الجين القاعدي: {gi['icon']} {gi['name']}<br>
                     🔄 المدار: {found['orbit']} (ID: {found.get('orbit_id', 0)})<br>
-                    ⚡ الطاقة الأساسية: {found.get('raw_energy', found['weight']*100):.1f}<br>
+                    ⚡ الوزن الأصلي: {found.get('weight', 1.0)} | الطاقة الأساسية: {found.get('raw_energy', 0):.1f}<br>
                     <hr>
                     <p>🔮 {found['insight']}</p>
                 </div>
@@ -486,7 +737,7 @@ with tabs[2]:
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         df = pd.DataFrame(st.session_state.orbit_bodies)
         col1, col2 = st.columns(2)
-        col1.plotly_chart(px.pie(df, names='gene', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, hole=0.5, title="توزيع الجينات"))
+        col1.plotly_chart(px.pie(df, names='gene', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, hole=0.5, title="توزيع الجينات النهائية"))
         col2.plotly_chart(px.bar(df.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="تعداد الأجسام المدارية"))
         st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة طاقة الجذور"))
         
@@ -506,7 +757,7 @@ with tabs[3]:
         dom_gene = max(genes_count, key=genes_count.get)
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v29.5:</b><br>
+            <b>بيان الاستواء الوجودي v30.0:</b><br>
             تم استنطاق <b>{len(bodies)}</b> جذراً.<br>
             الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
             مجموع الطاقة الديناميكية: <b>{total_e:.1f}</b>
@@ -548,7 +799,7 @@ with tabs[5]:
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
-# --- التبويب 6: الرنين السياقي (جديد) ---
+# --- التبويب 6: الرنين السياقي (محدث) ---
 with tabs[6]:
     st.markdown("### 📡 الرنين السياقي - شبكة العلاقات بين الجذور")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
@@ -560,20 +811,20 @@ with tabs[6]:
             st.markdown("#### 🌐 شبكة الرنين (الروابط القوية)")
             st.dataframe(df_edges, use_container_width=True)
             
-            # عرض أقوى 5 روابط
-            st.markdown("#### 💫 أقوى 5 روابط طاقية")
-            for edge in resonance_edges[:5]:
-                st.markdown(f"""
-                <div style='background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 5px;'>
-                    🔗 <b>{edge['source']}</b> ⇄ <b>{edge['target']}</b> : قوة الرنين <b>{edge['strength']}</b>
-                </div>
-                """, unsafe_allow_html=True)
+            # عرض أقوى رابط
+            strongest = resonance_edges[0]
+            st.success(
+                f"✨ أقوى رابط رنيني: **{strongest['source']}** ⇄ **{strongest['target']}** | "
+                f"القوة: {strongest['strength']} | "
+                f"المسافة النصية: {strongest['distance']} | "
+                f"الزوج الجيني: {strongest['gene_pair']}"
+            )
         else:
             st.info("لا توجد روابط رنين قوية بين الجذور المستنطقة.")
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
-# --- التبويب 7: المنحنى الزمني (جديد) ---
+# --- التبويب 7: المنحنى الزمني (محدث) ---
 with tabs[7]:
     st.markdown("### 📈 المنحنى الزمني - تدفق الطاقة في النص")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
@@ -587,7 +838,8 @@ with tabs[7]:
                     "الجذر": b['root'],
                     "الطاقة": b['energy'],
                     "المدار": b.get('orbit_id', 0),
-                    "الجين": b['gene']
+                    "الجين": b['gene'],
+                    "الإشراق": b.get('sig_n_factor', 0)
                 })
             
             df_seq = pd.DataFrame(seq_data)
@@ -600,7 +852,7 @@ with tabs[7]:
             
             # عرض الجدول الزمني
             st.markdown("#### 📋 التسلسل الزمني للجذور")
-            st.dataframe(df_seq[["الترتيب", "الجذر", "الطاقة", "المدار", "الجين"]], use_container_width=True)
+            st.dataframe(df_seq[["الترتيب", "الجذر", "الطاقة", "المدار", "الجين", "الإشراق"]], use_container_width=True)
             
             # تحليل بسيط للاتجاه
             energies = [b['energy'] for b in bodies]
