@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.0
-# "ثلاثية الصعود" — خريطة الوعي الحراري + متجه الصعود + طبقة مكين بلاغية خفيفة
-# مبني على v28.0 مع الحفاظ الكامل على الاستقرار
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.1
+# "ثلاثية الصعود + الطيف الجيني"
+# مبني على v29.0 مع:
+# - خريطة وعي حرارية محسّنة (إصلاح عمود الحروف)
+# - متجه الصعود
+# - طبقة مكين بلاغية خفيفة
+# - طبقة الطيف الجيني داخل الوعي الفوقي
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
@@ -31,7 +35,7 @@ ENABLE_MAKIN_LAYER = True         # طبقة بلاغية مكين خفيفة
 # ==============================================================================
 # [1] إعدادات الهوية السيادية المحصنة
 # ==============================================================================
-st.set_page_config(page_title="Nibras v29.0", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras v29.1", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
@@ -84,7 +88,7 @@ def normalize_sovereign(text: str):
         return ""
     text = ARABIC_DIACRITICS_PATTERN.sub('', text)
     text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ى", "ي").replace("ة", "ه")
-    return re.sub(r'[^\u0621-\u063A\u0641-\u064A\s]', ' ', text).strip()
+    return re.sub(r'[^\u0621-\u063A\u064F-\u064A\s]', ' ', text).strip()
 
 def ensure_dot(text):
     if not text:
@@ -95,7 +99,7 @@ def ensure_dot(text):
     return s
 
 # ==============================================================================
-# [4] محرك الاستحقاق الجيني v28.0 (الربط المداري الحتمي) — أساس v29.0
+# [4] محرك الاستحقاق الجيني v28.0 (الربط المداري الحتمي) — أساس v29.x
 # ==============================================================================
 def get_sovereign_gene(root_name, original_weight, orbit_id=0):
     orbit = int(orbit_id)
@@ -264,7 +268,7 @@ with st.sidebar:
     st.markdown(f"""
     <div style='text-align:center;'>
         <h2 style='color:#4fc3f7;'>🛡️ نبراس السيادي</h2>
-        <p>الإصدار v29.0 - ثلاثية الصعود</p>
+        <p>الإصدار v29.1 - ثلاثية الصعود + الطيف الجيني</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -298,7 +302,7 @@ tabs = st.tabs([
 ])
 
 # ==============================================================================
-# [10] طبقات المدار السياقي + الطاقة الديناميكية + الوعي الجمعي + البلاغة
+# [10] طبقات المدار السياقي + الطاقة الديناميكية + الوعي الجمعي + البلاغة + الصعود
 # ==============================================================================
 def apply_context_orbit_adjustment(bodies):
     if not ENABLE_CONTEXT_ORBIT or not bodies:
@@ -350,12 +354,6 @@ def compute_collective_consciousness(bodies):
     }
 
 def makin_letter_profile(root_text: str):
-    """
-    طبقة بلاغية مكين خفيفة: تقسيم الحروف إلى:
-    - حروف صعود (ق، ط، ظ، خ، ص، ض، غ)
-    - حروف احتواء/لين (م، ن، ل، ر، و، ي، ه)
-    - حروف قطع/حدّة (ح، ج، ك، س، ش، ت، ث، ف، ب، د، ذ، ز)
-    """
     if not ENABLE_MAKIN_LAYER or not root_text:
         return {}
     asc_letters = set("قظطخصضغ")
@@ -376,11 +374,6 @@ def makin_letter_profile(root_text: str):
     }
 
 def compute_ascent_vector(bodies):
-    """
-    متجه الصعود: رقم واحد يلخص اتجاه النص:
-    - قيم موجبة عالية → صعود نحو المدارات العليا
-    - قيم سالبة → هبوط/ثقل مادي
-    """
     if not ENABLE_ASCENT_VECTOR or not bodies:
         return 0.0
     orbit_vals = []
@@ -391,15 +384,34 @@ def compute_ascent_vector(bodies):
     if not orbit_vals:
         return 0.0
     avg_orbit = sum(orbit_vals) / len(orbit_vals)
-    # نطبع المتجه حول محور 5 (تحت/فوق)
     ascent_vector = avg_orbit - 5.0
     return round(ascent_vector, 2)
+
+def compute_gene_spectrum(bodies, window=4):
+    """
+    الطيف الجيني: تقسيم النص إلى مقاطع صغيرة وتحليل الجين المسيطر في كل مقطع.
+    window = عدد الجذور في كل مقطع.
+    """
+    if not bodies:
+        return []
+
+    ordered = bodies.copy()
+    spectrum = []
+    for i in range(0, len(ordered), window):
+        chunk = ordered[i:i+window]
+        genes = [b['gene'] for b in chunk]
+        if not genes:
+            continue
+        dominant = Counter(genes).most_common(1)[0][0]
+        spectrum.append(dominant)
+
+    return spectrum
 
 # ==============================================================================
 # [11] التبويب 0: الاستنطاق المداري
 # ==============================================================================
 with tabs[0]:
-    st.markdown("### 📍 هندسة المسارات المدارية — v29.0 ثلاثية الصعود")
+    st.markdown("### 📍 هندسة المسارات المدارية — v29.1 ثلاثية الصعود + الطيف الجيني")
     
     full_text = st.text_area(
         "أدخل النص للاستنطاق:", 
@@ -408,7 +420,7 @@ with tabs[0]:
         key="input_area"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي v29.0", use_container_width=True):
+    if st.button("🚀 تفعيل المفاعل السيادي v29.1", use_container_width=True):
         if full_text.strip():
             clean = normalize_sovereign(full_text)
             words = clean.split()
@@ -565,7 +577,6 @@ with tabs[2]:
     st.markdown("### 📈 خريطة الوعي الحراري — Heatmap Consciousness")
     if st.session_state.orbit_active and st.session_state.orbit_bodies and ENABLE_HEATMAP_LAYER:
         df = pd.DataFrame(st.session_state.orbit_bodies)
-        # نبني شبكة حرارية بسيطة: المحور X = المدار، المحور Y = الجين، القيمة = مجموع الطاقة
         if 'orbit_id_context' in df.columns:
             df['orbit_plot'] = df['orbit_id_context']
         else:
@@ -575,13 +586,29 @@ with tabs[2]:
         heat_df = df.groupby(['orbit_plot', 'gene_label'])['energy'].sum().reset_index()
         if not heat_df.empty:
             pivot = heat_df.pivot(index='gene_label', columns='orbit_plot', values='energy').fillna(0)
+
             fig_h = px.imshow(
                 pivot.values,
                 labels=dict(x="المدار", y="الجين", color="الطاقة"),
-                x=pivot.columns,
-                y=pivot.index,
+                x=list(range(len(pivot.columns))),
+                y=list(range(len(pivot.index))),
                 color_continuous_scale="RdBu_r"
             )
+
+            # إصلاح عمود الحروف الأبجدية: ضبط المحاور يدويًا
+            fig_h.update_xaxes(
+                showticklabels=True,
+                tickmode='array',
+                tickvals=list(range(len(pivot.columns))),
+                ticktext=pivot.columns
+            )
+            fig_h.update_yaxes(
+                showticklabels=True,
+                tickmode='array',
+                tickvals=list(range(len(pivot.index))),
+                ticktext=pivot.index
+            )
+
             fig_h.update_layout(
                 height=500,
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -638,7 +665,7 @@ with tabs[3]:
 
         st.markdown(f"""
         <div class="story-box">
-            <b>بيان الاستواء الوجودي v29.0:</b><br>
+            <b>بيان الاستواء الوجودي v29.1:</b><br>
             تم استنطاق <b>{len(bodies)}</b> جذراً.<br>
             الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
             مجموع الطاقة: <b>{total_e:.1f}</b>
@@ -661,10 +688,10 @@ with tabs[4]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# [16] التبويب 5: الوعي الفوقي
+# [16] التبويب 5: الوعي الفوقي + الطيف الجيني
 # ==============================================================================
 with tabs[5]:
-    st.markdown("### 🧠 الوعي الفوقي - البيان الجمعي الحراري")
+    st.markdown("### 🧠 الوعي الفوقي - البيان الجمعي الحراري + الطيف الجيني")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         bodies = st.session_state.orbit_bodies
         total_e = sum(b['energy'] for b in bodies)
@@ -696,6 +723,52 @@ with tabs[5]:
             {ascent_line}
         </div>
         """, unsafe_allow_html=True)
+
+        # 🌈 الطيف الجيني داخل الوعي الفوقي
+        spectrum = compute_gene_spectrum(bodies, window=4)
+        if spectrum:
+            st.markdown("### 🌈 الطيف الجيني — Gene Spectrum")
+
+            gene_to_num = {"S":1, "B":2, "C":3, "G":4, "N":5}
+            numeric = [gene_to_num[g] for g in spectrum]
+
+            fig_spec = px.line(
+                x=list(range(1, len(numeric)+1)),
+                y=numeric,
+                markers=True,
+                labels={"x":"المقطع", "y":"الجين"},
+                title="الطيف الجيني عبر النص"
+            )
+
+            fig_spec.update_layout(
+                height=350,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+            )
+
+            fig_spec.update_yaxes(
+                tickmode='array',
+                tickvals=[1,2,3,4,5],
+                ticktext=[
+                    "🐑 الضأن (S)",
+                    "🐄 البقر (B)",
+                    "🐪 الإبل (C)",
+                    "🐐 المعز (G)",
+                    "✨ إشراق (N)"
+                ]
+            )
+
+            st.plotly_chart(fig_spec, use_container_width=True)
+
+            st.markdown(f"""
+            <div class="story-box">
+                🔭 <b>قراءة الطيف الجيني:</b><br>
+                النص تحرك عبر <b>{len(spectrum)}</b> موجات.<br>
+                بدأ بـ <b>{GENE_STYLE[spectrum[0]]['name']}</b> 
+                وانتهى بـ <b>{GENE_STYLE[spectrum[-1]]['name']}</b>.
+            </div>
+            """, unsafe_allow_html=True)
+
         display_insight_cards(bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
