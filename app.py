@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v30.1
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v30.2
 # المسمى: The Final Stable Engine - المحرك المستقر النهائي
 # الميثاق: نواة حتمية + حواس استخراج + رادار بصري + مقارن بنيوي
 # المستخدم المهيمن: محمّد | CPU: السجدة (5)
@@ -119,21 +119,27 @@ def extract_candidate_root(word, r_index):
         return w, 10
     
     # إزالة الزوائد الصرفية
-    prefixes = ['ال', 'و', 'ف', 'ب', 'ل', 'س', 'ك']
-    suffixes = ['ون', 'ين', 'ات', 'ان', 'ه', 'ها', 'هم', 'كن', 'نا', 'تم']
+    prefixes = ['ال', 'و', 'ف', 'ب', 'ل', 'س', 'ك', 'بال', 'وال', 'فال', 'لل']
+    suffixes = ['ون', 'ين', 'ات', 'ان', 'ه', 'ها', 'هم', 'كن', 'نا', 'تم', 'ية', 'يات']
     
     temp_w = w
     for p in prefixes:
-        if temp_w.startswith(p) and len(temp_w) > 3:
+        if temp_w.startswith(p) and len(temp_w) > len(p) + 2:
             temp_w = temp_w[len(p):]
             break
     for s in suffixes:
-        if temp_w.endswith(s) and len(temp_w) > 3:
+        if temp_w.endswith(s) and len(temp_w) > len(s) + 2:
             temp_w = temp_w[:-len(s)]
             break
     
     if temp_w in r_index:
         return temp_w, 7
+    
+    # محاولة إزالة حرف واحد من البداية أو النهاية
+    if len(w) > 3 and w[1:] in r_index:
+        return w[1:], 5
+    if len(w) > 3 and w[:-1] in r_index:
+        return w[:-1], 5
     
     return None, 0
 
@@ -202,7 +208,8 @@ def analyze_text_sovereign(full_text, r_index):
             matched_meta.append({
                 "rk": rk,
                 "pos": pos,
-                "m_rank": m_rank
+                "m_rank": m_rank,
+                "word": word
             })
     
     if not matched_meta:
@@ -244,18 +251,21 @@ def analyze_text_sovereign(full_text, r_index):
             "sig": data['sig'],
             "style": GENE_STYLE.get(gene, GENE_STYLE['C']),
             "orbit_id": data.get('orbit_id', 0),
-            "pos": m['pos']
+            "pos": m['pos'],
+            "word": m['word']
         })
     
     # المرحلة 4: حساب المؤشرات الإجمالية
-    unique_roots = list(counts.keys())
+    unique_roots = list(set([b['root_norm'] for b in bodies]))
     ascent = compute_ascent_vector(bodies)
     
     return {
         "bodies": bodies,
         "unique_roots": unique_roots,
         "ascent": ascent,
-        "counts": counts
+        "counts": counts,
+        "total_words": len(words),
+        "matched_count": len(matched_meta)
     }
 
 def structural_compare(text1, text2, r_index):
@@ -346,7 +356,7 @@ def render_sovereign_cards(bodies, limit=12):
 # [6] تهيئة التطبيق وإعدادات الصفحة
 # ==============================================================================
 st.set_page_config(
-    page_title="Nibras v30.1 - المحرك المستقر النهائي",
+    page_title="Nibras v30.2 - المحرك المستقر النهائي",
     page_icon="🛡️",
     layout="wide"
 )
@@ -399,7 +409,7 @@ with st.sidebar:
     st.markdown("""
     <div style='text-align:center; padding:10px;'>
         <h1 style='color:#FFD700; margin:0;'>🛡️ نبراس السيادي</h1>
-        <p style='color:#888;'>الإصدار v30.1</p>
+        <p style='color:#888;'>الإصدار v30.2</p>
         <p style='color:#555;'>المستخدم: محمد</p>
     </div>
     ---
@@ -407,6 +417,19 @@ with st.sidebar:
         <p style='color:#4CAF50;'>📊 إحصائيات القاعدة:</p>
         <p>📚 إجمالي الجذور: <span style='color:#FFD700;'>{len(r_index)}</span></p>
     </div>
+    """, unsafe_allow_html=True)
+    
+    # عرض عينة من الجذور المحملة
+    if r_index:
+        sample_roots = list(r_index.keys())[:5]
+        st.markdown(f"""
+        <div style='padding:5px;'>
+            <p style='color:#888;'>🔍 عينة من الجذور المحملة:</p>
+            <p style='color:#aaa; font-size:0.9em;'>{', '.join(sample_roots)}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("""
     ---
     <div style='text-align:center; padding:10px;'>
         <p style='color:#555;'>خِت فِت.</p>
@@ -437,7 +460,13 @@ with tabs[0]:
         key="input_area"
     )
     
-    if st.button("🚀 تفعيل المفاعل السيادي v30.1", use_container_width=True):
+    # عرض معلومات debug عن قاعدة البيانات
+    with st.expander("🔧 معلومات التشخيص (Debug)"):
+        st.write(f"عدد الجذور في قاعدة البيانات: {len(r_index)}")
+        if r_index:
+            st.write(f"أمثلة للجذور المتاحة: {', '.join(list(r_index.keys())[:15])}")
+    
+    if st.button("🚀 تفعيل المفاعل السيادي v30.2", use_container_width=True):
         if input_text.strip():
             with st.spinner("جاري استنطاق النص..."):
                 result = analyze_text_sovereign(input_text, r_index)
@@ -452,6 +481,9 @@ with tabs[0]:
                     st.warning(f"📌 مؤشر الصعود: {ascent} - تثبيت مادي في الجذور الأرضية")
                 else:
                     st.info(f"⚖️ مؤشر الصعود: {ascent} - توازن بين الصعود والثبات")
+                
+                # إحصاءات التحليل
+                st.info(f"📊 تم تحليل {result['total_words']} كلمة، تم استخراج {result['matched_count']} جذراً.")
                 
                 # رادار الاستنطاق
                 render_insight_radar(result['bodies'])
@@ -478,6 +510,7 @@ with tabs[0]:
                 st.success("✅ تم الاستنطاق بنجاح.")
             else:
                 st.error("⚠️ لم يتم العثور على جذور مطابقة في قاعدة البيانات.")
+                st.info("💡 تأكد من أن الكلمات التي أدخلتها موجودة في ملف الليكسيكون. الجذور المتاحة في قاعدة البيانات: " + ', '.join(list(r_index.keys())[:20]))
         else:
             st.warning("⚠️ الرجاء إدخال نص للاستنطاق.")
 
