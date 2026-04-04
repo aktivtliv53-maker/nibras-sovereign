@@ -2,131 +2,94 @@
 # ==============================================================================
 # نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v29.1
 # "ثلاثية الصعود + الطيف الجيني"
-# مبني على v29.0 مع:
-# - خريطة وعي حرارية محسّنة (إصلاح عمود الحروف)
-# - متجه الصعود
-# - طبقة مكين بلاغية خفيفة
-# - طبقة الطيف الجيني داخل الوعي الفوقي
-# المستخدم المهيمن: محمّد | CPU: السجدة (5)
 # ==============================================================================
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 from collections import Counter
-import re
-import random
-import os
-import json
-import hashlib
-import numpy as np
+import re, random, os, json, hashlib
 
 # ==============================================================================
-# [0] أعلام التحكم بالطبقات (يمكن تعطيل أي طبقة بدون كسر النظام)
+# [0] أعلام التحكم
 # ==============================================================================
-ENABLE_SMART_ROOT = True          # طبقة التحليل الجذري التقريبي
-ENABLE_CONTEXT_ORBIT = True       # طبقة المدار السياقي
-ENABLE_DYNAMIC_ENERGY = True      # طبقة الطاقة الديناميكية
-ENABLE_COLLECTIVE_LAYER = True    # طبقة الوعي الجمعي
-ENABLE_HEATMAP_LAYER = True       # خريطة الوعي الحراري
-ENABLE_ASCENT_VECTOR = True       # متجه الصعود
-ENABLE_MAKIN_LAYER = True         # طبقة بلاغية مكين خفيفة
+ENABLE_SMART_ROOT = True
+ENABLE_CONTEXT_ORBIT = True
+ENABLE_DYNAMIC_ENERGY = True
+ENABLE_COLLECTIVE_LAYER = True
+ENABLE_HEATMAP_LAYER = True
+ENABLE_ASCENT_VECTOR = True
+ENABLE_MAKIN_LAYER = True
 
 # ==============================================================================
-# [1] إعدادات الهوية السيادية المحصنة
+# [1] إعدادات الواجهة
 # ==============================================================================
 st.set_page_config(page_title="Nibras v29.1", page_icon="🛡️", layout="wide")
 
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
-    [data-testid="stAppViewContainer"] { background: #050505; color: #e0e0e0; direction: rtl; font-family: 'Amiri', serif; }
-    .stTabs [aria-selected="true"] { color: #FFD700 !important; border-bottom: 2px solid #FFD700 !important; }
-    
+    [data-testid="stAppViewContainer"] {
+        background: #050505; color: #e0e0e0; direction: rtl; font-family: 'Amiri', serif;
+    }
     .insight-card {
-        background: linear-gradient(135deg, #0d0d14 0%, #161625 100%);
-        padding: 25px; border-radius: 15px; border-right: 8px solid #FFD700;
-        margin-bottom: 20px; line-height: 1.8; font-size: 1.1em;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        background: linear-gradient(135deg,#0d0d14,#161625);
+        padding:20px;border-radius:15px;border-right:6px solid #FFD700;
+        margin-bottom:15px;line-height:1.8;
     }
-    .energy-badge { background: #1a3a1a; color: #00ffcc; padding: 2px 10px; border-radius: 5px; font-family: monospace; }
     .story-box {
-        background: linear-gradient(135deg, rgba(10,21,10,0.85) 0%, rgba(1,1,3,0.95) 100%);
-        padding: 35px; border-radius: 25px; border-right: 15px solid #4CAF50;
-        line-height: 2; font-size: 1.2em; margin-bottom: 30px;
-    }
-    .ultra-card {
-        background: #0d0d14; padding: 20px; border-radius: 20px;
-        border-top: 8px solid #4fc3f7; text-align: center; margin-bottom: 20px;
+        background: linear-gradient(135deg,rgba(10,21,10,0.85),rgba(1,1,3,0.95));
+        padding:30px;border-radius:20px;border-right:10px solid #4CAF50;
+        margin-bottom:25px;line-height:2;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [2] مصفوفة الجينات والرموز السيادية
+# [2] الجينات
 # ==============================================================================
 GENE_STYLE = {
-    'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 'meaning': 'طاقة المسير والتمكين البعيد'},
-    'B': {'name': 'البقر', 'color': '#FFD700', 'icon': '🐄', 'meaning': 'طاقة التثبيت والوفرة المادية'},
-    'S': {'name': 'الضأن', 'color': '#4CAF50', 'icon': '🐑', 'meaning': 'طاقة السكينة واللين والرحمة'},
-    'G': {'name': 'المعز', 'color': '#ff5252', 'icon': '🐐', 'meaning': 'طاقة السيادة والحدّة والصعود'},
-    'N': {'name': 'إشراق', 'color': '#00ffcc', 'icon': '✨', 'meaning': 'الانبثاق الهجين الصافي'}
+    'C': {'name':'الإبل','color':'#4fc3f7','icon':'🐪'},
+    'B': {'name':'البقر','color':'#FFD700','icon':'🐄'},
+    'S': {'name':'الضأن','color':'#4CAF50','icon':'🐑'},
+    'G': {'name':'المعز','color':'#ff5252','icon':'🐐'},
+    'N': {'name':'إشراق','color':'#00ffcc','icon':'✨'}
 }
 
 # ==============================================================================
-# [3] دوال التطهير والتوحيد
+# [3] التطهير
 # ==============================================================================
-ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]')
+ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652]')
 
-def normalize_lexicon_root(root_name: str):
-    if not root_name:
-        return ""
-    return root_name.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ة", "ه").replace("ى", "ي").strip()
+def normalize_lexicon_root(r):
+    return r.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ة","ه").replace("ى","ي").strip()
 
-def normalize_sovereign(text: str):
-    if not text: 
-        return ""
+def normalize_sovereign(text):
     text = ARABIC_DIACRITICS_PATTERN.sub('', text)
-    text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ى", "ي").replace("ة", "ه")
-    return re.sub(r'[^\u0621-\u063A\u064F-\u064A\s]', ' ', text).strip()
+    text = text.replace("أ","ا").replace("إ","ا").replace("آ","ا").replace("ى","ي").replace("ة","ه")
+    return re.sub(r'[^\u0621-\u063A\u064B-\u0652\s]', ' ', text).strip()
 
-def ensure_dot(text):
-    if not text:
-        return ""
-    s = str(text).strip()
-    if not s.endswith('.'):
-        s = s + '.'
-    return s
+def ensure_dot(t):
+    return t if t.endswith('.') else t+'.'
 
 # ==============================================================================
-# [4] محرك الاستحقاق الجيني v28.0 (الربط المداري الحتمي) — أساس v29.x
+# [4] محرك الجين
 # ==============================================================================
-def get_sovereign_gene(root_name, original_weight, orbit_id=0):
-    orbit = int(orbit_id)
-    w = float(original_weight)
-    
-    if orbit in [1, 2]:
-        gene_key = "C"
-    elif orbit in [3, 4]:
-        gene_key = "B"
-    elif orbit in [5, 6]:
-        gene_key = "G"
-    elif orbit >= 7:
-        gene_key = "S"
-    else:
-        gene_key = "N"
-
-    calibrated_energy = w * 100 if w < 10 else w
-    return gene_key, calibrated_energy
+def get_sovereign_gene(root, weight, orbit):
+    if orbit in [1,2]: g="C"
+    elif orbit in [3,4]: g="B"
+    elif orbit in [5,6]: g="G"
+    elif orbit>=7: g="S"
+    else: g="N"
+    return g, (weight*100 if weight<10 else weight)
 
 def signature_from_root(root):
-    if not root: 
-        return {'total_energy': 300.0, 'vector_x': 0, 'vector_y': 0}
-    h = int(hashlib.md5(root.encode()).hexdigest(), 16)
+    if not root: return {'total_energy':300,'vector_x':0,'vector_y':0}
+    h=int(hashlib.md5(root.encode()).hexdigest(),16)
     return {
-        'total_energy': len(root) * 285.0 + (h % 150),
-        'vector_x': (h % 30 - 15) / 120.0,
-        'vector_y': ((h >> 4) % 30 - 15) / 120.0
+        'total_energy':len(root)*285+(h%150),
+        'vector_x':(h%30-15)/120,
+        'vector_y':((h>>4)%30-15)/120
     }
 
 # ==============================================================================
@@ -134,165 +97,91 @@ def signature_from_root(root):
 # ==============================================================================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
-    if not os.path.exists(path):
-        st.error(f"❌ ملف الليكسيكون غير موجود: {path}")
-        return {}, [], Counter()
-    
-    with open(path, 'r', encoding='utf-8') as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError as e:
-            st.error(f"❌ خطأ في JSON: {e}")
-            return {}, [], Counter()
-
-    r_index = {}
-    all_roots = []
-    orbit_counter = Counter()
-
-    if not isinstance(data, list):
-        st.error("❌ الليكسيكون يجب أن يكون مصفوفة")
-        return {}, [], Counter()
+    if not os.path.exists(path): return {},[],Counter()
+    data=json.load(open(path,'r',encoding='utf-8'))
+    r_index={}; all_roots=[]; orbit_counter=Counter()
 
     for item in data:
-        raw_root = item.get("root", "")
-        if not raw_root:
-            continue
-        
-        normalized = normalize_lexicon_root(raw_root)
-        orbit_id = item.get("orbit_id", 0)
-        weight_val = float(item.get("weight", 50.0))
-        
-        gene_key, calibrated_energy = get_sovereign_gene(raw_root, weight_val, orbit_id)
-        
-        orbit_name = f"المدار {orbit_id}" if orbit_id else "وعي"
-        insight_text = item.get("insight_radar", item.get("insight", ""))
-        
-        r_index[normalized] = {
-            "root_raw": raw_root,
-            "root": normalized,
-            "orbit_id": orbit_id,
-            "orbit": orbit_name,
-            "weight": calibrated_energy / 100 if calibrated_energy > 100 else calibrated_energy,
-            "raw_energy": calibrated_energy,
-            "insight": ensure_dot(insight_text),
-            "gene": gene_key
+        raw=item.get("root",""); 
+        if not raw: continue
+        norm=normalize_lexicon_root(raw)
+        orbit=item.get("orbit_id",0)
+        weight=float(item.get("weight",50))
+        gene,cal=get_sovereign_gene(raw,weight,orbit)
+        insight=item.get("insight_radar",item.get("insight",""))
+
+        r_index[norm]={
+            "root_raw":raw,"root":norm,
+            "orbit_id":orbit,"orbit":f"المدار {orbit}",
+            "weight":weight,"raw_energy":cal,
+            "insight":ensure_dot(insight),"gene":gene
         }
-        all_roots.append(r_index[normalized])
-        orbit_counter[orbit_name] += 1
-    
-    return r_index, all_roots, orbit_counter
+        all_roots.append(r_index[norm])
+        orbit_counter[f"المدار {orbit}"]+=1
+
+    return r_index,all_roots,orbit_counter
 
 # ==============================================================================
-# [6] طبقة التحليل الجذري التقريبي + دوال البحث
+# [6] التحليل الجذري
 # ==============================================================================
-def smart_extract_root(word: str):
-    if not ENABLE_SMART_ROOT:
-        return word
-    if not word:
-        return word
-    
-    w = normalize_sovereign(word)
-    if len(w) <= 3:
-        return w
+def smart_extract_root(w):
+    w=normalize_sovereign(w)
+    if len(w)<=3: return w
+    for p in ["ال","وال","بال","كال","فال","س","و","ف","ل","ب","ك"]:
+        if w.startswith(p) and len(w)-len(p)>=3: w=w[len(p):]; break
+    for s in ["هما","كما","كم","كن","نا","ها","هم","هن","ان","ون","ين","ات","ة","ه","ي","ا"]:
+        if w.endswith(s) and len(w)-len(s)>=3: w=w[:-len(s)]; break
+    return w
 
-    prefixes = ["ال", "وال", "فال", "بال", "كال", "ولل", "فلل", "س", "و", "ف", "ل", "ب", "ك"]
-    for p in sorted(prefixes, key=len, reverse=True):
-        if w.startswith(p) and len(w) - len(p) >= 3:
-            w = w[len(p):]
-            break
-
-    suffixes = ["هما", "كما", "كم", "كن", "نا", "ها", "هم", "هن", "ان", "ون", "ين", "ات", "ة", "ه", "ي", "ا", "ت"]
-    for s in sorted(suffixes, key=len, reverse=True):
-        if w.endswith(s) and len(w) - len(s) >= 3:
-            w = w[:-len(s)]
-            break
-
-    for p in ["است", "ت", "ان", "افت"]:
-        if w.startswith(p) and len(w) - len(p) >= 3:
-            w = w[len(p):]
-            break
-
-    return w if len(w) >= 3 else w
-
-def match_root_logic(word, index_keys):
-    w = normalize_sovereign(word)
-    if not w or len(w) < 2:
-        return None
-
-    w_norm = normalize_lexicon_root(w)
-    if w_norm in index_keys:
-        return w_norm
-    
-    prefixes = ["ال", "و", "ف", "ب", "ك", "ل", "س", "بال", "وال", "فال"]
-    for p in prefixes:
-        if w.startswith(p) and len(w) - len(p) >= 3:
-            candidate = normalize_lexicon_root(w[len(p):])
-            if candidate in index_keys:
-                return candidate
-
-    if ENABLE_SMART_ROOT:
-        smart_candidate = smart_extract_root(word)
-        smart_norm = normalize_lexicon_root(smart_candidate)
-        if smart_norm in index_keys:
-            return smart_norm
-
-    return None
+def match_root_logic(word,keys):
+    w=normalize_sovereign(word)
+    if len(w)<2: return None
+    n=normalize_lexicon_root(w)
+    if n in keys: return n
+    for p in ["ال","و","ف","ب","ك","ل","س"]:
+        if w.startswith(p) and len(w)-len(p)>=3:
+            c=normalize_lexicon_root(w[len(p):])
+            if c in keys: return c
+    s=normalize_lexicon_root(smart_extract_root(word))
+    return s if s in keys else None
 
 def display_insight_cards(bodies):
-    if not bodies:
-        return
-    for res in bodies:
+    for b in bodies:
         st.markdown(f"""
-        <div class="insight-card" style="border-right-color: {res['color']}">
-            <b style="color:{res['color']}; font-size:1.2em;">📌 الجذر: {res['root']}</b> | 
-            🧬 الجين: {res['gene_icon']} {res['gene_name']} | 
-            ⚡ الطاقة: <span class="energy-badge">{res['energy']:.1f}</span>
-            <hr style="border:0.5px solid #333; margin:10px 0;">
-            <p>🔮 {res['insight']}</p>
+        <div class="insight-card" style="border-right-color:{b['color']}">
+            <b style="color:{b['color']}">📌 {b['root']}</b> |
+            🧬 {b['gene_icon']} {b['gene_name']} |
+            ⚡ {b['energy']:.1f}
+            <hr>{b['insight']}
         </div>
-        """, unsafe_allow_html=True)
+        """,unsafe_allow_html=True)
 
 # ==============================================================================
-# [7] تهيئة حالة الجلسة
+# [7] حالة الجلسة
 # ==============================================================================
 if 'orbit_bodies' not in st.session_state:
-    st.session_state.orbit_bodies = []
-    st.session_state.orbit_active = False
+    st.session_state.orbit_bodies=[]
+    st.session_state.orbit_active=False
 
-r_index, all_roots, orbit_counter = load_lexicon_db("data/nibras_lexicon.json")
+r_index,all_roots,orbit_counter=load_lexicon_db("data/nibras_lexicon.json")
 
 # ==============================================================================
 # [8] الشريط الجانبي
 # ==============================================================================
 with st.sidebar:
-    st.markdown(f"""
-    <div style='text-align:center;'>
-        <h2 style='color:#4fc3f7;'>🛡️ نبراس السيادي</h2>
-        <p>الإصدار v29.1 - ثلاثية الصعود + الطيف الجيني</p>
-        <p>المستخدم: محمد</p>
-    </div>
-    ---
-    <div>
-        <p>📊 إحصائيات القاعدة:</p>
-        <p>📚 إجمالي الجذور: {len(r_index)}</p>
-        <p>🐪 الإبل (مدارات 1-2): {len([r for r in r_index.values() if r['gene'] == 'C'])}</p>
-        <p>🐄 البقر (مدارات 3-4): {len([r for r in r_index.values() if r['gene'] == 'B'])}</p>
-        <p>🐑 الضأن (مدارات 7+): {len([r for r in r_index.values() if r['gene'] == 'S'])}</p>
-        <p>🐐 المعز (مدارات 5-6): {len([r for r in r_index.values() if r['gene'] == 'G'])}</p>
-    </div>
-    ---
-    <div>
-        <p>📡 توزيع المدارات:</p>
-        {''.join([f'<p>🔹 {k}: {v} جذراً</p>' for k, v in sorted(orbit_counter.items())])}
-    </div>
-    ---
-    <p>خِت فِت.</p>
-    """, unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center;color:#4fc3f7'>🛡️ نبراس السيادي</h2>",unsafe_allow_html=True)
+    st.markdown("الإصدار v29.1 — ثلاثية الصعود + الطيف الجيني")
+    st.markdown("المستخدم: محمد")
+    st.markdown("---")
+    st.markdown(f"📚 إجمالي الجذور: {len(r_index)}")
+    for k,v in orbit_counter.items(): st.markdown(f"🔹 {k}: {v}")
+    st.markdown("---")
+    st.markdown("خِت فِت.")
 
 # ==============================================================================
-# [9] التبويبات السيادية
+# [9] التبويبات
 # ==============================================================================
-tabs = st.tabs([
+tabs=st.tabs([
     "🔍 الاستنطاق المداري",
     "🌌 الرنين الجيني",
     "📈 اللوحة الوجودية الحرارية",
@@ -302,378 +191,221 @@ tabs = st.tabs([
 ])
 
 # ==============================================================================
-# [10] طبقات المدار السياقي + الطاقة الديناميكية + الوعي الجمعي + البلاغة + الصعود
+# [10] الطبقات الديناميكية
 # ==============================================================================
 def apply_context_orbit_adjustment(bodies):
-    if not ENABLE_CONTEXT_ORBIT or not bodies:
-        return bodies
-    freq = Counter(b['root'] for b in bodies)
-    max_freq = max(freq.values()) if freq else 1
+    freq=Counter(b['root'] for b in bodies)
+    maxf=max(freq.values()) if freq else 1
     for b in bodies:
-        f = freq[b['root']]
-        if f > 1 and isinstance(b.get('orbit_id'), int) and b['orbit_id'] > 0:
-            delta = 1 if f >= max_freq else 0
-            new_orbit = b['orbit_id'] + delta
-            b['orbit_id_context'] = new_orbit
-            b['orbit'] = f"المدار {new_orbit}"
-        else:
-            b['orbit_id_context'] = b.get('orbit_id', 0)
+        f=freq[b['root']]
+        b['orbit_id_context']=b['orbit_id']+(1 if f>=maxf and b['orbit_id']>0 else 0)
     return bodies
 
-def apply_dynamic_energy(bodies, text_length):
-    if not ENABLE_DYNAMIC_ENERGY or not bodies:
-        return bodies
-    freq = Counter(b['root'] for b in bodies)
-    base_len_factor = max(1, min(3, text_length / 50))
+def apply_dynamic_energy(bodies,text_len):
+    freq=Counter(b['root'] for b in bodies)
+    factor=max(1,min(3,text_len/50))
     for b in bodies:
-        f = freq[b['root']]
-        sig = signature_from_root(b['root'])
-        base_energy = b.get('base_energy', b['energy'])
-        dynamic = base_energy * (1 + 0.05 * (f - 1)) * base_len_factor
-        dynamic += sig['total_energy'] * 0.05
-        b['energy'] = round(dynamic, 2)
+        sig=signature_from_root(b['root'])
+        base=b['base_energy']
+        f=freq[b['root']]
+        dyn=base*(1+0.05*(f-1))*factor + sig['total_energy']*0.05
+        b['energy']=round(dyn,2)
     return bodies
 
 def compute_collective_consciousness(bodies):
-    if not ENABLE_COLLECTIVE_LAYER or not bodies:
-        return {}
-    genes_count = Counter(b['gene'] for b in bodies)
-    total_e = sum(b['energy'] for b in bodies)
-    unique_roots = len(set(b['root'] for b in bodies))
-    ascent = genes_count.get('G', 0) + genes_count.get('C', 0)
-    calm = genes_count.get('S', 0)
-    material = genes_count.get('B', 0)
-    tension_level = ascent * 1.2 + material * 0.8 - calm * 1.0
-    harmony_level = calm * 1.3 + unique_roots * 0.2
+    genes=Counter(b['gene'] for b in bodies)
+    total=sum(b['energy'] for b in bodies)
+    uniq=len(set(b['root'] for b in bodies))
+    ascent=genes.get('G',0)+genes.get('C',0)
+    calm=genes.get('S',0)
+    material=genes.get('B',0)
+    tension=ascent*1.2 + material*0.8 - calm
+    harmony=calm*1.3 + uniq*0.2
     return {
-        "total_energy": total_e,
-        "genes_count": genes_count,
-        "unique_roots": unique_roots,
-        "tension_level": round(tension_level, 2),
-        "harmony_level": round(harmony_level, 2),
-    }
-
-def makin_letter_profile(root_text: str):
-    if not ENABLE_MAKIN_LAYER or not root_text:
-        return {}
-    asc_letters = set("قظطخصضغ")
-    soft_letters = set("منلرويها")
-    sharp_letters = set("حجكسشتثفبدذز")
-    r = normalize_sovereign(root_text)
-    asc = sum(1 for ch in r if ch in asc_letters)
-    soft = sum(1 for ch in r if ch in soft_letters)
-    sharp = sum(1 for ch in r if ch in sharp_letters)
-    total = max(1, len(r))
-    return {
-        "asc": asc,
-        "soft": soft,
-        "sharp": sharp,
-        "asc_ratio": round(asc / total, 2),
-        "soft_ratio": round(soft / total, 2),
-        "sharp_ratio": round(sharp / total, 2),
+        "total_energy":total,
+        "genes_count":genes,
+        "unique_roots":uniq,
+        "tension_level":round(tension,2),
+        "harmony_level":round(harmony,2)
     }
 
 def compute_ascent_vector(bodies):
-    if not ENABLE_ASCENT_VECTOR or not bodies:
-        return 0.0
-    orbit_vals = []
-    for b in bodies:
-        oid = b.get('orbit_id_context', b.get('orbit_id', 0))
-        if oid:
-            orbit_vals.append(oid)
-    if not orbit_vals:
-        return 0.0
-    avg_orbit = sum(orbit_vals) / len(orbit_vals)
-    ascent_vector = avg_orbit - 5.0
-    return round(ascent_vector, 2)
+    vals=[b.get('orbit_id_context',b['orbit_id']) for b in bodies if b['orbit_id']]
+    if not vals: return 0.0
+    return round(sum(vals)/len(vals)-5,2)
 
-def compute_gene_spectrum(bodies, window=4):
-    """
-    الطيف الجيني: تقسيم النص إلى مقاطع صغيرة وتحليل الجين المسيطر في كل مقطع.
-    window = عدد الجذور في كل مقطع.
-    """
-    if not bodies:
-        return []
-
-    ordered = bodies.copy()
-    spectrum = []
-    for i in range(0, len(ordered), window):
-        chunk = ordered[i:i+window]
-        genes = [b['gene'] for b in chunk]
-        if not genes:
-            continue
-        dominant = Counter(genes).most_common(1)[0][0]
-        spectrum.append(dominant)
-
-    return spectrum
+def compute_gene_spectrum(bodies,window=4):
+    spec=[]
+    for i in range(0,len(bodies),window):
+        chunk=bodies[i:i+window]
+        genes=[b['gene'] for b in chunk]
+        if genes: spec.append(Counter(genes).most_common(1)[0][0])
+    return spec
 
 # ==============================================================================
 # [11] التبويب 0: الاستنطاق المداري
 # ==============================================================================
 with tabs[0]:
-    st.markdown("### 📍 هندسة المسارات المدارية — v29.1 ثلاثية الصعود + الطيف الجيني")
-    
-    full_text = st.text_area(
-        "أدخل النص للاستنطاق:", 
-        height=150, 
-        placeholder="مثال: أحد أبى أثر أجد أجل أخذ",
-        key="input_area"
-    )
-    
-    if st.button("🚀 تفعيل المفاعل السيادي v29.1", use_container_width=True):
+    st.markdown("### 📍 هندسة المسارات المدارية — v29.1")
+    full_text=st.text_area("أدخل النص للاستنطاق:",height=150)
+
+    if st.button("🚀 تفعيل المفاعل السيادي",use_container_width=True):
         if full_text.strip():
-            clean = normalize_sovereign(full_text)
-            words = clean.split()
-            
-            bodies = []
-            word_pool = []
-            
-            for word in words:
-                root_key = match_root_logic(word, r_index.keys())
-                if root_key:
-                    data = r_index.get(root_key)
-                    if data:
-                        sig = signature_from_root(root_key)
-                        base_energy = data.get('raw_energy', data['weight'] * 100)
-                        gene_info = GENE_STYLE.get(data['gene'], GENE_STYLE['S'])
-                        energy = base_energy + sig['total_energy'] * 0.15
-                        bodies.append({
-                            "root": data['root_raw'],
-                            "orbit": data['orbit'],
-                            "orbit_id": data.get('orbit_id', 0),
-                            "gene": data['gene'],
-                            "gene_name": gene_info['name'],
-                            "gene_icon": gene_info['icon'],
-                            "energy": round(energy, 2),
-                            "base_energy": round(energy, 2),
-                            "insight": data['insight'],
-                            "color": gene_info['color'],
-                            "x": random.uniform(-10, 10),
-                            "y": random.uniform(-10, 10),
-                            "vx": sig['vector_x'],
-                            "vy": sig['vector_y']
-                        })
-                        word_pool.append(data['root_raw'])
-            
+            clean=normalize_sovereign(full_text)
+            words=clean.split()
+            bodies=[]
+
+            for w in words:
+                key=match_root_logic(w,r_index.keys())
+                if key:
+                    d=r_index[key]
+                    sig=signature_from_root(key)
+                    base=d['raw_energy']
+                    gene_info=GENE_STYLE[d['gene']]
+                    energy=base + sig['total_energy']*0.15
+
+                    bodies.append({
+                        "root":d['root_raw'],
+                        "orbit":d['orbit'],
+                        "orbit_id":d['orbit_id'],
+                        "gene":d['gene'],
+                        "gene_name":gene_info['name'],
+                        "gene_icon":gene_info['icon'],
+                        "energy":round(energy,2),
+                        "base_energy":round(energy,2),
+                        "insight":d['insight'],
+                        "color":gene_info['color'],
+                        "x":random.uniform(-10,10),
+                        "y":random.uniform(-10,10)
+                    })
+
             if bodies:
-                bodies = apply_context_orbit_adjustment(bodies)
-                bodies = apply_dynamic_energy(bodies, len(full_text))
+                bodies=apply_context_orbit_adjustment(bodies)
+                bodies=apply_dynamic_energy(bodies,len(full_text))
 
-                st.session_state.orbit_bodies = bodies
-                st.session_state.orbit_active = True
-                
-                df = pd.DataFrame(bodies)
-                fig = px.scatter(
-                    df, x="x", y="y", text="root", size="energy", color="gene",
-                    color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
-                    range_x=[-35, 35], range_y=[-35, 35]
-                )
-                fig.update_layout(
-                    height=500,
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    showlegend=False,
-                    xaxis_visible=False,
-                    yaxis_visible=False
-                )
-                st.plotly_chart(fig, use_container_width=True)
-                
-                st.markdown("### 📜 البيان الختامي الموسع")
-                total_e = sum(b['energy'] for b in bodies)
-                genes_count = Counter(b['gene'] for b in bodies)
-                dom_gene = max(genes_count, key=genes_count.get)
-                orbits_detail = Counter(
-                    f"المدار {b.get('orbit_id_context', b.get('orbit_id', 0))}"
-                    for b in bodies if b.get('orbit_id')
-                )
-                
-                cc = compute_collective_consciousness(bodies) if ENABLE_COLLECTIVE_LAYER else None
-                ascent_vec = compute_ascent_vector(bodies) if ENABLE_ASCENT_VECTOR else 0.0
+                st.session_state.orbit_bodies=bodies
+                st.session_state.orbit_active=True
 
-                extra_line = ""
-                if cc:
-                    extra_line = (
-                        f"<br>🧠 مستوى الانسجام: <b>{cc['harmony_level']}</b> | "
-                        f"مستوى التوتر: <b>{cc['tension_level']}</b>"
-                    )
-                ascent_line = ""
-                if ENABLE_ASCENT_VECTOR:
-                    direction = "صعود" if ascent_vec > 0 else ("ثبات" if ascent_vec == 0 else "انحدار")
-                    ascent_line = f"<br>📈 متجه الصعود: <b>{ascent_vec}</b> ({direction})"
+                df=pd.DataFrame(bodies)
+                fig=px.scatter(
+                    df,x="x",y="y",text="root",size="energy",color="gene",
+                    color_discrete_map={g:GENE_STYLE[g]['color'] for g in GENE_STYLE},
+                    range_x=[-35,35],range_y=[-35,35]
+                )
+                fig.update_layout(height=500,paper_bgcolor='rgba(0,0,0,0)',
+                                  plot_bgcolor='rgba(0,0,0,0)',showlegend=False,
+                                  xaxis_visible=False,yaxis_visible=False)
+                st.plotly_chart(fig,use_container_width=True)
+
+                total=sum(b['energy'] for b in bodies)
+                genes=Counter(b['gene'] for b in bodies)
+                dom=max(genes,key=genes.get)
+                cc=compute_collective_consciousness(bodies)
+                asc=compute_ascent_vector(bodies)
 
                 st.markdown(f"""
                 <div class="story-box">
-                    ✅ تم استنطاق <b>{len(bodies)}</b> جذراً.<br>
-                    🐪 الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
-                    ⚡ مجموع الطاقة: <b>{total_e:.1f}</b><br>
-                    📚 الجذور: <b>{', '.join(word_pool)}</b><br>
-                    🎯 توزيع المدارات: {', '.join([f'{k}({v})' for k, v in orbits_detail.items()])}
-                    {extra_line}
-                    {ascent_line}
+                    تم استنطاق <b>{len(bodies)}</b> جذراً.<br>
+                    الهيمنة الجينية: <b>{GENE_STYLE[dom]['icon']} {GENE_STYLE[dom]['name']}</b><br>
+                    مجموع الطاقة: <b>{total:.1f}</b><br>
+                    الانسجام: <b>{cc['harmony_level']}</b> |
+                    التوتر: <b>{cc['tension_level']}</b><br>
+                    متجه الصعود: <b>{asc}</b>
                 </div>
-                """, unsafe_allow_html=True)
-                
+                """,unsafe_allow_html=True)
+
                 display_insight_cards(bodies)
-                st.success("✅ تم الاستنطاق بنجاح.")
             else:
-                st.error("⚠️ لم يتم العثور على جذور مطابقة.")
-        else:
-            st.warning("⚠️ الرجاء إدخال نص.")
+                st.error("⚠️ لم يتم العثور على جذور.")
 
 # ==============================================================================
 # [12] التبويب 1: الرنين الجيني
 # ==============================================================================
 with tabs[1]:
-    st.markdown("### 🌌 مصفوفة الرنين والاستحقاق المداري")
-    cols = st.columns(4)
-    for i, (code, info) in enumerate(GENE_STYLE.items()):
-        if i < 4:
-            cols[i].markdown(f"""
-            <div class='ultra-card' style='border-top-color:{info["color"]}'>
-                <h2>{info['icon']}</h2>
-                <h3>{info['name']}</h3>
-                <p>{info['meaning']}</p>
+    st.markdown("### 🌌 الرنين الجيني")
+    roots_sorted=sorted([r['root_raw'] for r in all_roots])
+    sel=st.selectbox("اختر جذراً:",roots_sorted)
+
+    if sel:
+        norm=normalize_lexicon_root(sel)
+        d=r_index.get(norm)
+        if d:
+            gi=GENE_STYLE[d['gene']]
+            st.markdown(f"""
+            <div class="insight-card" style="border-right-color:{gi['color']}">
+                <b style="color:{gi['color']}">📌 {d['root_raw']}</b><br>
+                🧬 {gi['icon']} {gi['name']}<br>
+                المدار: {d['orbit']}<br>
+                الطاقة: {d['raw_energy']:.1f}<br>
+                <hr>{d['insight']}
             </div>
-            """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.markdown("### 📖 استنطاق جذر محدد")
-    
-    root_options = sorted([r['root_raw'] for r in all_roots])
-    if root_options:
-        selected = st.selectbox("اختر جذراً:", options=root_options)
-        if selected:
-            norm = normalize_lexicon_root(selected)
-            found = r_index.get(norm)
-            if found:
-                gi = GENE_STYLE[found['gene']]
-                profile = makin_letter_profile(found['root_raw']) if ENABLE_MAKIN_LAYER else {}
-                extra_line = ""
-                if profile:
-                    extra_line = (
-                        f"<br>🔤 حروف الصعود: {profile['asc']} "
-                        f"(نسبة: {profile['asc_ratio']}) | "
-                        f"حروف اللين: {profile['soft']} "
-                        f"(نسبة: {profile['soft_ratio']}) | "
-                        f"حروف الحدّة: {profile['sharp']} "
-                        f"(نسبة: {profile['sharp_ratio']})"
-                    )
-                st.markdown(f"""
-                <div class='insight-card' style='border-right-color:{gi["color"]}'>
-                    <b style='color:{gi["color"]}'>📌 الجذر: {found['root_raw']}</b><br>
-                    🧬 الجين: {gi['icon']} {gi['name']}<br>
-                    🔄 المدار: {found['orbit']} (ID: {found.get('orbit_id', 0)})<br>
-                    ⚡ الطاقة الأساسية: {found.get('raw_energy', found['weight']*100):.1f}
-                    {extra_line}
-                    <hr>
-                    <p>🔮 {found['insight']}</p>
-                </div>
-                """, unsafe_allow_html=True)
+            """,unsafe_allow_html=True)
 
 # ==============================================================================
-# [13] التبويب 2: اللوحة الوجودية الحرارية (Heatmap Consciousness)
+# [13] التبويب 2: اللوحة الوجودية الحرارية
 # ==============================================================================
 with tabs[2]:
-    st.markdown("### 📈 خريطة الوعي الحراري — Heatmap Consciousness")
-    if st.session_state.orbit_active and st.session_state.orbit_bodies and ENABLE_HEATMAP_LAYER:
-        df = pd.DataFrame(st.session_state.orbit_bodies)
-        if 'orbit_id_context' in df.columns:
-            df['orbit_plot'] = df['orbit_id_context']
-        else:
-            df['orbit_plot'] = df['orbit_id']
-        df['gene_label'] = df['gene'].map(lambda g: f"{GENE_STYLE[g]['icon']} {GENE_STYLE[g]['name']}" if g in GENE_STYLE else g)
+    st.markdown("### 📈 خريطة الوعي الحراري")
+    if st.session_state.orbit_active:
+        df=pd.DataFrame(st.session_state.orbit_bodies)
+        df['orbit_plot']=df.get('orbit_id_context',df['orbit_id'])
+        df['gene_label']=df['gene'].map(lambda g:f"{GENE_STYLE[g]['icon']} {GENE_STYLE[g]['name']}")
 
-        heat_df = df.groupby(['orbit_plot', 'gene_label'])['energy'].sum().reset_index()
-        if not heat_df.empty:
-            pivot = heat_df.pivot(index='gene_label', columns='orbit_plot', values='energy').fillna(0)
+        heat=df.groupby(['orbit_plot','gene_label'])['energy'].sum().reset_index()
+        if not heat.empty:
+            pivot=heat.pivot(index='gene_label',columns='orbit_plot',values='energy').fillna(0)
 
-            fig_h = px.imshow(
+            fig_h=px.imshow(
                 pivot.values,
-                labels=dict(x="المدار", y="الجين", color="الطاقة"),
+                labels=dict(x="المدار",y="الجين",color="الطاقة"),
                 x=list(range(len(pivot.columns))),
                 y=list(range(len(pivot.index))),
                 color_continuous_scale="RdBu_r"
             )
 
-            # إصلاح عمود الحروف الأبجدية: ضبط المحاور يدويًا
             fig_h.update_xaxes(
-                showticklabels=True,
                 tickmode='array',
                 tickvals=list(range(len(pivot.columns))),
                 ticktext=pivot.columns
             )
             fig_h.update_yaxes(
-                showticklabels=True,
                 tickmode='array',
                 tickvals=list(range(len(pivot.index))),
                 ticktext=pivot.index
             )
 
-            fig_h.update_layout(
-                height=500,
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)'
-            )
-            st.plotly_chart(fig_h, use_container_width=True)
-        else:
-            st.info("لا توجد بيانات كافية لبناء خريطة حرارية.")
-
-        col1, col2 = st.columns(2)
-        col1.plotly_chart(
-            px.pie(
-                df, names='gene', color='gene',
-                color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
-                hole=0.5, title="توزيع الجينات"
-            ),
-            use_container_width=True
-        )
-        col2.plotly_chart(
-            px.bar(
-                df.groupby('gene').size().reset_index(name='count'),
-                x='gene', y='count', color='gene',
-                color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
-                title="تعداد الأجسام المدارية"
-            ),
-            use_container_width=True
-        )
-    else:
-        st.info("⚙️ انتظر تفعيل المفاعل، أو تأكد أن طبقة الخريطة الحرارية مفعّلة.")
-
-# ==============================================================================
+            fig_h.update_layout(height=500,paper_bgcolor='rgba(0,0,0,0)',
+                                plot_bgcolor='rgba(0,0,0,0)')
+            st.plotly_chart(fig_h,use_container_width=True)
+            # ==============================================================================
 # [14] التبويب 3: البيان الختامي
 # ==============================================================================
 with tabs[3]:
     st.markdown("### 📜 البيان الختامي")
+
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         bodies = st.session_state.orbit_bodies
+
         total_e = sum(b['energy'] for b in bodies)
         genes_count = Counter(b['gene'] for b in bodies)
         dom_gene = max(genes_count, key=genes_count.get)
-        cc = compute_collective_consciousness(bodies) if ENABLE_COLLECTIVE_LAYER else None
-        ascent_vec = compute_ascent_vector(bodies) if ENABLE_ASCENT_VECTOR else 0.0
-
-        extra_line = ""
-        if cc:
-            extra_line = (
-                f"<br>🧠 مستوى الانسجام: <b>{cc['harmony_level']}</b> | "
-                f"مستوى التوتر: <b>{cc['tension_level']}</b>"
-            )
-        ascent_line = ""
-        if ENABLE_ASCENT_VECTOR:
-            direction = "صعود" if ascent_vec > 0 else ("ثبات" if ascent_vec == 0 else "انحدار")
-            ascent_line = f"<br>📈 متجه الصعود: <b>{ascent_vec}</b> ({direction})"
+        cc = compute_collective_consciousness(bodies)
+        ascent_vec = compute_ascent_vector(bodies)
 
         st.markdown(f"""
         <div class="story-box">
             <b>بيان الاستواء الوجودي v29.1:</b><br>
-            تم استنطاق <b>{len(bodies)}</b> جذراً.<br>
+            عدد الجذور: <b>{len(bodies)}</b><br>
             الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
-            مجموع الطاقة: <b>{total_e:.1f}</b>
-            {extra_line}
-            {ascent_line}
+            مجموع الطاقة: <b>{total_e:.1f}</b><br>
+            مستوى الانسجام: <b>{cc['harmony_level']}</b> |
+            مستوى التوتر: <b>{cc['tension_level']}</b><br>
+            متجه الصعود: <b>{ascent_vec}</b>
         </div>
         """, unsafe_allow_html=True)
+
         display_insight_cards(bodies)
+
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
@@ -681,7 +413,8 @@ with tabs[3]:
 # [15] التبويب 4: الميزان السيادي
 # ==============================================================================
 with tabs[4]:
-    st.markdown("### ⚖️ ميزان النزاهة الجذرية - الاستحقاق المداري")
+    st.markdown("### ⚖️ ميزان النزاهة الجذرية")
+
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         display_insight_cards(st.session_state.orbit_bodies)
     else:
@@ -691,41 +424,34 @@ with tabs[4]:
 # [16] التبويب 5: الوعي الفوقي + الطيف الجيني
 # ==============================================================================
 with tabs[5]:
-    st.markdown("### 🧠 الوعي الفوقي - البيان الجمعي الحراري + الطيف الجيني")
+    st.markdown("### 🧠 الوعي الفوقي — البيان الجمعي + الطيف الجيني")
+
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         bodies = st.session_state.orbit_bodies
+
         total_e = sum(b['energy'] for b in bodies)
         genes_count = Counter(b['gene'] for b in bodies)
         dom_gene = max(genes_count, key=genes_count.get)
-        orbits_analysis = Counter(b.get('orbit_id_context', b.get('orbit_id', 0)) for b in bodies)
-        cc = compute_collective_consciousness(bodies) if ENABLE_COLLECTIVE_LAYER else None
-        ascent_vec = compute_ascent_vector(bodies) if ENABLE_ASCENT_VECTOR else 0.0
-
-        extra_line = ""
-        if cc:
-            extra_line = (
-                f"<br>🧠 مستوى الانسجام: <b>{cc['harmony_level']}</b> | "
-                f"مستوى التوتر: <b>{cc['tension_level']}</b>"
-            )
-        ascent_line = ""
-        if ENABLE_ASCENT_VECTOR:
-            direction = "صعود" if ascent_vec > 0 else ("ثبات" if ascent_vec == 0 else "انحدار")
-            ascent_line = f"<br>📈 متجه الصعود: <b>{ascent_vec}</b> ({direction})"
+        orbits_analysis = Counter(b.get('orbit_id_context', b['orbit_id']) for b in bodies)
+        cc = compute_collective_consciousness(bodies)
+        ascent_vec = compute_ascent_vector(bodies)
 
         st.markdown(f"""
         <div class="story-box">
-            <h3 style='color:#FFD700;'>🌌 بيان الوعي الجمعي الحراري</h3>
-            <b>عدد الجذور:</b> {len(bodies)}<br>
-            <b>مجموع الطاقة:</b> {total_e:.1f}<br>
-            <b>الهيمنة الجينية:</b> {GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}<br>
-            <b>توزيع المدارات:</b> {', '.join([f'المدار {k}({v})' for k, v in sorted(orbits_analysis.items()) if k > 0])}
-            {extra_line}
-            {ascent_line}
+            <h3 style='color:#FFD700;'>🌌 بيان الوعي الجمعي</h3>
+            عدد الجذور: <b>{len(bodies)}</b><br>
+            مجموع الطاقة: <b>{total_e:.1f}</b><br>
+            الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
+            توزيع المدارات: {', '.join([f'{k}({v})' for k,v in sorted(orbits_analysis.items())])}<br>
+            مستوى الانسجام: <b>{cc['harmony_level']}</b> |
+            مستوى التوتر: <b>{cc['tension_level']}</b><br>
+            متجه الصعود: <b>{ascent_vec}</b>
         </div>
         """, unsafe_allow_html=True)
 
-        # 🌈 الطيف الجيني داخل الوعي الفوقي
+        # 🌈 الطيف الجيني
         spectrum = compute_gene_spectrum(bodies, window=4)
+
         if spectrum:
             st.markdown("### 🌈 الطيف الجيني — Gene Spectrum")
 
@@ -740,12 +466,6 @@ with tabs[5]:
                 title="الطيف الجيني عبر النص"
             )
 
-            fig_spec.update_layout(
-                height=350,
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)'
-            )
-
             fig_spec.update_yaxes(
                 tickmode='array',
                 tickvals=[1,2,3,4,5],
@@ -758,17 +478,28 @@ with tabs[5]:
                 ]
             )
 
+            fig_spec.update_layout(
+                height=350,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+            )
+
             st.plotly_chart(fig_spec, use_container_width=True)
 
             st.markdown(f"""
             <div class="story-box">
                 🔭 <b>قراءة الطيف الجيني:</b><br>
-                النص تحرك عبر <b>{len(spectrum)}</b> موجات.<br>
-                بدأ بـ <b>{GENE_STYLE[spectrum[0]]['name']}</b> 
-                وانتهى بـ <b>{GENE_STYLE[spectrum[-1]]['name']}</b>.
+                عدد الموجات: <b>{len(spectrum)}</b><br>
+                البداية: <b>{GENE_STYLE[spectrum[0]]['name']}</b><br>
+                النهاية: <b>{GENE_STYLE[spectrum[-1]]['name']}</b>
             </div>
             """, unsafe_allow_html=True)
 
         display_insight_cards(bodies)
+
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
+
+# ==============================================================================
+# نهاية الملف
+# ==============================================================================
