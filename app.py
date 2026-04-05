@@ -1,11 +1,4 @@
-```python
 # -*- coding: utf-8 -*-
-# ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v58.0
-# الإصلاح الميثاقي الشامل - الربط العضوي المحكم
-# المستخدم المهيمن: محمّد | CPU: سورة السجدة آية 5
-# ==============================================================================
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -13,207 +6,116 @@ from collections import Counter, defaultdict
 import re
 import os
 import json
-import time
 import hashlib
 import math
 import copy
-import random
-from itertools import combinations
 
-# ==============================================================================
-# [1] إدارة المسارات والبيانات
-# ==============================================================================
-def get_absolute_path(filename):
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    paths = [os.path.join(base_path, "data", filename), os.path.join(base_path, filename)]
-    for p in paths:
-        if os.path.exists(p): return p
-    return None
-
-# ==============================================================================
-# [2] تهيئة الذاكرة السيادية (Global State)
-# ==============================================================================
-def initialize_system_state():
-    defaults = {
-        'orbit_bodies': [], 'orbit_active': False, 'input_area': "",
-        'last_processed_text': "", 'active_meta_law': {
-            "root_influence": 1.0, "ascent_bias": 1.0, "energy_bias": 1.0,
-            "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}
-        },
-        'system_log': [], 'cosmic_radar_data': pd.DataFrame(),
-        'all_roots': [], 'r_index': {}, 'quran_data': [], 'initialized': False
+# --- [1] النظام الأساسي وإدارة الذاكرة ---
+def initialize_engine():
+    """تهيئة مخازن البيانات المركزية لمنع أخطاء AttributeError"""
+    state_keys = {
+        'active_text': "",
+        'processed_bodies': [],
+        'is_active': False,
+        'lexicon_index': {},
+        'quran_matrix': [],
+        'meta_law': {"influence": 1.0, "ascent": 1.0, "energy": 1.0},
+        'radar_data': pd.DataFrame()
     }
-    for key, val in defaults.items():
+    for key, val in state_keys.items():
         if key not in st.session_state:
             st.session_state[key] = val
 
-initialize_system_state()
+initialize_engine()
 
-# ==============================================================================
-# [3] الهوية البصرية (CSS)
-# ==============================================================================
-st.set_page_config(page_title="Nibras v58.0 - الميثاقي", layout="wide")
-st.markdown("""
-<style>
-    header, footer, .stAppHeader {visibility: hidden;}
-    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
-    [data-testid="stAppViewContainer"] { background: #050505; color: #e0e0e0; direction: rtl; font-family: 'Amiri', serif; }
-    .insight-card { background: #0d0d14; padding: 20px; border-radius: 15px; border-right: 8px solid #FFD700; margin-bottom: 15px; }
-    .energy-badge { background: #1a3a1a; color: #00ffcc; padding: 2px 8px; border-radius: 4px; }
-</style>
-""", unsafe_allow_html=True)
-
-# ==============================================================================
-# [4] مصفوفة الجينات والقواعد
-# ==============================================================================
-GENE_STYLE = {
-    'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 'meaning': 'طاقة المسير والتمكين'},
-    'B': {'name': 'البقر', 'color': '#FFD700', 'icon': '🐄', 'meaning': 'طاقة التثبيت والوفرة'},
-    'S': {'name': 'الضأن', 'color': '#4CAF50', 'icon': '🐑', 'meaning': 'طاقة السكينة واللين'},
-    'G': {'name': 'المعز', 'color': '#ff5252', 'icon': '🐐', 'meaning': 'طاقة السيادة والحدّة'},
-    'N': {'name': 'إشراق', 'color': '#00ffcc', 'icon': '✨', 'meaning': 'الانبثاق الصافي'}
-}
-
-def normalize_sovereign(text):
+# --- [2] محركات المعالجة الفنية ---
+def normalize_text(text):
     if not text: return ""
     text = re.sub(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]', '', text)
     return text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ى", "ي").replace("ة", "ه").strip()
 
-# ==============================================================================
-# [5] محرك الاستنطاق (The Engine)
-# ==============================================================================
-def signature_from_root(root):
+def get_root_signature(root):
     h = int(hashlib.md5(root.encode()).hexdigest(), 16)
-    return {'x': round(((h % 360)-180)/12.0, 2), 'y': round((((h>>8)%360)-180)/12.0, 2), 'n': (h>>16)%100, 'rb': 0.9+(h%21)/100.0}
+    return {
+        'x': round(((h % 360)-180)/12.0, 2),
+        'y': round((((h>>8)%360)-180)/12.0, 2),
+        'energy_mod': 0.9 + (h % 21) / 100.0
+    }
 
-def process_text_to_bodies(text, r_index):
-    clean = normalize_sovereign(text)
+def run_analysis_flow(text):
+    """المحرك المركزي: يحول النص إلى بيانات مدارية ويحدث الذاكرة"""
+    st.session_state.active_text = text
+    clean = normalize_text(text)
     words = clean.split()
     bodies = []
-    found_roots = []
     
-    # استخراج الجذور
+    index = st.session_state.lexicon_index
     for pos, word in enumerate(words):
-        # محاولة المطابقة المباشرة أو المجردة
-        rk = None
-        if word in r_index: rk = word
-        elif len(word) > 3:
-            # تجريد بسيط (ال، و، ف)
-            for pref in ["ال", "و", "ف", "ب"]:
-                if word.startswith(pref) and word[len(pref):] in r_index:
-                    rk = word[len(pref):]; break
+        root_key = None
+        if word in index: root_key = word
+        elif len(word) > 3: # تجريد بسيط للزوائد
+            for p in ["ال", "و", "ف", "ب"]:
+                if word.startswith(p) and word[len(p):] in index:
+                    root_key = word[len(p):]; break
         
-        if rk:
-            data = r_index[rk]
-            sig = signature_from_root(rk)
-            # حساب الجين
-            orbit = data.get('orbit_id', 0)
-            gene = "N" if sig['n'] > 90 else ("C" if orbit < 3 else "B" if orbit < 5 else "G" if orbit < 7 else "S")
-            
+        if root_key:
+            data = index[root_key]
+            sig = get_root_signature(root_key)
             bodies.append({
-                "root": rk, "root_raw": data.get('root_raw', rk), "energy": data.get('weight', 50) * sig['rb'],
-                "gene": gene, "color": GENE_STYLE[gene]['color'], "icon": GENE_STYLE[gene]['icon'],
-                "insight": data.get('insight', "جذر سيادي"), "x": sig['x'], "y": sig['y'], "pos": pos
+                "root": root_key,
+                "energy": data.get('weight', 50) * sig['energy_mod'] * st.session_state.meta_law['influence'],
+                "insight": data.get('insight', ""),
+                "x": sig['x'], "y": sig['y'], "pos": pos
             })
-    return bodies
-
-def trigger_orbital_flow(text):
-    """الربط العضوي: نقل النص للمفاعل وتفعيله"""
-    st.session_state.input_area = text
-    st.session_state.orbit_bodies = process_text_to_bodies(text, st.session_state.r_index)
-    st.session_state.orbit_active = True
-    st.session_state.last_processed_text = text
-
-# ==============================================================================
-# [6] تحميل البيانات (مرة واحدة)
-# ==============================================================================
-if not st.session_state.initialized:
-    lex_p = get_absolute_path("nibras_lexicon.json")
-    q_p = get_absolute_path("matrix_data.json")
     
-    # تحميل الليكسيكون
-    if lex_p:
-        with open(lex_p, 'r', encoding='utf-8') as f:
-            lex_data = json.load(f)
-            for item in lex_data:
-                norm = normalize_sovereign(item['root'])
-                st.session_state.r_index[norm] = item
-                st.session_state.all_roots.append(norm)
-    
-    # تحميل آيات القرآن
-    if q_p:
-        with open(q_p, 'r', encoding='utf-8') as f:
-            st.session_state.quran_data = json.load(f)
-            
-    st.session_state.initialized = True
+    st.session_state.processed_bodies = bodies
+    st.session_state.is_active = True
 
-# ==============================================================================
-# [7] واجهة المستخدم والتبويبات
-# ==============================================================================
-t1, t2, t3, t4, t5 = st.tabs(["📖 القرآن", "🔍 المفاعل", "⚖️ المولد", "🌌 الرنين", "📈 اللوحة"])
+# --- [3] واجهة المستخدم والتبويبات ---
+t1, t2, t3, t4 = st.tabs(["المصدر القرآني", "مفاعل الاستنطاق", "محرك القوانين", "اللوحة التحليلية"])
 
 with t1:
-    st.markdown("### 📖 استنطاق النص القرآني")
-    if st.session_state.quran_data:
-        surahs = sorted(list(set(d['surah_name'] for d in st.session_state.quran_data)))
-        s_sel = st.selectbox("اختر السورة", surahs)
-        verses = [v for v in st.session_state.quran_data if v['surah_name'] == s_sel]
-        v_sel = st.selectbox("اختر الآية", verses, format_func=lambda x: f"آية {x['ayah_number']}")
+    st.subheader("قاعدة بيانات المصدر")
+    if st.session_state.quran_matrix:
+        # عرض واختيار الآية
+        verses = st.session_state.quran_matrix
+        v_sel = st.selectbox("اختر النص المستهدف", verses, format_func=lambda x: f"سورة {x.get('surah_name')} - آية {x.get('ayah_number')}")
         
-        st.markdown(f"<div style='font-size:2em; text-align:center; padding:20px;'>{v_sel['text']}</div>", unsafe_allow_html=True)
-        
-        if st.button("🚀 إرسال للمفاعل السيادي", use_container_width=True):
-            trigger_orbital_flow(v_sel['text'])
-            st.success("✅ تم الربط! انتقل لتبويب المفاعل.")
-            st.rerun()
+        if v_sel:
+            st.info(v_sel['text'])
+            if st.button("تفعيل الربط المباشر مع المفاعل"):
+                run_analysis_flow(v_sel['text'])
+                st.success("تم نقل البيانات وتحديث المفاعل")
+                st.rerun()
 
 with t2:
-    st.markdown("### 🔍 المفاعل المداري")
-    txt = st.text_area("النص الحالي:", value=st.session_state.input_area, height=150)
-    if st.button("🚀 تحديث المفاعل"):
-        trigger_orbital_flow(txt)
+    st.subheader("نتائج الاستنطاق المداري")
+    input_text = st.text_area("النص قيد المعالجة:", value=st.session_state.active_text)
+    if st.button("تحديث يدوي للمفاعل"):
+        run_analysis_flow(input_text)
         st.rerun()
-        
-    if st.session_state.orbit_active and st.session_state.orbit_bodies:
-        # عرض الرادار
-        df = pd.DataFrame(st.session_state.orbit_bodies)
-        fig = px.scatter(df, x="x", y="y", text="root", size="energy", color="gene", 
-                         color_discrete_map={k: v['color'] for k,v in GENE_STYLE.items()}, range_x=[-20,20], range_y=[-20,20])
+    
+    if st.session_state.is_active and st.session_state.processed_bodies:
+        df = pd.DataFrame(st.session_state.processed_bodies)
+        fig = px.scatter(df, x="x", y="y", text="root", size="energy", range_x=[-25,25], range_y=[-25,25])
         st.plotly_chart(fig, use_container_width=True)
         
-        for b in st.session_state.orbit_bodies:
-            st.markdown(f"""<div class='insight-card' style='border-color:{b['color']}'>
-            <b>{b['icon']} {b['root']}</b> | طاقة: <span class='energy-badge'>{b['energy']:.1f}</span><br>{b['insight']}</div>""", unsafe_allow_html=True)
+        for b in st.session_state.processed_bodies:
+            with st.expander(f"الجذر: {b['root']}"):
+                st.write(b['insight'])
 
 with t3:
-    st.markdown("### ⚖️ مولد القوانين")
-    law_val = st.select_slider("معامل الإزاحة", options=[1.0, 1.1, 1.2, 1.5, 2.0])
-    if st.button("🚀 حقن القانون"):
-        st.session_state.active_meta_law['root_influence'] = law_val
-        # إعادة المعالجة فوراً لتطبيق القانون
-        if st.session_state.input_area:
-            trigger_orbital_flow(st.session_state.input_area)
-        st.success(f"✅ تم تفعيل إزاحة {law_val}")
+    st.subheader("إدارة القوانين الرياضية")
+    influence = st.slider("معامل الإزاحة (Influence)", 0.5, 2.0, st.session_state.meta_law['influence'])
+    if st.button("تطبيق القانون الجديد"):
+        st.session_state.meta_law['influence'] = influence
+        if st.session_state.active_text:
+            run_analysis_flow(st.session_state.active_text)
         st.rerun()
 
 with t4:
-    st.markdown("### 🌌 الرنين الجيني")
-    sel_r = st.selectbox("ابحث في الليكسيكون:", st.session_state.all_roots)
-    if sel_r:
-        d = st.session_state.r_index[sel_r]
-        st.write(f"المدار: {d.get('orbit_id')}")
-        st.write(f"الاستنطاق: {d.get('insight')}")
-
-with t5:
-    st.markdown("### 📈 اللوحة الوجودية")
-    if st.session_state.orbit_bodies:
-        st.metric("عدد الأجسام", len(st.session_state.orbit_bodies))
-        st.metric("متوسط الطاقة", round(sum(b['energy'] for b in st.session_state.orbit_bodies)/len(st.session_state.orbit_bodies), 2))
-
-```
-### 💡 لماذا هذا الإصدار v58.0 هو الحل؟
- 1. **مشكلة النسخ اليدوي:** تم حلها في t1؛ زر "إرسال للمفاعل" يقوم بالعملية آلياً ويحدث الذاكرة المركزية.
- 2. **عدم استجابة المولد:** أضفت استدعاء trigger_orbital_flow داخل زر الحقن في t3؛ مما يعني أن تغيير "القانون" سيغير شكل الرادار فوراً.
- 3. **خطأ الرنين الجيني:** استبدلت البحث العشوائي بقائمة منسدلة (selectbox) مرتبطة مباشرة بـ all_roots المستخرجة من الليكسيكون، لضمان عدم حدوث خطأ مفتاحي (KeyError).
- 4. **اللوحة الناقصة:** أضفت مقاييس (metrics) أساسية تظهر بمجرد وجود أجسام مدارية.
-**خِت فِت.** 🌌👑
+    st.subheader("البيانات الاحصائية")
+    if st.session_state.processed_bodies:
+        st.write(pd.DataFrame(st.session_state.processed_bodies))
+    else:
+        st.info("بانتظار تفعيل المفاعل")
