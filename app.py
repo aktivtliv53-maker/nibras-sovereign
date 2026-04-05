@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v55.0
-# الإصدار: الميثاقي - مع وحدة الاستنطاق القرآني (Q-Mode) والوعي الفوقي
+# الإصدار: الميثاقي - الدمج الكامل بين v54.2 و v40.2
 # الربط العضوي الكامل: القرآن ⬅️ المفاعل ⬅️ الوعي الفوقي
 # المستخدم المهيمن: محمّد
 # ==============================================================================
@@ -9,7 +9,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from collections import Counter
+from collections import Counter, defaultdict
 import re
 import os
 import json
@@ -38,6 +38,7 @@ def get_absolute_path(filename):
 # ==============================================================================
 # [2] تهيئة الذاكرة المركزية (Global Session State)
 # ==============================================================================
+# متغيرات v40.2 للنصوص المدارة
 if 'orbit_bodies' not in st.session_state:
     st.session_state.orbit_bodies = []
     st.session_state.orbit_active = False
@@ -51,20 +52,22 @@ if 'last_processed_text' not in st.session_state:
     st.session_state.last_processed_text = ""
 if 'widget_key' not in st.session_state:
     st.session_state.widget_key = "orbital_init_v1"
-if 'system_log' not in st.session_state:
-    st.session_state.system_log = []
-if 'active_meta_law' not in st.session_state:
+
+# متغيرات v54.2 للمعمار المحكم
+if "active_meta_law" not in st.session_state:
     st.session_state.active_meta_law = {
-        "shift_value": 0.0,
-        "top_root": "",
-        "new_influence": 0.0,
-        "last_update": time.time()
+        "root_influence": 1.0, 
+        "ascent_bias": 1.0, 
+        "energy_bias": 1.0,
+        "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}
     }
+if "system_log" not in st.session_state:
+    st.session_state.system_log = []
 
 # ==============================================================================
 # [3] إعدادات الهوية السيادية
 # ==============================================================================
-st.set_page_config(page_title="Nibras v55.0", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="Nibras v55.0 - المعمار المحكم", layout="wide")
 
 st.markdown("""
 <style>
@@ -131,35 +134,6 @@ st.markdown("""
     }
     .ascent-positive { background: linear-gradient(135deg, #0a2a0a 0%, #0a1a0a 100%); border-right: 5px solid #00ffcc; }
     .ascent-negative { background: linear-gradient(135deg, #2a0a0a 0%, #1a0a0a 100%); border-right: 5px solid #ff5252; }
-    
-    /* تنسيق بيان الوعي الفوقي */
-    .meta-consciousness {
-        background: linear-gradient(135deg, #0a0a1a 0%, #0d0d25 100%);
-        padding: 25px;
-        border-radius: 20px;
-        border-top: 3px solid #00ffcc;
-        border-right: 3px solid #00ffcc;
-        margin-bottom: 20px;
-    }
-    .meta-title {
-        color: #00ffcc;
-        font-size: 1.3em;
-        font-weight: bold;
-        margin-bottom: 15px;
-        text-align: center;
-    }
-    .meta-insight {
-        color: #e0e0e0;
-        line-height: 1.8;
-        font-size: 1.05em;
-    }
-    .meta-prediction {
-        background: rgba(0, 255, 204, 0.1);
-        padding: 15px;
-        border-radius: 15px;
-        margin-top: 15px;
-        border-right: 3px solid #FFD700;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -376,21 +350,15 @@ def khit_fit_archive(res_bodies, ascent_score):
     with open("data/deep_memory.json", "a", encoding="utf-8") as f:
         f.write(json.dumps(archive_data, ensure_ascii=False) + "\n")
     
-    # تحديث system_log
+    # تحديث system_log (التكامل مع v54.2)
     log_entry = copy.deepcopy(archive_data)
-    log_entry["top_root"] = archive_data["roots"][0] if archive_data["roots"] else "none"
+    log_entry["step"] = len(st.session_state.system_log) + 1
+    log_entry["shift_value"] = st.session_state.active_meta_law.get("root_influence", 1.0)
     log_entry["new_influence"] = archive_data["total_energy"] / 100 if archive_data["total_energy"] > 0 else 0
+    log_entry["top_root"] = archive_data["roots"][0] if archive_data["roots"] else "none"
     st.session_state.system_log.append(log_entry)
     if len(st.session_state.system_log) > 50:
         st.session_state.system_log = st.session_state.system_log[-50:]
-    
-    # تحديث active_meta_law
-    st.session_state.active_meta_law = {
-        "shift_value": archive_data["ascent"],
-        "top_root": log_entry["top_root"],
-        "new_influence": log_entry["new_influence"],
-        "last_update": time.time()
-    }
     
     return True
 
@@ -402,16 +370,12 @@ def load_lexicon_db(path):
     if not path or not os.path.exists(path):
         st.error(f"❌ ملف الليكسيكون غير موجود: {path}")
         return {}, [], Counter()
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8') as f:
+        try:
             data = json.load(f)
-    except json.JSONDecodeError as e:
-        st.error(f"❌ خطأ في JSON: {e}")
-        return {}, [], Counter()
-    except Exception as e:
-        st.error(f"❌ خطأ في قراءة الملف: {e}")
-        return {}, [], Counter()
-    
+        except json.JSONDecodeError as e:
+            st.error(f"❌ خطأ في JSON: {e}")
+            return {}, [], Counter()
     r_index = {}
     all_roots = []
     orbit_counter = Counter()
@@ -457,61 +421,74 @@ def load_quran_matrix():
     """تحميل آيات القرآن من الملف الصحيح matrix_data.json"""
     path = get_absolute_path("matrix_data.json")
     if path:
-        try:
-def deepseek_brain_analysis():
-    """
-    تحليل الوعي الفوقي للنظام:
-    - تحليل العلاقة بين التأثير والجذور
-    - تقديم نصيحة استراتيجية
-    """
-    if not st.session_state.system_log:
-        return None, "لا توجد بيانات كافية في السجل السيادي لإجراء تحليل الوعي الفوقي."
-    
-    try:
-        # 1. تجهيز البيانات
-        df_log = pd.DataFrame(st.session_state.system_log)
-        
-        # 2. حساب المؤشرات الكبرى
-        avg_shift = df_log['ascent'].mean() if 'ascent' in df_log.columns else 0
-        dominant_root = df_log['top_root'].iloc[-1] if 'top_root' in df_log.columns else "غير محدد"
-        dominant_influence = df_log['new_influence'].mean() if 'new_influence' in df_log.columns else 0
-        
-        # 3. رصد التوجه السيادي (المحرك التصحيحي)
-        if len(df_log) > 1:
-            is_ascending = df_log['new_influence'].iloc[-1] > df_log['new_influence'].iloc[0]
-            shift_trend = "تصاعدي 📈" if is_ascending else "مستقر ⚖️"
-        else:
-            shift_trend = "في طور التكوين 🌱"
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
 
-        # 4. صياغة البيان الفوقي
-        meta_insight = f"""
-        • الجذر الأكثر تأثيراً حالياً: <b style="color:#00ffcc;">{dominant_root}</b><br>
-        • متوسط التأثير الوجودي: {dominant_influence:.2f}<br>
-        • اتجاه الإزاحة الحالي: <b>{shift_trend}</b> (المتوسط: {avg_shift:.2f})
-        """
-        
-        # 5. النصيحة الاستراتيجية بناءً على التوجه
-        if avg_shift > 0:
-            prediction = f"""
-            <div class="meta-prediction">
-            📍 <b>قانون الإزاحة القادم:</b><br>
-            بما أن المؤشر في اتجاه <b>تصاعدي</b>، يُتوقع تعاظم طاقة الصعود والشمول. 
-            يُنصح بمراقبة تحولات الجينات نحو مدارات الإشراق (N).
-            </div>
-            """
-        else:
-            prediction = f"""
-            <div class="meta-prediction">
-            📍 <b>قانون الإزاحة القادم:</b><br>
-            المؤشر يميل للثبات، مما يشير إلى مرحلة تمكين أرضي. 
-            يُتوقع بروز جذور مدارات التجذر (B). ركز على نصوص البناء والاستقرار.
-            </div>
-            """
-        
-        return meta_insight, prediction
-        
-    except Exception as e:
-        return None, f"خطأ في تحليل الوعي الفوقي: {str(e)}"
+@st.cache_data(ttl=3600)
+def load_quran_roots():
+    """تحميل جذور القرآن من الملف الصحيح quran_roots_complete.json"""
+    path = get_absolute_path("quran_roots_complete.json")
+    if not path:
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    roots_map = {}
+    roots_list = data.get("roots", []) if isinstance(data, dict) else data
+    for item in roots_list:
+        raw_root = item.get("root", "")
+        if not raw_root: 
+            continue
+        norm = normalize_sovereign(raw_root)
+        roots_map[norm] = {
+            "root_raw": raw_root,
+            "orbit_id": 0,
+            "orbit": item.get("orbit_hint", "آيات_الكون"),
+            "weight": float(item.get("frequency", 10)),
+            "insight": f"جذر قرآني سيادي (التكرار: {item.get('frequency', 'غير محدد')})",
+            "gene_base": "N"
+        }
+    return roots_map
+
+# ==============================================================================
+# [14] الدوال المركزية للمحرك المداري (قلب النظام من v40.2)
+# ==============================================================================
+def display_insight_cards(bodies):
+    """عرض بطاقات الاستنطاق"""
+    if not bodies:
+        return
+    for res in bodies:
+        gene_base = res.get('gene_base', res.get('gene', 'N'))
+        base_info = GENE_STYLE.get(gene_base, GENE_STYLE['N'])
+        st.markdown(f"""
+        <div class="insight-card" style="border-right-color: {res['color']}">
+            <b style="color:{res['color']}; font-size:1.2em;">📌 الجذر: {res['root']}</b> |
+            🧬 الجين النهائي: {res['icon']} {res['gene_name']} |
+            🧱 الجين القاعدي: {base_info['icon']} {base_info['name']} |
+            ⚡ الطاقة: <span class="energy-badge">{res['energy']:.1f}</span><br>
+            🔄 المصدر: {res.get('source', res['root'])} |
+            📐 النمط: {res.get('pattern', 'مباشر')} |
+            🪜 الرتبة الصرفية: {res.get('morph_rank', '-')} |
+            ✨ عامل الإشراق: {res.get('sig_n_factor', '-')}<br>
+            🛰️ المدار: {res.get('orbit', 'وعي')} |
+            📍 الموضع: ({res.get('x', 0)}, {res.get('y', 0)})
+            <hr style="border:0.5px solid #333; margin:10px 0;">
+            <p>🔮 {res['insight']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+def process_text_and_generate_bodies(input_text, r_index):
+    """الدالة الأساسية لتحويل النص إلى أجسام مدارية"""
+    clean_text = normalize_sovereign(input_text)
+    words = clean_text.split()
+    bodies = []
+    unique_roots = []
+    all_matched_roots = []
+    temp_meta = []
+    
+    for pos, word in enumerate(words):
+        rk, mode, pattern_name, morph_rank = extract_candidate_root_v31(word, r_index.keys())
         temp_meta.append({"word": word, "pos": pos, "rk": rk, "mode": mode, "pattern_name": pattern_name, "morph_rank": morph_rank})
         if rk:
             all_matched_roots.append(rk)
@@ -629,91 +606,53 @@ def run_orbital_analysis(text, r_index):
         st.error("⚠️ لم يتم العثور على جذور مطابقة.")
 
 # ==============================================================================
-# [15] دالة الوعي الفوقي (DeepSeek Brain)
+# [15] دوال v54.2 للرادار السيادي
 # ==============================================================================
-def deepseek_brain_analysis():
-    """
-    تحليل الوعي الفوقي للنظام:
-    - قراءة system_log كـ DataFrame
-    - تحليل العلاقة بين new_influence و top_root
-    - تقديم نصيحة استراتيجية حول قانون الإزاحة
-    """
-    if not st.session_state.system_log:
-        return None, "لا توجد بيانات كافية في السجل السيادي لإجراء تحليل الوعي الفوقي."
+def analyze_ayah_live(ayah_obj, r_index, meta_law):
+    roots = ayah_obj.get("roots", [])
+    if not roots: 
+        return None
     
-    try:
-        # تحويل السجل إلى DataFrame
-        df_log = pd.DataFrame(st.session_state.system_log)
-        
-        # التحقق من وجود الأعمدة المطلوبة
-        required_cols = ['new_influence', 'top_root', 'ascent']
-        missing_cols = [col for col in required_cols if col not in df_log.columns]
-        if missing_cols:
-            return None, f"البيانات غير مكتملة: {missing_cols}"
-        
-        # تحليل العلاقة بين new_influence و top_root
-        root_influence = df_log.groupby('top_root')['new_influence'].agg(['mean', 'count', 'std']).fillna(0)
-        root_influence = root_influence.sort_values('mean', ascending=False)
-        
-        # تحليل اتجاه الإزاحة
-  # --- بداية قطاع رصد التوجه السيادي ---
-# تأكد من حذف أي try أو if قديمة في هذه المنطقة قبل اللصق
-try:
-    # تحويل السجلات إلى DataFrame بأمان
-    recent_logs = pd.DataFrame(st.session_state.system_log)
+    root_counts = Counter(roots)
+    total_energy, total_ascent = 0, 0
     
-    # التحقق من وجود بيانات كافية للحساب
-    if not recent_logs.empty and len(recent_logs) > 1:
-        # حساب التوجه بناءً على آخر إزاحة مقارنة بالأولى
-        is_ascending = recent_logs['new_influence'].iloc[-1] > recent_logs['new_influence'].iloc[0]
-        shift_trend = "تصاعدي 📈" if is_ascending else "مستقر ⚖️"
-    else:
-        shift_trend = "في طور التكوين 🌱"
+    for r, count in root_counts.items():
+        if r in r_index:
+            e = r_index[r]
+            g_mult = meta_law["gene_weight"].get(e.get("gene_base", "N"), 1.0)
+            
+            energy = (e.get("weight", 1.0) * count) * meta_law["energy_bias"]
+            res = e.get("resonance_bias", 1.0) * meta_law["root_influence"] * g_mult
+            
+            total_energy += energy
+            total_ascent += (energy * res) * meta_law["ascent_bias"]
+            
+    return {
+        "energy": total_energy, 
+        "ascent": total_ascent, 
+        "root_counts": dict(root_counts)
+    }
 
-except Exception as e:
-    # في حال حدوث أي خطأ تقني، النظام لا ينهار
-    shift_trend = "تحت الرصد"
-    st.sidebar.error(f"تنبيه في وحدة الرصد: {e}")
+@st.cache_data
+def build_living_consciousness(_q_data, _r_idx, meta_law_json):
+    meta_law = json.loads(meta_law_json)
+    root_freq = Counter()
+    surah_stats = defaultdict(lambda: {"energy": 0, "ascent": 0, "name": ""})
+    
+    for ayah in _q_data:
+        res = analyze_ayah_live(ayah, _r_idx, meta_law)
+        if res:
+            s_num = ayah["surah_number"]
+            surah_stats[s_num]["energy"] += res["energy"]
+            surah_stats[s_num]["ascent"] += res["ascent"]
+            surah_stats[s_num]["name"] = ayah["surah_name"]
+            root_freq.update(res["root_counts"])
 
-# عرض النتيجة في الواجهة
-st.info(f"📊 **توجه النظام الحالي:** {shift_trend}")
-# --- نهاية قطاع رصد التوجه السيادي ---
-        
-        • الجذر الأكثر تأثيراً: <b style="color:#00ffcc;">{dominant_root}</b> (متوسط التأثير: {dominant_influence:.2f})
-        • اتجاه الإزاحة الحالي: <b>{shift_trend}</b> (متوسط الإزاحة: {avg_shift:.2f})
-        
-        """
-        
-        # النصيحة الاستراتيجية
-        if avg_shift > 0:
-            prediction = f"""
-            <div class="meta-prediction">
-            📍 <b>قانون الإزاحة القادم:</b><br>
-            بما أن المؤشر في اتجاه <b>تصاعدي</b>، يُتوقع أن تزداد قوة الجذر <b>{dominant_root}</b> في التحليلات القادمة.
-            يُنصح بالتركيز على النصوص التي تعزز طاقة الصعود والشمول، مع مراقبة تحولات الجينات نحو مدارات الإشراق (N).
-            </div>
-            """
-        elif avg_shift < 0:
-            prediction = f"""
-            <div class="meta-prediction">
-            📍 <b>قانون الإزاحة القادم:</b><br>
-            المؤشر في اتجاه <b>تنازلي</b>، مما يشير إلى مرحلة تثبيت وتمكين أرضي.
-            يُتوقع أن تبرز جذور مدارات التجذر (B) والتمكين. يُنصح بالتركيز على النصوص التي تعزز الثبات والبناء.
-            </div>
-            """
-        else:
-            prediction = f"""
-            <div class="meta-prediction">
-            📍 <b>قانون الإزاحة القادم:</b><br>
-            النظام في حالة <b>توازن</b> بين الصعود والثبات.
-            يُتوقع تنوع في الجذور المستنطقة مع ميل خفيف نحو الجذر الأكثر تأثيراً: <b>{dominant_root}</b>.
-            </div>
-            """
-        
-        return meta_insight, prediction
-        
-    except Exception as e:
-        return None, f"خطأ في تحليل الوعي الفوقي: {str(e)}"
+    radar_df = pd.DataFrame([
+        {"surah": k, "name": v["name"], "energy": round(v["energy"], 2), "ascent": round(v["ascent"], 2)}
+        for k, v in surah_stats.items()
+    ])
+    return {"patterns": {"root_frequency": root_freq}, "cosmic_radar": radar_df}
 
 # ==============================================================================
 # [16] تهيئة قاعدة البيانات والدمج
@@ -731,6 +670,10 @@ for k, v in quran_roots_index.items():
 # إضافة index لكل آية لتوليد مفاتيح ديناميكية
 for i, entry in enumerate(quran_data):
     entry['index'] = i
+
+# حساب الوعي مرة واحدة لخدمة كافة التبويبات (Handoff)
+law_key = json.dumps(st.session_state.active_meta_law, sort_keys=True)
+mind = build_living_consciousness(quran_data, r_index, law_key)
 
 # الشريط الجانبي
 with st.sidebar:
@@ -755,20 +698,35 @@ with st.sidebar:
         {''.join([f'<p>🔹 {k}: {v} جذراً</p>' for k, v in sorted(orbit_counter.items())])}
     </div>
     ---
-    <p>خِت فِت.</p>
     """, unsafe_allow_html=True)
+    
+    st.sidebar.metric("قوة الإزاحة الحالية", round(st.session_state.active_meta_law["root_influence"], 3))
+    
+    if st.sidebar.button("♻️ إعادة الضبط الجذري"):
+        st.session_state.active_meta_law = {"root_influence": 1.0, "ascent_bias": 1.0, "energy_bias": 1.0, "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}}
+        st.session_state.system_log = []
+        st.rerun()
+    
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("<p>خِت فِت.</p>", unsafe_allow_html=True)
 
 # ==============================================================================
-# [17] التبويبات (النسخة القرآنية هو القائد)
+# [17] التبويبات (دمج التبويبات من كلا الإصدارين)
 # ==============================================================================
 tabs = st.tabs([
-    "📖 النسخة القرآنية", "🔍 الاستنطاق المداري", "🧠 الوعي الفوقي",
-    "🌌 الرنين الجيني", "📈 اللوحة الوجودية", "📜 البيان الختامي", 
-    "⚖️ الميزان السيادي", "📡 الرنين السياقي", "📈 المنحنى الزمني"
+    "📖 النسخة القرآنية",        # من v40.2
+    "🔍 الاستنطاق المداري",      # من v40.2
+    "🛰️ الرادار السيادي",         # من v54.2
+    "⚖️ مولّد القوانين",         # من v54.2
+    "🌐 الواقع الفوقي",           # من v54.2
+    "🌌 الرنين الجيني",           # من v40.2
+    "📈 اللوحة الوجودية",         # من v40.2
+    "📜 البيان الختامي",          # من v40.2
+    "📡 الرنين السياقي"           # من v40.2
 ])
 
 # ==============================================================================
-# [18] التبويب الأول [0]: النسخة القرآنية (تجهيز الشحنة)
+# [18] التبويب [0]: النسخة القرآنية (من v40.2)
 # ==============================================================================
 with tabs[0]:
     st.markdown("### 📖 استنطاق الآيات القرآنية (Q-Mode)")
@@ -798,11 +756,9 @@ with tabs[0]:
             </div>
             """, unsafe_allow_html=True)
             
-            # مفتاح ديناميكي لكسر الجمود (يعتمد على index الآية)
             btn_key = f"btn_run_{v_obj.get('index', hash(v_obj['text']))}"
             if st.button("🚀 تفعيل المفاعل السيادي للآية", use_container_width=True, key=btn_key):
                 import time
-                # شحن النص وتوليد الهوية الديناميكية
                 st.session_state.input_area = v_obj['text']
                 st.session_state.widget_key = f"q_key_{time.time()}"
                 st.session_state.trigger_analysis = True
@@ -810,22 +766,19 @@ with tabs[0]:
                 st.rerun()
 
 # ==============================================================================
-# [19] التبويب الثاني [1]: الاستنطاق المداري (الاستقبال والتشغيل)
+# [19] التبويب [1]: الاستنطاق المداري (من v40.2)
 # ==============================================================================
 with tabs[1]:
     st.markdown("### 🔍 المفاعل السيادي للاستنطاق المداري")
     
-    # استقبال الهوية الجديدة
     c_key = st.session_state.get('widget_key', 'orbital_init_v1')
     c_text = st.session_state.get('input_area', "")
     
-    # الحقن في الحالة قبل العرض
     if st.session_state.get(c_key) is None:
         st.session_state[c_key] = c_text
     
-    # المربع النصي الذكي
     input_text = st.text_area("النص محل الاستنطاق:", key=c_key, height=180)
-    st.session_state.input_area = input_text  # مزامنة عكسية
+    st.session_state.input_area = input_text
     
     col1, col2 = st.columns([3, 1])
     with col1:
@@ -833,85 +786,86 @@ with tabs[1]:
     with col2:
         archive_btn = st.button("🏁 خِت فِت (ختم الجلسة)", use_container_width=True)
     
-    # التشغيل التلقائي عند الحقن أو يدوياً عند ضغط زر التحليل
     if st.session_state.get('trigger_analysis', False) or manual_btn:
-        st.session_state.trigger_analysis = False  # خفض الراية
+        st.session_state.trigger_analysis = False
         if input_text:
             run_orbital_analysis(input_text, r_index)
         else:
             st.warning("⚠️ الرجاء إدخال نص أو شحن آية من التبويب القرآني.")
     
-    # أرشفة الجلسة
     elif archive_btn and st.session_state.orbit_active and st.session_state.orbit_bodies:
         ascent_score = compute_ascent_vector(st.session_state.orbit_bodies)
         if khit_fit_archive(st.session_state.orbit_bodies, ascent_score):
             st.success("🔒 تم تشفير الجلسة في الذاكرة العميقة (data/deep_memory.json).")
-            st.rerun()
         else:
             st.error("❌ فشل في أرشفة الجلسة.")
     elif archive_btn:
         st.warning("⚠️ لا توجد جلسة نشطة لأرشفتها.")
 
 # ==============================================================================
-# [20] التبويب الثالث [2]: الوعي الفوقي (DeepSeek Brain)
+# [20] التبويب [2]: الرادار السيادي (من v54.2)
 # ==============================================================================
 with tabs[2]:
-    st.markdown("### 🧠 الوعي الفوقي - بيان الاستبصار السيادي")
-    
-    if not st.session_state.system_log:
-        st.info("📊 لا توجد جلسات مؤرشفة بعد. قم بتحليل بعض النصوص ثم اضغط على 'ختم الجلسة' لتوليد السجل السيادي.")
+    st.markdown("### 🛰️ رادار التموضع الوجودي")
+    if not mind["cosmic_radar"].empty:
+        fig = px.scatter(
+            mind["cosmic_radar"], x="energy", y="ascent", text="name", 
+            color="ascent", size="energy", hover_data=["surah"], height=600,
+            color_continuous_scale="Tealrose"
+        )
+        st.plotly_chart(fig, use_container_width=True)
     else:
-        # عرض إحصائيات السجل
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("عدد الجلسات المؤرشفة", len(st.session_state.system_log))
-        with col2:
-            avg_ascent = sum(log.get('ascent', 0) for log in st.session_state.system_log) / len(st.session_state.system_log)
-            st.metric("متوسط مؤشر الصعود", f"{avg_ascent:.2f}")
-        with col3:
-            if st.session_state.active_meta_law.get('top_root'):
-                st.metric("الجذر الأحدث", st.session_state.active_meta_law['top_root'])
-        
-        # تحليل الوعي الفوقي
-        meta_insight, prediction = deepseek_brain_analysis()
-        
-        if meta_insight:
-            st.markdown(f"""
-            <div class="meta-consciousness">
-                <div class="meta-title">🌌 البيان الفوقي للنظام</div>
-                <div class="meta-insight">{meta_insight}</div>
-                {prediction if prediction else ''}
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.warning(prediction if prediction else "تعذر إجراء تحليل الوعي الفوقي.")
-        
-        # عرض السجل التفصيلي
-        with st.expander("📋 السجل السيادي التفصيلي"):
-            df_log = pd.DataFrame(st.session_state.system_log)
-            # تنسيق الأعمدة للعرض
-            display_cols = ['timestamp', 'ascent', 'dominant_gene', 'top_root', 'total_energy']
-            available_cols = [col for col in display_cols if col in df_log.columns]
-            if available_cols:
-                st.dataframe(df_log[available_cols], use_container_width=True)
-            else:
-                st.dataframe(df_log, use_container_width=True)
-        
-        # زر مسح السجل (بحذر)
-        if st.button("🗑️ مسح السجل السيادي", use_container_width=True):
-            st.session_state.system_log = []
-            st.session_state.active_meta_law = {
-                "shift_value": 0.0,
-                "top_root": "",
-                "new_influence": 0.0,
-                "last_update": time.time()
-            }
-            st.rerun()
+        st.warning("⚠️ الرادار بانتظار نبض البيانات.")
 
 # ==============================================================================
-# [21] التبويبات المتبقية (3-8) مختصرة ولكنها كاملة وظيفياً
+# [21] التبويب [3]: مولّد القوانين (من v54.2)
 # ==============================================================================
 with tabs[3]:
+    st.markdown("### ⚖️ محرك حقن القوانين")
+    shift = st.select_slider("اختر معامل الإزاحة السيادية:", options=[1.02, 1.05, 1.10, 1.15, 1.20])
+    
+    if st.button("🚀 تفعيل القانون الجديد"):
+        new_law = copy.deepcopy(st.session_state.active_meta_law)
+        new_law["root_influence"] *= shift
+        new_law["ascent_bias"] *= (shift - 0.01)
+        
+        st.session_state.system_log.append({
+            "step": len(st.session_state.system_log) + 1,
+            "shift_value": shift,
+            "new_influence": new_law["root_influence"],
+            "timestamp": pd.Timestamp.now().strftime("%H:%M:%S")
+        })
+        
+        st.session_state.active_meta_law = new_law
+        st.success(f"✅ تم حقن الإزاحة {shift}x بنجاح.")
+        st.rerun()
+
+# ==============================================================================
+# [22] التبويب [4]: الواقع الفوقي (من v54.2)
+# ==============================================================================
+with tabs[4]:
+    st.markdown("## 🌐 محرك الواقع الفوقي (Real-time Engine)")
+    
+    if not mind["cosmic_radar"].empty:
+        top_surah = mind["cosmic_radar"].nlargest(1, "ascent").iloc[0]
+        top_root = mind["patterns"]["root_frequency"].most_common(1)[0] if mind["patterns"]["root_frequency"] else ("لا يوجد", 0)
+        
+        c1, c2, c3 = st.columns(3)
+        c1.metric("السورة القائدة", top_surah["name"])
+        c2.metric("الجذر المهيمن", f"{top_root[0]} ({top_root[1]})")
+        c3.metric("مستوى الوعي (Logs)", len(st.session_state.system_log))
+        
+        st.markdown("---")
+        st.markdown("### 📜 سجل تطور النظام (Structured History)")
+        if st.session_state.system_log:
+            st.table(st.session_state.system_log[-5:])
+    else:
+        st.error("الواقع الفوقي خارج نطاق الرصد.")
+
+# ==============================================================================
+# [23] التبويبات المتبقية (5-8) من v40.2
+# ==============================================================================
+with tabs[5]:
     st.markdown("### 🌌 مصفوفة الرنين والاستحقاق المداري")
     cols = st.columns(4)
     for i, (code, info) in enumerate(GENE_STYLE.items()):
@@ -929,7 +883,7 @@ with tabs[3]:
                 gi = GENE_STYLE.get(found.get('gene_base', 'N'), GENE_STYLE['N'])
                 st.markdown(f"<div class='insight-card' style='border-right-color:{gi['color']}'><b style='color:{gi['color']}'>📌 الجذر: {found['root_raw']}</b><br>🧬 الجين القاعدي: {gi['icon']} {gi['name']}<br>🔄 المدار: {found['orbit']} (ID: {found.get('orbit_id', 0)})<br>⚡ الوزن الأصلي: {found.get('weight', 1.0)} | الطاقة الأساسية: {found.get('raw_energy', 0):.1f}<br><hr><p>🔮 {found['insight']}</p></div>", unsafe_allow_html=True)
 
-with tabs[4]:
+with tabs[6]:
     st.markdown("### 📈 التحليل الكمي للمدار")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         df = pd.DataFrame(st.session_state.orbit_bodies)
@@ -943,7 +897,7 @@ with tabs[4]:
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
-with tabs[5]:
+with tabs[7]:
     st.markdown("### 📜 البيان الختامي")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         bodies = st.session_state.orbit_bodies
@@ -955,14 +909,7 @@ with tabs[5]:
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
-with tabs[6]:
-    st.markdown("### ⚖️ ميزان النزاهة الجذرية")
-    if st.session_state.orbit_active and st.session_state.orbit_bodies:
-        display_insight_cards(st.session_state.orbit_bodies)
-    else:
-        st.info("⚙️ انتظر تفعيل المفاعل.")
-
-with tabs[7]:
+with tabs[8]:
     st.markdown("### 📡 الرنين السياقي")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         resonance_edges = build_resonance_network(st.session_state.orbit_bodies)
@@ -975,29 +922,7 @@ with tabs[7]:
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
-with tabs[8]:
-    st.markdown("### 📈 المنحنى الزمني")
-    if st.session_state.orbit_active and st.session_state.orbit_bodies:
-        bodies = sorted(st.session_state.orbit_bodies, key=lambda x: x.get('pos', 0))
-        if bodies:
-            seq_data = [{"الترتيب": b.get('pos', i), "الجذر": b['root'], "الطاقة": b['energy'], "المدار": b.get('orbit_id', 0), "الجين": b['gene'], "الإشراق": b.get('sig_n_factor', 0)} for i, b in enumerate(bodies)]
-            df_seq = pd.DataFrame(seq_data)
-            fig = px.line(df_seq, x="الترتيب", y="الطاقة", markers=True, title="منحنى تدفق الطاقة في النص")
-            fig.update_traces(line_color='#00ffcc', marker_color='#FFD700', marker_size=10)
-            fig.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig, use_container_width=True)
-            st.dataframe(df_seq[["الترتيب", "الجذر", "الطاقة", "المدار", "الجين", "الإشراق"]], use_container_width=True)
-            energies = [b['energy'] for b in bodies]
-            if len(energies) > 1:
-                trend = energies[-1] - energies[0]
-                trend_text = "📈 تصاعدي" if trend > 0 else "📉 تنازلي" if trend < 0 else "➡️ مستقر"
-                st.info(f"اتجاه الطاقة: {trend_text} (التغير: {trend:.1f})")
-        else:
-            st.info("لا توجد بيانات كافية.")
-    else:
-        st.info("⚙️ انتظر تفعيل المفاعل.")
-
 # ==============================================================================
 # نهاية الكود - الإصدار v55.0 النهائي
-# الربط العضوي الكامل: القرآن ⬅️ المفاعل ⬅️ الوعي الفوقي
+# الدمج الكامل بين v54.2 و v40.2
 # ==============================================================================
