@@ -677,27 +677,28 @@ def deepseek_brain_analysis():
         root_influence = root_influence.sort_values('mean', ascending=False)
         
         # تحليل اتجاه الإزاحة
-        # --- قطاع تحليل التوجه السيادي (المحمي) ---
+  # --- بداية قطاع رصد التوجه السيادي ---
+# تأكد من حذف أي try أو if قديمة في هذه المنطقة قبل اللصق
 try:
+    # تحويل السجلات إلى DataFrame بأمان
     recent_logs = pd.DataFrame(st.session_state.system_log)
     
+    # التحقق من وجود بيانات كافية للحساب
     if not recent_logs.empty and len(recent_logs) > 1:
-        # المسمار 1: تصحيح الـ Ternary Operator بالكامل
+        # حساب التوجه بناءً على آخر إزاحة مقارنة بالأولى
         is_ascending = recent_logs['new_influence'].iloc[-1] > recent_logs['new_influence'].iloc[0]
         shift_trend = "تصاعدي 📈" if is_ascending else "مستقر ⚖️"
     else:
         shift_trend = "في طور التكوين 🌱"
-        
-except Exception as e:
-    # المسمار 2: ضمان وجود مخرج حتى لو فشل التحليل
-    shift_trend = "تحت الرصد"
-    st.sidebar.caption(f"تنبيه تقني بسيط: {e}")
 
-# الآن يمكنك استخدام shift_trend في الواجهة بأمان
-st.write(f"📊 توجه النظام الحالي: **{shift_trend}**")
-        # صياغة البيان الفوقي
-        meta_insight = f"""
-        بناءً على تحليل <b>{len(df_log)}</b> جلسة سابقة في السجل السيادي:
+except Exception as e:
+    # في حال حدوث أي خطأ تقني، النظام لا ينهار
+    shift_trend = "تحت الرصد"
+    st.sidebar.error(f"تنبيه في وحدة الرصد: {e}")
+
+# عرض النتيجة في الواجهة
+st.info(f"📊 **توجه النظام الحالي:** {shift_trend}")
+# --- نهاية قطاع رصد التوجه السيادي ---
         
         • الجذر الأكثر تأثيراً: <b style="color:#00ffcc;">{dominant_root}</b> (متوسط التأثير: {dominant_influence:.2f})
         • اتجاه الإزاحة الحالي: <b>{shift_trend}</b> (متوسط الإزاحة: {avg_shift:.2f})
