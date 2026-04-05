@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v65.0
-# الإصدار: الميثاقي - الدمج الكامل بين v63.2 و v40.2
-# الحوكمة الاستراتيجية + الاستنطاق القرآني + التثبيت الفائق
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v66.0
+# الإصدار: الميثاقي - مع إصلاح خطأ تكرار المعرف (Duplicate Element ID)
 # المستخدم المهيمن: محمّد
 # ==============================================================================
 
@@ -61,10 +60,9 @@ def ensure_dot(text):
     return s
 
 # ==============================================================================
-# [3] تهيئة الذاكرة المركزية وحماية الفساد (v63.2 Self-Healing)
+# [3] تهيئة الذاكرة المركزية وحماية الفساد
 # ==============================================================================
 def sanitize_session_state():
-    """تنقية وتصحيح حالة الجلسة عند التحميل"""
     if "active_meta_law" not in st.session_state or not isinstance(st.session_state.active_meta_law, dict):
         st.session_state.active_meta_law = {"root_influence": 1.0, "energy_bias": 1.0, "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}}
     else:
@@ -99,11 +97,7 @@ def sanitize_session_state():
     if "last_correction_cycle" not in st.session_state:
         st.session_state.last_correction_cycle = -9999
     if "last_correction_snapshot" not in st.session_state:
-        st.session_state.last_correction_snapshot = {
-            "root_influence": None,
-            "energy_bias": None,
-            "strategy": None
-        }
+        st.session_state.last_correction_snapshot = {"root_influence": None, "energy_bias": None, "strategy": None}
     if "correction_cooldown" not in st.session_state:
         st.session_state.correction_cooldown = 2
     
@@ -126,7 +120,7 @@ def sanitize_session_state():
 # [4] إعدادات الهوية السيادية
 # ==============================================================================
 sanitize_session_state()
-st.set_page_config(page_title="Nibras v65.0 - السيادة المطلقة", layout="wide")
+st.set_page_config(page_title="Nibras v66.0 - السيادة المطلقة", layout="wide")
 
 st.markdown("""
 <style>
@@ -467,7 +461,7 @@ def load_quran_roots():
     return roots_map
 
 # ==============================================================================
-# [14] دوال المحرك المداري
+# [14] دوال المحرك المداري مع إصلاح خطأ تكرار المعرف
 # ==============================================================================
 def display_insight_cards(bodies):
     if not bodies:
@@ -544,7 +538,10 @@ def process_text_and_generate_bodies(input_text, r_index):
     
     return bodies, unique_roots
 
-def display_orbital_radar(bodies):
+# ==============================================================================
+# [15] دالة الرادار مع مفتاح فريد (إصلاح الخطأ)
+# ==============================================================================
+def display_orbital_radar(bodies, key_suffix="main"):
     if not bodies:
         return
     df = pd.DataFrame(bodies)
@@ -561,7 +558,8 @@ def display_orbital_radar(bodies):
                       annotations=[dict(x=0, y=radius, text=f"M{i+1}", showarrow=False,
                                         font=dict(color="grey", size=8))
                                   for i, radius in enumerate([4, 8, 12, 16, 20, 24, 28, 32])])
-    st.plotly_chart(fig, use_container_width=True)
+    # المفتاح الفريد لكل رسمة - هذا هو إصلاح الخطأ
+    st.plotly_chart(fig, use_container_width=True, key=f"radar_chart_{key_suffix}")
 
 def calculate_orbits(text, r_index):
     if not text:
@@ -569,18 +567,18 @@ def calculate_orbits(text, r_index):
     bodies, _ = process_text_and_generate_bodies(text, r_index)
     return bodies
 
-def display_orbital_results():
+def display_orbital_results(key_suffix="orbital"):
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         bodies = st.session_state.orbit_bodies
         ascent_score = compute_ascent_vector(bodies)
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v65.0</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v66.0</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
-        display_orbital_radar(bodies)
+        display_orbital_radar(bodies, key_suffix=key_suffix)
         total_e = sum(b['energy'] for b in bodies)
         genes_count = Counter(b['gene'] for b in bodies)
         dom_gene = max(genes_count, key=genes_count.get)
@@ -596,7 +594,7 @@ def display_orbital_results():
     return False
 
 # ==============================================================================
-# [15] دوال v63 - الحوكمة الاستراتيجية
+# [16] دوال v63 - الحوكمة الاستراتيجية
 # ==============================================================================
 def get_current_cycle_index():
     return len(st.session_state.get("system_log", []))
@@ -797,7 +795,7 @@ def reset_nibras_system():
     st.session_state.current_text = ""
 
 # ==============================================================================
-# [16] دوال الرادار
+# [17] دوال الرادار
 # ==============================================================================
 def generate_sample_radar_data():
     sample_data = pd.DataFrame({
@@ -855,7 +853,7 @@ def update_cosmic_radar(quran_data, r_index, meta_law):
         st.session_state.root_frequency_data = generate_sample_root_frequency()
 
 # ==============================================================================
-# [17] محرك الحقن السيادي
+# [18] محرك الحقن السيادي
 # ==============================================================================
 def initialize_sovereign_memory():
     lex_path = get_absolute_path("nibras_lexicon.json")
@@ -885,7 +883,7 @@ with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
         <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-        <p>الإصدار v65.0 - الميثاقي</p>
+        <p>الإصدار v66.0 - الميثاقي</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -898,7 +896,7 @@ with st.sidebar:
     st.sidebar.markdown("<p>خِت فِت.</p>", unsafe_allow_html=True)
 
 # ==============================================================================
-# [18] التبويبات الرئيسية (9 تبويبات كاملة)
+# [19] التبويبات الرئيسية (9 تبويبات كاملة)
 # ==============================================================================
 tab_titles = [
     "📖 النسخة القرآنية", "🔍 الاستنطاق المداري", "🛰️ الرادار السيادي",
@@ -978,8 +976,9 @@ with tabs[1]:
                 st.error("⚠️ لم يتم العثور على جذور مطابقة.")
         else:
             st.warning("⚠️ الرجاء إدخال نص للتحليل.")
+    # عرض النتائج بمفتاح فريد "orbital"
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
-        display_orbital_results()
+        display_orbital_results(key_suffix="orbital")
     elif not st.session_state.orbit_bodies:
         st.warning("⚠️ المفاعل بانتظار إشارة البدء من التبويب القرآني")
         if st.button("🔄 تنشيط يدوي للمفاعل", use_container_width=True):
@@ -1029,7 +1028,7 @@ with tabs[2]:
         if not df_valid.empty:
             fig = px.line(df_valid, x="cycle", y="new_influence", title="تطور تأثير الجذر", markers=True)
             fig.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="evolution_chart")
         else:
             st.info("📊 لا توجد بيانات كافية لعرض الرسم البياني")
     else:
@@ -1038,7 +1037,7 @@ with tabs[2]:
         st.warning("⚠️ الرادار بانتظار نبض البيانات. قم بتحليل آية أولاً.")
     else:
         fig = px.scatter(st.session_state.cosmic_radar_data, x="energy", y="ascent", text="name", color="ascent", size="energy", hover_data=["surah"], height=500, color_continuous_scale="Tealrose")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="cosmic_radar_scatter")
 
 # ==============================================================================
 # تبويب 3: مولّد القوانين
@@ -1093,7 +1092,7 @@ with tabs[4]:
             st.success("✨ النظام في حالة تمدد استراتيجي نتيجة استقرار مرتفع.")
         else:
             st.info("⚖️ النظام يعمل في الوضع القياسي المتوازن.")
-    with st.expander("🛡️ حالة التثبيت الفائق (v65.0)", expanded=False):
+    with st.expander("🛡️ حالة التثبيت الفائق (v66.0)", expanded=False):
         st.markdown(f"**Cooldown الحالي:** `{st.session_state.get('correction_cooldown', 2)}` دورة")
         st.markdown(f"**آخر دورة تصحيح:** `{st.session_state.get('last_correction_cycle', -9999)}`")
         snap = st.session_state.get("last_correction_snapshot", {})
@@ -1160,9 +1159,9 @@ with tabs[6]:
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         df = pd.DataFrame(st.session_state.orbit_bodies)
         col1, col2 = st.columns(2)
-        col1.plotly_chart(px.pie(df, names='gene', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, hole=0.5, title="توزيع الجينات"))
-        col2.plotly_chart(px.bar(df.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="تعداد الأجسام"))
-        st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة الطاقة"))
+        col1.plotly_chart(px.pie(df, names='gene', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, hole=0.5, title="توزيع الجينات"), key="gene_pie_chart")
+        col2.plotly_chart(px.bar(df.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="تعداد الأجسام"), key="gene_bar_chart")
+        st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة الطاقة"), key="energy_scatter_chart")
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
@@ -1172,7 +1171,7 @@ with tabs[6]:
 with tabs[7]:
     st.markdown("### 📜 البيان الختامي")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
-        display_orbital_results()
+        display_orbital_results(key_suffix="final_statement")
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
@@ -1193,5 +1192,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار v65.0 النهائي
+# نهاية الكود - الإصدار v66.0 النهائي مع إصلاح خطأ تكرار المعرف
 # ==============================================================================
