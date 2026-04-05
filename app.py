@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v66.0
-# الإصدار: الميثاقي - مع إصلاح خطأ تكرار المعرف (Duplicate Element ID)
+# الإصدار: الميثاقي - مع ألواح التكوين (Manifestation Dashboard)
 # المستخدم المهيمن: محمّد
 # ==============================================================================
 
@@ -16,8 +16,8 @@ import time
 import hashlib
 import math
 import copy
-import random
 from itertools import combinations
+from datetime import datetime
 
 # ==============================================================================
 # [1] دوال المسار السيادية
@@ -60,7 +60,39 @@ def ensure_dot(text):
     return s
 
 # ==============================================================================
-# [3] تهيئة الذاكرة المركزية وحماية الفساد
+# [3] دوال مساعدة آمنة
+# ==============================================================================
+def safe_float(value, default=0.0):
+    try:
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            return float(value)
+        return default
+    except (ValueError, TypeError):
+        return default
+
+def safe_dict(value):
+    if isinstance(value, dict):
+        return value
+    return {}
+
+def safe_list(value):
+    if isinstance(value, list):
+        return value
+    return []
+
+def clamp(value, min_v, max_v):
+    return max(min_v, min(value, max_v))
+
+def human_ts(ts):
+    try:
+        return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return "غير معروف"
+
+# ==============================================================================
+# [4] تهيئة الذاكرة المركزية وحماية الفساد
 # ==============================================================================
 def sanitize_session_state():
     if "active_meta_law" not in st.session_state or not isinstance(st.session_state.active_meta_law, dict):
@@ -117,9 +149,35 @@ def sanitize_session_state():
         st.session_state.initialized = False
 
 # ==============================================================================
-# [4] إعدادات الهوية السيادية
+# [5] تهيئة ألواح التكوين (Manifestation State)
+# ==============================================================================
+def init_manifestation_state():
+    if "manifestation_target" not in st.session_state or not isinstance(st.session_state.manifestation_target, str):
+        st.session_state.manifestation_target = "رزق"
+    if "manifestation_custom_target" not in st.session_state or not isinstance(st.session_state.manifestation_custom_target, str):
+        st.session_state.manifestation_custom_target = ""
+    if "manifestation_protocol" not in st.session_state or not isinstance(st.session_state.manifestation_protocol, list):
+        st.session_state.manifestation_protocol = []
+    if "manifestation_missing_genes" not in st.session_state or not isinstance(st.session_state.manifestation_missing_genes, list):
+        st.session_state.manifestation_missing_genes = []
+    if "manifestation_active_covenant" not in st.session_state or not isinstance(st.session_state.manifestation_active_covenant, dict):
+        st.session_state.manifestation_active_covenant = {}
+    if "manifestation_history" not in st.session_state or not isinstance(st.session_state.manifestation_history, list):
+        st.session_state.manifestation_history = []
+    if "manifestation_enabled" not in st.session_state or not isinstance(st.session_state.manifestation_enabled, bool):
+        st.session_state.manifestation_enabled = True
+    if "manifestation_last_build_ts" not in st.session_state:
+        st.session_state.manifestation_last_build_ts = 0.0
+    if "manifestation_signal_score" not in st.session_state:
+        st.session_state.manifestation_signal_score = 0.0
+    if "manifestation_recommendation" not in st.session_state or not isinstance(st.session_state.manifestation_recommendation, str):
+        st.session_state.manifestation_recommendation = ""
+
+# ==============================================================================
+# [6] إعدادات الهوية السيادية
 # ==============================================================================
 sanitize_session_state()
+init_manifestation_state()
 st.set_page_config(page_title="Nibras v66.0 - السيادة المطلقة", layout="wide")
 
 st.markdown("""
@@ -162,11 +220,12 @@ st.markdown("""
     }
     .ascent-positive { background: linear-gradient(135deg, #0a2a0a 0%, #0a1a0a 100%); border-right: 5px solid #00ffcc; }
     .ascent-negative { background: linear-gradient(135deg, #2a0a0a 0%, #1a0a0a 100%); border-right: 5px solid #ff5252; }
+    .gene-badge { background: rgba(255,215,0,0.15); padding: 4px 12px; border-radius: 20px; margin: 2px; display: inline-block; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [5] مصفوفة الجينات
+# [7] مصفوفة الجينات
 # ==============================================================================
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 'meaning': 'طاقة المسير والتمكين البعيد'},
@@ -177,7 +236,7 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [6] المستخرج الاحتمالي v31
+# [8] المستخرج الاحتمالي v31
 # ==============================================================================
 COMMON_PREFIXES = ["وال", "بال", "كال", "فال", "لل", "ال", "و", "ف", "ب", "ك", "ل", "س"]
 COMMON_SUFFIXES = ["يات", "ات", "ون", "ين", "ان", "وا", "نا", "ها", "هم", "هن", "كم", "ني", "ة", "ه", "ي"]
@@ -233,7 +292,7 @@ def extract_candidate_root_v31(word, index_keys):
     return None, "unresolved", pattern_name, morph_rank
 
 # ==============================================================================
-# [7] التوقيع الجذري
+# [9] التوقيع الجذري
 # ==============================================================================
 def signature_from_root(root: str):
     if not root:
@@ -248,7 +307,7 @@ def signature_from_root(root: str):
     }
 
 # ==============================================================================
-# [8] الاستحقاق الجيني
+# [10] الاستحقاق الجيني
 # ==============================================================================
 def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
     orbit = int(orbit_id or 0)
@@ -281,7 +340,7 @@ def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
     return base_gene
 
 # ==============================================================================
-# [9] الطاقة الديناميكية
+# [11] الطاقة الديناميكية
 # ==============================================================================
 def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
     base_energy = base_w * 100 if base_w < 10 else base_w
@@ -294,7 +353,7 @@ def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
     return round(max(1.0, energy), 2)
 
 # ==============================================================================
-# [10] مؤشر الصعود
+# [12] مؤشر الصعود
 # ==============================================================================
 def compute_ascent_vector(bodies):
     if not bodies:
@@ -308,7 +367,7 @@ def compute_ascent_vector(bodies):
     return round(total / len(bodies), 2)
 
 # ==============================================================================
-# [11] شبكة الرنين
+# [13] شبكة الرنين
 # ==============================================================================
 def build_resonance_network(bodies):
     edges = []
@@ -337,7 +396,7 @@ def build_resonance_network(bodies):
     return sorted(edges, key=lambda x: x['strength'], reverse=True)
 
 # ==============================================================================
-# [12] بروتوكول خِت فِت للأرشفة
+# [14] بروتوكول خِت فِت للأرشفة
 # ==============================================================================
 def khit_fit_archive(res_bodies, ascent_score):
     if not res_bodies:
@@ -365,7 +424,7 @@ def khit_fit_archive(res_bodies, ascent_score):
     return True
 
 # ==============================================================================
-# [13] تحميل قواعد البيانات
+# [15] تحميل قواعد البيانات
 # ==============================================================================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
@@ -461,7 +520,7 @@ def load_quran_roots():
     return roots_map
 
 # ==============================================================================
-# [14] دوال المحرك المداري مع إصلاح خطأ تكرار المعرف
+# [16] دوال المحرك المداري
 # ==============================================================================
 def display_insight_cards(bodies):
     if not bodies:
@@ -538,9 +597,6 @@ def process_text_and_generate_bodies(input_text, r_index):
     
     return bodies, unique_roots
 
-# ==============================================================================
-# [15] دالة الرادار مع مفتاح فريد (إصلاح الخطأ)
-# ==============================================================================
 def display_orbital_radar(bodies, key_suffix="main"):
     if not bodies:
         return
@@ -558,7 +614,6 @@ def display_orbital_radar(bodies, key_suffix="main"):
                       annotations=[dict(x=0, y=radius, text=f"M{i+1}", showarrow=False,
                                         font=dict(color="grey", size=8))
                                   for i, radius in enumerate([4, 8, 12, 16, 20, 24, 28, 32])])
-    # المفتاح الفريد لكل رسمة - هذا هو إصلاح الخطأ
     st.plotly_chart(fig, use_container_width=True, key=f"radar_chart_{key_suffix}")
 
 def calculate_orbits(text, r_index):
@@ -594,7 +649,7 @@ def display_orbital_results(key_suffix="orbital"):
     return False
 
 # ==============================================================================
-# [16] دوال v63 - الحوكمة الاستراتيجية
+# [17] دوال v63 - الحوكمة الاستراتيجية
 # ==============================================================================
 def get_current_cycle_index():
     return len(st.session_state.get("system_log", []))
@@ -795,7 +850,303 @@ def reset_nibras_system():
     st.session_state.current_text = ""
 
 # ==============================================================================
-# [17] دوال الرادار
+# [18] دوال ألواح التكوين (Manifestation Dashboard)
+# ==============================================================================
+def safe_get_latest_analysis_snapshot():
+    """Return a safe, normalized snapshot of the latest meaningful system analysis"""
+    snapshot = {
+        "source": "fallback",
+        "root_influence": 1.0,
+        "energy_bias": 1.0,
+        "field_coherence": 1.0,
+        "volatility": 0.0,
+        "law_vector": {},
+        "genes": [],
+        "timestamp": time.time()
+    }
+    
+    try:
+        # محاولة استخراج البيانات من system_log
+        log = safe_list(st.session_state.get("system_log", []))
+        valid_entries = [e for e in log if isinstance(e, dict) and "new_influence" in e]
+        
+        if valid_entries:
+            latest = valid_entries[-1]
+            snapshot["root_influence"] = safe_float(latest.get("new_influence"), 1.0)
+            snapshot["energy_bias"] = safe_float(latest.get("energy_bias", 1.0), 1.0)
+            snapshot["source"] = "system_log"
+            snapshot["timestamp"] = safe_float(latest.get("timestamp", time.time()), time.time())
+            
+            # حساب التقلب
+            if len(valid_entries) > 1:
+                influences = [safe_float(e.get("new_influence", 1.0), 1.0) for e in valid_entries[-10:]]
+                if influences:
+                    snapshot["volatility"] = max(influences) - min(influences)
+        
+        # محاولة استخراج من orbit_bodies إذا كانت موجودة
+        if st.session_state.get("orbit_bodies") and not snapshot["genes"]:
+            bodies = safe_list(st.session_state.orbit_bodies)
+            if bodies:
+                genes = [b.get("gene", "N") for b in bodies if isinstance(b, dict)]
+                snapshot["genes"] = list(set(genes))
+        
+        # حساب التماسك الميداني
+        snapshot["field_coherence"] = clamp(1.0 - (snapshot["volatility"] * 2), 0.5, 1.0)
+        
+        # التقاط law_vector من active_meta_law
+        law = safe_dict(st.session_state.get("active_meta_law", {}))
+        snapshot["law_vector"] = {
+            "root_influence": safe_float(law.get("root_influence", 1.0), 1.0),
+            "energy_bias": safe_float(law.get("energy_bias", 1.0), 1.0)
+        }
+        
+    except Exception:
+        pass
+    
+    return snapshot
+
+def extract_missing_genes_from_state(snapshot, target_type):
+    """Infer symbolic missing genes from the current sovereign state"""
+    missing_genes = []
+    
+    root_inf = safe_float(snapshot.get("root_influence", 1.0), 1.0)
+    energy_bias = safe_float(snapshot.get("energy_bias", 1.0), 1.0)
+    coherence = safe_float(snapshot.get("field_coherence", 1.0), 1.0)
+    volatility = safe_float(snapshot.get("volatility", 0.0), 0.0)
+    
+    # قواعد الاستدلال
+    if root_inf < 0.95:
+        missing_genes.append("ثبات")
+    if energy_bias < 0.95:
+        missing_genes.append("تفعيل")
+    if energy_bias > 1.60:
+        missing_genes.append("تطهير")
+    if coherence < 0.90:
+        missing_genes.append("ترسيخ")
+    if volatility > 0.10:
+        missing_genes.append("حماية")
+    
+    if volatility < 0.02 and target_type in ["رزق", "فتح", "علم"]:
+        missing_genes.append("اتساع")
+    
+    # أهداف محددة
+    target_gene_map = {
+        "رزق": "جذب",
+        "فتح": "فتح",
+        "علم": "تجلّي",
+        "شفاء": "تطهير",
+        "هيبة": "حماية",
+        "تمكين": "تفعيل",
+        "صفاء": "تطهير"
+    }
+    
+    if target_type in target_gene_map:
+        required = target_gene_map[target_type]
+        if required not in missing_genes:
+            missing_genes.append(required)
+    
+    # إزالة التكرار والحفاظ على الترتيب
+    seen = set()
+    ordered = []
+    for g in missing_genes:
+        if g not in seen:
+            seen.add(g)
+            ordered.append(g)
+    
+    return ordered
+
+def build_manifestation_covenant(target_type, snapshot):
+    """Build the covenant/protocol for the user"""
+    missing_genes = extract_missing_genes_from_state(snapshot, target_type)
+    
+    # حساب signal_score
+    root_inf = safe_float(snapshot.get("root_influence", 1.0), 1.0)
+    energy_bias = safe_float(snapshot.get("energy_bias", 1.0), 1.0)
+    coherence = safe_float(snapshot.get("field_coherence", 1.0), 1.0)
+    volatility = safe_float(snapshot.get("volatility", 0.0), 0.0)
+    
+    base_score = (root_inf * 40) + (coherence * 30) + (1.0 - min(volatility, 0.5)) * 20
+    energy_factor = 1.0 - abs(energy_bias - 1.0) * 0.5
+    signal_score = clamp(base_score * energy_factor, 0, 100)
+    
+    # recommended_focus
+    if missing_genes:
+        recommended_focus = missing_genes[0]
+    else:
+        recommended_focus = "استمرار"
+    
+    # بناء البروتوكول
+    protocol = []
+    step_num = 1
+    
+    # خريطة الجينات إلى الإجراءات
+    gene_action_map = {
+        "ثبات": {"action": "ترسيخ الروتين اليومي وتكرار العهد", "duration": "7 أيام", "intensity": "متوسطة"},
+        "فتح": {"action": "فتح المجال لاستقبال فرص جديدة", "duration": "5 أيام", "intensity": "عالية"},
+        "اتساع": {"action": "توسيع حدود القدرة والاستيعاب", "duration": "10 أيام", "intensity": "متوسطة"},
+        "تجلّي": {"action": "ممارسة الشهود والتأمل", "duration": "3 أيام", "intensity": "خفيفة"},
+        "حماية": {"action": "تحديد الحدود وحماية الطاقة", "duration": "7 أيام", "intensity": "عالية"},
+        "جذب": {"action": "تنشيط طاقة الجذب والاستحقاق", "duration": "5 أيام", "intensity": "متوسطة"},
+        "تفعيل": {"action": "بدء حركة فعلية نحو الهدف", "duration": "3 أيام", "intensity": "عالية"},
+        "تطهير": {"action": "تفريغ العوائق والسموم", "duration": "7 أيام", "intensity": "خفيفة"},
+        "ترسيخ": {"action": "تثبيت المكتسبات في الوعي", "duration": "10 أيام", "intensity": "متوسطة"},
+        "استمرار": {"action": "مواصلة المسار بثبات", "duration": "7 أيام", "intensity": "خفيفة"}
+    }
+    
+    for gene in missing_genes[:5]:
+        action_info = gene_action_map.get(gene, gene_action_map["استمرار"])
+        protocol.append({
+            "step": step_num,
+            "title": f"تفعيل جين {gene}",
+            "gene": gene,
+            "action": action_info["action"],
+            "duration": action_info["duration"],
+            "intensity": action_info["intensity"]
+        })
+        step_num += 1
+    
+    if not protocol:
+        protocol.append({
+            "step": 1,
+            "title": "تثبيت المسار",
+            "gene": "استمرار",
+            "action": "مواصلة العمل بما هو قائم وتثبيته",
+            "duration": "7 أيام",
+            "intensity": "خفيفة"
+        })
+    
+    return {
+        "target": target_type,
+        "timestamp": time.time(),
+        "signal_score": round(signal_score, 2),
+        "missing_genes": missing_genes,
+        "recommended_focus": recommended_focus,
+        "protocol": protocol,
+        "state_snapshot": snapshot
+    }
+
+def save_manifestation_protocol(covenant):
+    """Persist the covenant into state safely"""
+    if not covenant or not isinstance(covenant, dict):
+        return False
+    
+    try:
+        st.session_state.manifestation_active_covenant = covenant
+        st.session_state.manifestation_protocol = covenant.get("protocol", [])
+        st.session_state.manifestation_missing_genes = covenant.get("missing_genes", [])
+        st.session_state.manifestation_signal_score = covenant.get("signal_score", 0.0)
+        st.session_state.manifestation_recommendation = covenant.get("recommended_focus", "")
+        st.session_state.manifestation_last_build_ts = time.time()
+        
+        # إضافة إلى التاريخ
+        history_entry = {
+            "target": covenant.get("target", ""),
+            "signal_score": covenant.get("signal_score", 0.0),
+            "recommended_focus": covenant.get("recommended_focus", ""),
+            "missing_genes_count": len(covenant.get("missing_genes", [])),
+            "timestamp": time.time()
+        }
+        
+        history = safe_list(st.session_state.manifestation_history)
+        history.insert(0, history_entry)
+        st.session_state.manifestation_history = history[:50]
+        
+        # إضافة إلى system_log
+        if "system_log" in st.session_state and isinstance(st.session_state.system_log, list):
+            st.session_state.system_log.append({
+                "event": "manifestation_covenant_built",
+                "target": covenant.get("target", ""),
+                "signal_score": covenant.get("signal_score", 0.0),
+                "missing_genes": covenant.get("missing_genes", []),
+                "timestamp": time.time(),
+                "self_healed": False
+            })
+        
+        return True
+    except Exception:
+        return False
+
+def render_manifestation_dashboard():
+    """Render the full Manifestation Dashboard UI panel"""
+    st.subheader("ألواح التكوين")
+    st.caption("بناء الميثاق السيادي من حالة النظام الحالية")
+    
+    # عرض لقطة الحالة الحالية
+    snapshot = safe_get_latest_analysis_snapshot()
+    
+    with st.expander("📊 لقطة الحالة السيادية", expanded=False):
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("تأثير الجذر", f"{snapshot.get('root_influence', 1.0):.3f}")
+        c2.metric("انحياز الطاقة", f"{snapshot.get('energy_bias', 1.0):.3f}")
+        c3.metric("تماسك الحقل", f"{snapshot.get('field_coherence', 1.0):.3f}")
+        c4.metric("التقلب", f"{snapshot.get('volatility', 0.0):.3f}")
+        st.caption(f"📌 مصدر البيانات: {snapshot.get('source', 'غير معروف')}")
+    
+    # اختيار الهدف
+    target_options = ["رزق", "فتح", "علم", "شفاء", "هيبة", "تمكين", "صفاء", "مخصص"]
+    selected_target = st.selectbox("🎯 اختر هدف التكوين", target_options, index=target_options.index(st.session_state.manifestation_target) if st.session_state.manifestation_target in target_options else 0)
+    
+    custom_target = ""
+    if selected_target == "مخصص":
+        custom_target = st.text_input("✍️ اكتب هدفك المخصص", value=st.session_state.manifestation_custom_target, placeholder="مثال: تحقيق التوازن الداخلي")
+        final_target = custom_target if custom_target.strip() else "رزق"
+    else:
+        final_target = selected_target
+    
+    # زر بناء الميثاق
+    if st.button("🏛️ بناء الميثاق السيادي", use_container_width=True):
+        covenant = build_manifestation_covenant(final_target, snapshot)
+        if save_manifestation_protocol(covenant):
+            st.success("✅ تم بناء الميثاق وحفظه بنجاح")
+            st.rerun()
+        else:
+            st.error("❌ فشل في حفظ الميثاق")
+    
+    # عرض الميثاق النشط
+    if st.session_state.manifestation_active_covenant:
+        covenant = st.session_state.manifestation_active_covenant
+        st.markdown("---")
+        st.markdown("### 📜 الميثاق النشط")
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("الهدف", covenant.get("target", "—"))
+        col2.metric("درجة الإشارة", f"{covenant.get('signal_score', 0):.1f}")
+        col3.metric("بؤرة التركيز", covenant.get("recommended_focus", "—"))
+        
+        missing = covenant.get("missing_genes", [])
+        if missing:
+            st.markdown("**🧬 الجينات الغائبة:** " + " ".join([f'<span class="gene-badge">{g}</span>' for g in missing]), unsafe_allow_html=True)
+        
+        st.caption(f"🕐 بني في: {human_ts(covenant.get('timestamp', 0))}")
+        
+        # عرض البروتوكول
+        protocol = covenant.get("protocol", [])
+        if protocol:
+            st.markdown("#### 🔧 بروتوكول التفعيل")
+            for step in protocol:
+                with st.container():
+                    st.markdown(f"""
+                    <div style="background: #0d0d14; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid #FFD700;">
+                        <b>📌 الخطوة {step.get('step', 0)}: {step.get('title', '')}</b><br>
+                        🧬 الجين: {step.get('gene', '')}<br>
+                        📝 الإجراء: {step.get('action', '')}<br>
+                        ⏱️ المدة: {step.get('duration', '')} | 🔥 الشدة: {step.get('intensity', '')}
+                    </div>
+                    """, unsafe_allow_html=True)
+    
+    # عرض التاريخ
+    history = safe_list(st.session_state.manifestation_history)
+    if history:
+        st.markdown("---")
+        st.markdown("### 📜 سجل الميثاق")
+        history_df = pd.DataFrame(history)
+        cols_to_show = ["target", "signal_score", "recommended_focus", "missing_genes_count"]
+        available_cols = [c for c in cols_to_show if c in history_df.columns]
+        if available_cols:
+            st.dataframe(history_df[available_cols].head(10), use_container_width=True)
+
+# ==============================================================================
+# [19] دوال الرادار
 # ==============================================================================
 def generate_sample_radar_data():
     sample_data = pd.DataFrame({
@@ -853,7 +1204,7 @@ def update_cosmic_radar(quran_data, r_index, meta_law):
         st.session_state.root_frequency_data = generate_sample_root_frequency()
 
 # ==============================================================================
-# [18] محرك الحقن السيادي
+# [20] محرك الحقن السيادي
 # ==============================================================================
 def initialize_sovereign_memory():
     lex_path = get_absolute_path("nibras_lexicon.json")
@@ -896,7 +1247,7 @@ with st.sidebar:
     st.sidebar.markdown("<p>خِت فِت.</p>", unsafe_allow_html=True)
 
 # ==============================================================================
-# [19] التبويبات الرئيسية (9 تبويبات كاملة)
+# [21] التبويبات الرئيسية (9 تبويبات كاملة)
 # ==============================================================================
 tab_titles = [
     "📖 النسخة القرآنية", "🔍 الاستنطاق المداري", "🛰️ الرادار السيادي",
@@ -976,7 +1327,6 @@ with tabs[1]:
                 st.error("⚠️ لم يتم العثور على جذور مطابقة.")
         else:
             st.warning("⚠️ الرجاء إدخال نص للتحليل.")
-    # عرض النتائج بمفتاح فريد "orbital"
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
         display_orbital_results(key_suffix="orbital")
     elif not st.session_state.orbit_bodies:
@@ -1152,7 +1502,7 @@ with tabs[5]:
             """, unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية
+# تبويب 6: اللوحة الوجودية (مع ألواح التكوين)
 # ==============================================================================
 with tabs[6]:
     st.markdown("### 📈 التحليل الكمي للمدار")
@@ -1164,6 +1514,9 @@ with tabs[6]:
         st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة الطاقة"), key="energy_scatter_chart")
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
+    
+    st.markdown("---")
+    render_manifestation_dashboard()
 
 # ==============================================================================
 # تبويب 7: البيان الختامي
@@ -1192,5 +1545,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار v66.0 النهائي مع إصلاح خطأ تكرار المعرف
+# نهاية الكود - الإصدار v66.0 النهائي مع ألواح التكوين
 # ==============================================================================
