@@ -458,81 +458,60 @@ def load_quran_matrix():
     path = get_absolute_path("matrix_data.json")
     if path:
         try:
-            with open(path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            st.error(f"❌ خطأ في تحميل مصفوفة القرآن: {e}")
-            return []
-    return []
-
-@st.cache_data(ttl=3600)
-def load_quran_roots():
-    """تحميل جذور القرآن من الملف الصحيح quran_roots_complete.json"""
-    path = get_absolute_path("quran_roots_complete.json")
-    if not path:
-        return {}
+def deepseek_brain_analysis():
+    """
+    تحليل الوعي الفوقي للنظام:
+    - تحليل العلاقة بين التأثير والجذور
+    - تقديم نصيحة استراتيجية
+    """
+    if not st.session_state.system_log:
+        return None, "لا توجد بيانات كافية في السجل السيادي لإجراء تحليل الوعي الفوقي."
+    
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        # 1. تجهيز البيانات
+        df_log = pd.DataFrame(st.session_state.system_log)
+        
+        # 2. حساب المؤشرات الكبرى
+        avg_shift = df_log['ascent'].mean() if 'ascent' in df_log.columns else 0
+        dominant_root = df_log['top_root'].iloc[-1] if 'top_root' in df_log.columns else "غير محدد"
+        dominant_influence = df_log['new_influence'].mean() if 'new_influence' in df_log.columns else 0
+        
+        # 3. رصد التوجه السيادي (المحرك التصحيحي)
+        if len(df_log) > 1:
+            is_ascending = df_log['new_influence'].iloc[-1] > df_log['new_influence'].iloc[0]
+            shift_trend = "تصاعدي 📈" if is_ascending else "مستقر ⚖️"
+        else:
+            shift_trend = "في طور التكوين 🌱"
+
+        # 4. صياغة البيان الفوقي
+        meta_insight = f"""
+        • الجذر الأكثر تأثيراً حالياً: <b style="color:#00ffcc;">{dominant_root}</b><br>
+        • متوسط التأثير الوجودي: {dominant_influence:.2f}<br>
+        • اتجاه الإزاحة الحالي: <b>{shift_trend}</b> (المتوسط: {avg_shift:.2f})
+        """
+        
+        # 5. النصيحة الاستراتيجية بناءً على التوجه
+        if avg_shift > 0:
+            prediction = f"""
+            <div class="meta-prediction">
+            📍 <b>قانون الإزاحة القادم:</b><br>
+            بما أن المؤشر في اتجاه <b>تصاعدي</b>، يُتوقع تعاظم طاقة الصعود والشمول. 
+            يُنصح بمراقبة تحولات الجينات نحو مدارات الإشراق (N).
+            </div>
+            """
+        else:
+            prediction = f"""
+            <div class="meta-prediction">
+            📍 <b>قانون الإزاحة القادم:</b><br>
+            المؤشر يميل للثبات، مما يشير إلى مرحلة تمكين أرضي. 
+            يُتوقع بروز جذور مدارات التجذر (B). ركز على نصوص البناء والاستقرار.
+            </div>
+            """
+        
+        return meta_insight, prediction
+        
     except Exception as e:
-        st.error(f"❌ خطأ في تحميل جذور القرآن: {e}")
-        return {}
-    
-    roots_map = {}
-    roots_list = data.get("roots", []) if isinstance(data, dict) else data
-    for item in roots_list:
-        raw_root = item.get("root", "")
-        if not raw_root: 
-            continue
-        norm = normalize_sovereign(raw_root)
-        roots_map[norm] = {
-            "root_raw": raw_root,
-            "orbit_id": 0,
-            "orbit": item.get("orbit_hint", "آيات_الكون"),
-            "weight": float(item.get("frequency", 10)),
-            "insight": f"جذر قرآني سيادي (التكرار: {item.get('frequency', 'غير محدد')})",
-            "gene_base": "N"
-        }
-    return roots_map
-
-# ==============================================================================
-# [14] الدالة المركزية للمحرك المداري (قلب النظام)
-# ==============================================================================
-def display_insight_cards(bodies):
-    """عرض بطاقات الاستنطاق"""
-    if not bodies:
-        return
-    for res in bodies:
-        gene_base = res.get('gene_base', res.get('gene', 'N'))
-        base_info = GENE_STYLE.get(gene_base, GENE_STYLE['N'])
-        st.markdown(f"""
-        <div class="insight-card" style="border-right-color: {res['color']}">
-            <b style="color:{res['color']}; font-size:1.2em;">📌 الجذر: {res['root']}</b> |
-            🧬 الجين النهائي: {res['icon']} {res['gene_name']} |
-            🧱 الجين القاعدي: {base_info['icon']} {base_info['name']} |
-            ⚡ الطاقة: <span class="energy-badge">{res['energy']:.1f}</span><br>
-            🔄 المصدر: {res.get('source', res['root'])} |
-            📐 النمط: {res.get('pattern', 'مباشر')} |
-            🪜 الرتبة الصرفية: {res.get('morph_rank', '-')} |
-            ✨ عامل الإشراق: {res.get('sig_n_factor', '-')}<br>
-            🛰️ المدار: {res.get('orbit', 'وعي')} |
-            📍 الموضع: ({res.get('x', 0)}, {res.get('y', 0)})
-            <hr style="border:0.5px solid #333; margin:10px 0;">
-            <p>🔮 {res['insight']}</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-def process_text_and_generate_bodies(input_text, r_index):
-    """الدالة الأساسية لتحويل النص إلى أجسام مدارية"""
-    clean_text = normalize_sovereign(input_text)
-    words = clean_text.split()
-    bodies = []
-    unique_roots = []
-    all_matched_roots = []
-    temp_meta = []
-    
-    for pos, word in enumerate(words):
-        rk, mode, pattern_name, morph_rank = extract_candidate_root_v31(word, r_index.keys())
+        return None, f"خطأ في تحليل الوعي الفوقي: {str(e)}"
         temp_meta.append({"word": word, "pos": pos, "rk": rk, "mode": mode, "pattern_name": pattern_name, "morph_rank": morph_rank})
         if rk:
             all_matched_roots.append(rk)
