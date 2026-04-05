@@ -677,22 +677,24 @@ def deepseek_brain_analysis():
         root_influence = root_influence.sort_values('mean', ascending=False)
         
         # تحليل اتجاه الإزاحة
-        recent_logs = df_log.tail(10)
-        avg_shift = recent_logs['ascent'].mean() if len(recent_logs) > 0 else 0
-      # المسمار التصحيحي: نتحقق من وجود بيانات أولاً ثم نقارن
-
-if len(recent_logs) > 1:
-    shift_trend = "تصاعدي" if recent_logs['ascent'].iloc[-1] > recent_logs['ascent'].iloc[0] else "مستقر"
-else:
-    shift_trend = "بداية الرصد"
-        # التنبؤ بالقانون القادم
-        if len(root_influence) > 0:
-            dominant_root = root_influence.index[0]
-            dominant_influence = root_influence.iloc[0]['mean']
-        else:
-            dominant_root = "غير محدد"
-            dominant_influence = 0
+        # --- قطاع تحليل التوجه السيادي (المحمي) ---
+try:
+    recent_logs = pd.DataFrame(st.session_state.system_log)
+    
+    if not recent_logs.empty and len(recent_logs) > 1:
+        # المسمار 1: تصحيح الـ Ternary Operator بالكامل
+        is_ascending = recent_logs['new_influence'].iloc[-1] > recent_logs['new_influence'].iloc[0]
+        shift_trend = "تصاعدي 📈" if is_ascending else "مستقر ⚖️"
+    else:
+        shift_trend = "في طور التكوين 🌱"
         
+except Exception as e:
+    # المسمار 2: ضمان وجود مخرج حتى لو فشل التحليل
+    shift_trend = "تحت الرصد"
+    st.sidebar.caption(f"تنبيه تقني بسيط: {e}")
+
+# الآن يمكنك استخدام shift_trend في الواجهة بأمان
+st.write(f"📊 توجه النظام الحالي: **{shift_trend}**")
         # صياغة البيان الفوقي
         meta_insight = f"""
         بناءً على تحليل <b>{len(df_log)}</b> جلسة سابقة في السجل السيادي:
