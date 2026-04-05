@@ -679,8 +679,11 @@ def deepseek_brain_analysis():
         # تحليل اتجاه الإزاحة
         recent_logs = df_log.tail(10)
         avg_shift = recent_logs['ascent'].mean() if len(recent_logs) > 0 else 0
-        shift_trend = "تصاعدي" if recent_logs['ascent'].iloc[-1] > recent_logs['ascent'].iloc[0] if len(recent_logs) > 1 else "مستقر"
-        
+       # المسمار التصحيحي: نتحقق من وجود بيانات أولاً ثم نقارن
+if len(recent_logs) > 1:
+    shift_trend = "تصاعدي" if recent_logs['ascent'].iloc[-1] > recent_logs['ascent'].iloc[0] else "مستقر"
+else:
+    shift_trend = "بداية الرصد"
         # التنبؤ بالقانون القادم
         if len(root_influence) > 0:
             dominant_root = root_influence.index[0]
