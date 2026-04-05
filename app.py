@@ -18,7 +18,15 @@ import math
 from itertools import combinations
 
 # ==============================================================================
-# [1] إعدادات الهوية السيادية
+# [1] دوال المسار السيادية (لحل مشكلة الملفات)
+# ==============================================================================
+def get_data_path(filename):
+    """دالة سيادية لتحديد المسار المطلق للملفات في أي بيئة"""
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, "data", filename)
+
+# ==============================================================================
+# [2] إعدادات الهوية السيادية
 # ==============================================================================
 st.set_page_config(page_title="Nibras v32.0", page_icon="🛡️", layout="wide")
 
@@ -91,7 +99,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [2] مصفوفة الجينات
+# [3] مصفوفة الجينات
 # ==============================================================================
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 'meaning': 'طاقة المسير والتمكين البعيد'},
@@ -102,7 +110,7 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [3] دوال التطهير
+# [4] دوال التطهير
 # ==============================================================================
 ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]')
 
@@ -127,7 +135,7 @@ def ensure_dot(text):
     return s
 
 # ==============================================================================
-# [4] المستخرج الاحتمالي v31
+# [5] المستخرج الاحتمالي v31
 # ==============================================================================
 COMMON_PREFIXES = ["وال", "بال", "كال", "فال", "لل", "ال", "و", "ف", "ب", "ك", "ل", "س"]
 COMMON_SUFFIXES = ["يات", "ات", "ون", "ين", "ان", "وا", "نا", "ها", "هم", "هن", "كم", "ني", "ة", "ه", "ي"]
@@ -183,7 +191,7 @@ def extract_candidate_root_v31(word, index_keys):
     return None, "unresolved", pattern_name, morph_rank
 
 # ==============================================================================
-# [5] التوقيع الجذري
+# [6] التوقيع الجذري
 # ==============================================================================
 def signature_from_root(root: str):
     if not root:
@@ -198,7 +206,7 @@ def signature_from_root(root: str):
     }
 
 # ==============================================================================
-# [6] الاستحقاق الجيني
+# [7] الاستحقاق الجيني
 # ==============================================================================
 def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
     orbit = int(orbit_id or 0)
@@ -231,7 +239,7 @@ def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
     return base_gene
 
 # ==============================================================================
-# [7] الطاقة الديناميكية
+# [8] الطاقة الديناميكية
 # ==============================================================================
 def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
     base_energy = base_w * 100 if base_w < 10 else base_w
@@ -244,7 +252,7 @@ def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
     return round(max(1.0, energy), 2)
 
 # ==============================================================================
-# [8] مؤشر الصعود
+# [9] مؤشر الصعود
 # ==============================================================================
 def compute_ascent_vector(bodies):
     if not bodies:
@@ -258,7 +266,7 @@ def compute_ascent_vector(bodies):
     return round(total / len(bodies), 2)
 
 # ==============================================================================
-# [9] شبكة الرنين
+# [10] شبكة الرنين
 # ==============================================================================
 def build_resonance_network(bodies):
     edges = []
@@ -287,7 +295,7 @@ def build_resonance_network(bodies):
     return sorted(edges, key=lambda x: x['strength'], reverse=True)
 
 # ==============================================================================
-# [10] بروتوكول خِت فِت للأرشفة
+# [11] بروتوكول خِت فِت للأرشفة
 # ==============================================================================
 def khit_fit_archive(res_bodies, ascent_score):
     if not res_bodies:
@@ -305,7 +313,7 @@ def khit_fit_archive(res_bodies, ascent_score):
     return True
 
 # ==============================================================================
-# [11] تحميل قواعد البيانات
+# [12] تحميل قواعد البيانات (باستخدام المسار المطلق)
 # ==============================================================================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
@@ -359,18 +367,21 @@ def load_lexicon_db(path):
     return r_index, all_roots, orbit_counter
 
 @st.cache_data(ttl=3600)
-def load_quran_matrix(path="data/quran_matrix.json"):
-    if not os.path.exists(path):
-        return []
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+def load_quran_matrix():
+    path = get_data_path("quran_matrix.json")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
 
 @st.cache_data(ttl=3600)
-def load_quran_roots(path="data/quran_roots.json"):
-    if not os.path.exists(path): 
+def load_quran_roots():
+    path = get_data_path("quran_roots.json")
+    if not os.path.exists(path):
         return {}
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
+    
     roots_map = {}
     for item in data.get("roots", []):
         raw_root = item.get("root", "")
@@ -388,7 +399,7 @@ def load_quran_roots(path="data/quran_roots.json"):
     return roots_map
 
 # ==============================================================================
-# [12] دوال العرض
+# [13] دوال العرض
 # ==============================================================================
 def display_insight_cards(bodies):
     if not bodies:
@@ -414,18 +425,18 @@ def display_insight_cards(bodies):
         """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [13] تهيئة حالة الجلسة
+# [14] تهيئة حالة الجلسة والبيانات
 # ==============================================================================
 if 'orbit_bodies' not in st.session_state:
     st.session_state.orbit_bodies = []
     st.session_state.orbit_active = False
 
-# تحميل البيانات والدمج الإضافي
-r_index, all_roots, orbit_counter = load_lexicon_db("data/nibras_lexicon.json")
+# تحميل البيانات باستخدام المسار المطلق
+r_index, all_roots, orbit_counter = load_lexicon_db(get_data_path("nibras_lexicon.json"))
 quran_data = load_quran_matrix()
 quran_roots_index = load_quran_roots()
 
-# الدمج الإضافي: إضافة جذور القرآن التي لا توجد في الليكسيكون الأصلي
+# دمج إضافي (بدون استبدال الجذور الأصلية لضمان الاستقرار)
 for k, v in quran_roots_index.items():
     if k not in r_index:
         r_index[k] = v
@@ -457,7 +468,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [14] التبويبات
+# [15] التبويبات
 # ==============================================================================
 tabs = st.tabs([
     "🔍 الاستنطاق المداري", "🌌 الرنين الجيني", "📈 اللوحة الوجودية",
@@ -465,7 +476,7 @@ tabs = st.tabs([
     "📡 الرنين السياقي", "📈 المنحنى الزمني", "📖 النسخة القرآنية"
 ])
 
-# --- تبويب 0: الاستنطاق المداري (مثل v31.0 تماماً) ---
+# --- تبويب 0: الاستنطاق المداري ---
 with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية - النسخة الميثاقية v32.0")
     full_text = st.text_area("أدخل النص للاستنطاق:", height=150, placeholder="مثال: أحد أبى أثر أجد أجل أخذ", key="input_area")
@@ -685,7 +696,7 @@ with tabs[7]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# [15] التبويب 8: النسخة القرآنية (Q-Mode)
+# [16] التبويب 8: النسخة القرآنية (Q-Mode) - مع الإصلاحات النهائية
 # ==============================================================================
 with tabs[8]:
     st.markdown("### 📖 استنطاق الآيات القرآنية (Q-Mode)")
@@ -825,3 +836,7 @@ with tabs[8]:
                 st.success("✅ تم الاستنطاق القرآني بنجاح (Q-Mode).")
             else:
                 st.warning("⚠️ لم يتم العثور على جذور مطابقة في هذه الآية.")
+
+# ==============================================================================
+# نهاية الكود - الإصدار v32.0 النهائي
+# ==============================================================================
