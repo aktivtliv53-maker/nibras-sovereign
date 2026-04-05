@@ -443,6 +443,8 @@ def display_insight_cards(bodies):
 if 'orbit_bodies' not in st.session_state:
     st.session_state.orbit_bodies = []
     st.session_state.orbit_active = False
+if 'input_text' not in st.session_state:
+    st.session_state.input_text = ""
 
 # 1. تحميل الليكسيكون الأساسي
 lex_path = get_absolute_path("nibras_lexicon.json")
@@ -495,13 +497,20 @@ tabs = st.tabs([
 # --- تبويب 0: الاستنطاق المداري ---
 with tabs[0]:
     st.markdown("### 📍 هندسة المسارات المدارية - النسخة الميثاقية v32.0")
-    full_text = st.text_area("أدخل النص للاستنطاق:", height=150, placeholder="مثال: أحد أبى أثر أجد أجل أخذ", key="input_area")
+    
+    # استخدام النص من الجلسة إذا كان موجوداً
+    default_text = st.session_state.input_text if st.session_state.input_text else ""
+    full_text = st.text_area("أدخل النص للاستنطاق:", height=150, value=default_text, placeholder="مثال: أحد أبى أثر أجد أجل أخذ", key="input_area")
     
     col1, col2 = st.columns([3, 1])
     with col1:
         activate = st.button("🚀 تفعيل المفاعل السيادي", use_container_width=True)
     with col2:
         archive_btn = st.button("🏁 خِت فِت (ختم الجلسة)", use_container_width=True)
+    
+    # مسح حالة النص بعد الاستخدام
+    if full_text and default_text:
+        st.session_state.input_text = ""
     
     if activate and full_text.strip():
         clean_text = normalize_sovereign(full_text)
@@ -720,138 +729,66 @@ with tabs[8]:
     if not quran_data:
         st.error("🚨 ملف matrix_data.json غير موجود أو فارغ. يرجى التأكد من وجوده في مجلد data/")
     else:
-        # اختيار السورة
-        surahs = sorted(set(r["surah_number"] for r in quran_data))
-        col_a, col_b = st.columns(2)
-        with col_a:
-            sel_sura = st.selectbox("📌 اختر السورة", surahs, format_func=lambda x: f"{x} - {next((r['surah_name'] for r in quran_data if r['surah_number'] == x), '')}")
-        
-        # تصفية الآيات حسب السورة المختارة
-        ayat = [r for r in quran_data if r["surah_number"] == sel_sura]
-        ayah_labels = [f"{r['ayah_number']} - {r['surah_name']}" for r in ayat]
-        
-        with col_b:
-            sel_label = st.selectbox("📜 اختر الآية", ayah_labels)
-        
-        # عرض نص الآية
-        selected_ayah = ayat[ayah_labels.index(sel_label)]
-        st.markdown(f"""
-        <div style="background: #0d0d14; padding: 20px; border-radius: 15px; border-right: 5px solid #4fc3f7; margin-bottom: 20px; text-align: center;">
-            <p style="font-size: 1.3em; line-height: 1.8;">{selected_ayah['text']}</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("🚀 تفعيل المفاعل القرآني", use_container_width=True):
-            text = selected_ayah['text']
-            clean_text = normalize_sovereign(text)
-            words = clean_text.split()
-            bodies = []
-            all_matched_roots = []
-            temp_meta = []
-            
-            for pos, word in enumerate(words):
-                # استخراج الجذر (Fallback في حال عدم وجود المطور)
-                rk = word if word in r_index else None
-                mode = "direct" if rk else "none"
-                pattern_name = "direct_match" if rk else "none"
-                morph_rank = 3 if rk else 0
-                
-                temp_meta.append({"word": word, "pos": pos, "rk": rk, "mode": mode, "pattern_name": pattern_name, "morph_rank": morph_rank})
-                if rk:
-                    all_matched_roots.append(rk)
-            
-            counts = Counter(all_matched_roots)
-            
-            for m in temp_meta:
-                if not m['rk']:
-                    continue
-                data = r_index.get(m['rk'])
-                if not data:
-                    continue
-                sig = signature_from_root(m['rk'])
-                dynamic_energy = compute_dynamic_energy(
-                    base_w=data['weight'], count=counts[m['rk']], mode=m['mode'],
-                    morph_rank=m['morph_rank'], orbit_id=data.get('orbit_id', 0), root_sig=sig
-                )
-                final_gene = resolve_sovereign_gene(
-                    orbit_id=data.get('orbit_id', 0), morph_rank=m['morph_rank'],
-                    root_sig=sig, base_energy=dynamic_energy
-                )
-                gene_info = GENE_STYLE.get(final_gene, GENE_STYLE['N'])
-                orbit_shift_x = (data.get('orbit_id', 0) - 4) * 1.4 if data.get('orbit_id', 0) else 0
-                orbit_shift_y = (m['morph_rank'] - 3) * 0.8
-                bodies.append({
-                    "root": data.get("root_raw", m['rk']),
-                    "root_norm": m['rk'],
-                    "orbit": data.get("orbit", "قرآن"),
-                    "orbit_id": data.get('orbit_id', 0),
-                    "gene": final_gene,
-                    "gene_base": data.get('gene_base', 'N'),
-                    "gene_name": gene_info['name'],
-                    "icon": gene_info['icon'],
-                    "energy": dynamic_energy,
-                    "insight": data['insight'],
-                    "color": gene_info['color'],
-                    "pos": m['pos'],
-                    "mode": m['mode'],
-                    "pattern": m['pattern_name'],
-                    "morph_rank": m['morph_rank'],
-                    "source": m['word'],
-                    "x": round(sig['x'] + orbit_shift_x, 3),
-                    "y": round(sig['y'] + orbit_shift_y, 3),
-                    "sig_n_factor": sig['n_factor'],
-                    "resonance_bias": sig['rb']
+        # 1. استخراج قائمة السور الفريدة مع الحفاظ على ترتيبها
+        surah_options = []
+        seen_surahs = set()
+        for entry in quran_data:
+            if entry['surah_number'] not in seen_surahs:
+                surah_options.append({
+                    "id": entry['surah_number'],
+                    "name": entry['surah_name']
                 })
+                seen_surahs.add(entry['surah_number'])
+
+        # 2. المربع الأول: اختيار السورة
+        col1, col2 = st.columns(2)
+        with col1:
+            selected_surah_obj = st.selectbox(
+                "📌 اختر السورة",
+                options=surah_options,
+                format_func=lambda x: f"{x['id']} - {x['name']}",
+                key="q_surah_sel"
+            )
+
+        # 3. تصفية الآيات التابعة للسورة المختارة فقط
+        current_ayahs = [d for d in quran_data if d['surah_number'] == selected_surah_obj['id']]
+
+        # 4. المربع الثاني: اختيار الآية (إصلاح الخلل)
+        with col2:
+            selected_ayah_obj = st.selectbox(
+                "📑 اختر الآية",
+                options=current_ayahs,
+                format_func=lambda x: f"آية {x['ayah_number']}",
+                key=f"q_ayah_sel_{selected_surah_obj['id']}"  # مفتاح ديناميكي لمنع التجمد
+            )
+
+        # 5. عرض النص المختار وتفعيله في المفاعل
+        if selected_ayah_obj:
+            st.markdown(f"""
+            <div style="text-align: center; padding: 20px; background-color: rgba(255,255,255,0.05); border-radius: 10px; border-right: 5px solid #FFD700; margin-bottom: 20px;">
+                <h2 style="color: #FFD700; font-family: 'Amiri', serif; font-size: 1.5em;">{selected_ayah_obj['text']}</h2>
+                <p style="color: #888;">{selected_ayah_obj['surah_name']} - آية {selected_ayah_obj['ayah_number']}</p>
+            </div>
+            """, unsafe_allow_html=True)
             
-            if bodies:
-                st.session_state.orbit_bodies = bodies
-                st.session_state.orbit_active = True
+            # زر تفعيل المفاعل للآية المختارة
+            if st.button("🚀 تفعيل المفاعل السيادي لهذه الآية", use_container_width=True):
+                # تخزين النص في حالة الجلسة للتبويب الأول
+                st.session_state.input_text = selected_ayah_obj['text']
+                st.success(f"✅ تم نقل الآية إلى مفاعل الاستنطاق المداري. انتقل إلى التبويب الأول (🔍 الاستنطاق المداري) ثم اضغط زر التفعيل.")
                 
-                ascent_score = compute_ascent_vector(bodies)
-                ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
-                st.markdown(f"""
-                <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-                    <h3 style='margin:0;'>🚀 مؤشر الصعود القرآني</h3>
-                    <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
-                    <p style='margin:0;'>{'صعود طاقي نحو المعاني العلوية' if ascent_score > 0 else 'تثبيت مادي في الجذور الأرضية' if ascent_score < 0 else 'توازن بين الصعود والثبات'}</p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                df = pd.DataFrame(bodies)
-                fig = px.scatter(df, x="x", y="y", text="root", size="energy", color="gene",
-                                 color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE},
-                                 range_x=[-35, 35], range_y=[-35, 35])
-                for radius in [4, 8, 12, 16, 20, 24, 28, 32]:
-                    fig.add_shape(type="circle", x0=-radius, y0=-radius, x1=radius, y1=radius,
-                                  line=dict(color="rgba(255, 215, 0, 0.15)", width=1, dash="dot"))
-                fig.update_traces(textposition='top center', marker=dict(line=dict(width=1, color='white')))
-                fig.update_layout(height=600, template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)',
-                                  plot_bgcolor='rgba(0,0,0,0)', showlegend=False, xaxis_visible=False,
-                                  yaxis_visible=False, margin=dict(l=0, r=0, t=0, b=0),
-                                  annotations=[dict(x=0, y=radius, text=f"M{i+1}", showarrow=False,
-                                                    font=dict(color="grey", size=8))
-                                              for i, radius in enumerate([4, 8, 12, 16, 20, 24, 28, 32])])
-                st.plotly_chart(fig, use_container_width=True)
-                
-                total_e = sum(b['energy'] for b in bodies)
-                genes_count = Counter(b['gene'] for b in bodies)
-                dom_gene = max(genes_count, key=genes_count.get)
-                orbits_detail = Counter(f"المدار {b['orbit_id']}" for b in bodies if b.get('orbit_id'))
-                n_count = sum(1 for b in bodies if b['gene'] == 'N')
-                st.markdown(f"""
-                <div class="story-box">
-                    ✅ تم استنطاق <b>{len(bodies)}</b> جسماً جذرياً من الآية القرآنية.<br>
-                    🧬 الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>
-                    ✨ حالات الإشراق (N): <b>{n_count}</b><br>
-                    ⚡ مجموع الطاقة الديناميكية: <b>{total_e:.1f}</b><br>
-                    🎯 توزيع المدارات: {', '.join([f'{k}({v})' for k, v in orbits_detail.items()])}
-                </div>
-                """, unsafe_allow_html=True)
-                
-                display_insight_cards(bodies)
-                st.success("✅ تم الاستنطاق القرآني بنجاح (Q-Mode).")
-            else:
-                st.warning("⚠️ لم يتم العثور على جذور مطابقة في هذه الآية.")
+                # عرض معاينة سريعة للجذور المستخرجة (اختياري)
+                with st.expander("🔍 معاينة الجذور المستخرجة من الآية"):
+                    clean_text = normalize_sovereign(selected_ayah_obj['text'])
+                    words = clean_text.split()
+                    found_roots = []
+                    for w in words:
+                        if w in r_index:
+                            found_roots.append(w)
+                    if found_roots:
+                        st.write(f"الجذور المطابقة مباشرة: {', '.join(found_roots)}")
+                    else:
+                        st.info("لم يتم العثور على جذور مطابقة مباشرة (قد تحتاج إلى تفعيل المفاعل الرئيسي لاستخراجها بالكامل).")
 
 # ==============================================================================
 # نهاية الكود - الإصدار v32.0 النهائي
