@@ -1,6 +1,9 @@
+الخطأ واضح: random لم يتم استيراده. سأقوم بإضافة import random في بداية الكود.
+
+```python
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v66.0
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v66.1
 # الإصدار: الميثاقي - مع ألواح التكوين (Manifestation Dashboard)
 # المستخدم المهيمن: محمّد
 # ==============================================================================
@@ -16,6 +19,7 @@ import time
 import hashlib
 import math
 import copy
+import random
 from itertools import combinations
 from datetime import datetime
 
@@ -178,7 +182,7 @@ def init_manifestation_state():
 # ==============================================================================
 sanitize_session_state()
 init_manifestation_state()
-st.set_page_config(page_title="Nibras v66.0 - السيادة المطلقة", layout="wide")
+st.set_page_config(page_title="Nibras v66.1 - السيادة المطلقة", layout="wide")
 
 st.markdown("""
 <style>
@@ -629,7 +633,7 @@ def display_orbital_results(key_suffix="orbital"):
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v66.0</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v66.1</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1234,7 +1238,7 @@ with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
         <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-        <p>الإصدار v66.0 - الميثاقي</p>
+        <p>الإصدار v66.1 - الميثاقي</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -1442,7 +1446,7 @@ with tabs[4]:
             st.success("✨ النظام في حالة تمدد استراتيجي نتيجة استقرار مرتفع.")
         else:
             st.info("⚖️ النظام يعمل في الوضع القياسي المتوازن.")
-    with st.expander("🛡️ حالة التثبيت الفائق (v66.0)", expanded=False):
+    with st.expander("🛡️ حالة التثبيت الفائق (v66.1)", expanded=False):
         st.markdown(f"**Cooldown الحالي:** `{st.session_state.get('correction_cooldown', 2)}` دورة")
         st.markdown(f"**آخر دورة تصحيح:** `{st.session_state.get('last_correction_cycle', -9999)}`")
         snap = st.session_state.get("last_correction_snapshot", {})
@@ -1545,5 +1549,6 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار v66.0 النهائي مع ألواح التكوين
+# نهاية الكود - الإصدار v66.1 النهائي مع ألواح التكوين
 # ==============================================================================
+```
