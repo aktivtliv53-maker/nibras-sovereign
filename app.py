@@ -20,10 +20,19 @@ from itertools import combinations
 # ==============================================================================
 # [1] دوال المسار السيادية (لحل مشكلة الملفات)
 # ==============================================================================
-def get_data_path(filename):
-    """دالة سيادية لتحديد المسار المطلق للملفات في أي بيئة"""
+def get_absolute_path(filename):
+    """تحديد المسار المطلق لضمان الوصول للملف في بيئة Linux/Streamlit"""
     base_path = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_path, "data", filename)
+    # البحث في الجذر أو في مجلد data
+    paths_to_check = [
+        os.path.join(base_path, "data", filename),
+        os.path.join(base_path, filename),
+        os.path.join(os.getcwd(), "data", filename)
+    ]
+    for p in paths_to_check:
+        if os.path.exists(p):
+            return p
+    return None
 
 # ==============================================================================
 # [2] إعدادات الهوية السيادية
@@ -313,11 +322,11 @@ def khit_fit_archive(res_bodies, ascent_score):
     return True
 
 # ==============================================================================
-# [12] تحميل قواعد البيانات (باستخدام المسار المطلق)
+# [12] تحميل قواعد البيانات (باستخدام أسماء الملفات الصحيحة)
 # ==============================================================================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
-    if not os.path.exists(path):
+    if not path or not os.path.exists(path):
         st.error(f"❌ ملف الليكسيكون غير موجود: {path}")
         return {}, [], Counter()
     with open(path, 'r', encoding='utf-8') as f:
@@ -368,22 +377,26 @@ def load_lexicon_db(path):
 
 @st.cache_data(ttl=3600)
 def load_quran_matrix():
-    path = get_data_path("quran_matrix.json")
-    if os.path.exists(path):
+    """تحميل آيات القرآن من الملف الصحيح matrix_data.json"""
+    path = get_absolute_path("matrix_data.json")
+    if path:
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     return []
 
 @st.cache_data(ttl=3600)
 def load_quran_roots():
-    path = get_data_path("quran_roots.json")
-    if not os.path.exists(path):
+    """تحميل جذور القرآن من الملف الصحيح quran_roots_complete.json"""
+    path = get_absolute_path("quran_roots_complete.json")
+    if not path:
         return {}
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     
     roots_map = {}
-    for item in data.get("roots", []):
+    # استخراج الجذور من هيكلية الملف (metadata + roots)
+    roots_list = data.get("roots", []) if isinstance(data, dict) else data
+    for item in roots_list:
         raw_root = item.get("root", "")
         if not raw_root: 
             continue
@@ -391,9 +404,9 @@ def load_quran_roots():
         roots_map[norm] = {
             "root_raw": raw_root,
             "orbit_id": 0,
-            "orbit": item.get("orbit_hint", "قرآن"),
+            "orbit": item.get("orbit_hint", "آيات_الكون"),
             "weight": float(item.get("frequency", 10)),
-            "insight": f"جذر قرآني (مصدر: {data.get('metadata', {}).get('source', 'Quran DB')})",
+            "insight": f"جذر قرآني سيادي (التكرار: {item.get('frequency', 'غير محدد')})",
             "gene_base": "N"
         }
     return roots_map
@@ -431,12 +444,15 @@ if 'orbit_bodies' not in st.session_state:
     st.session_state.orbit_bodies = []
     st.session_state.orbit_active = False
 
-# تحميل البيانات باستخدام المسار المطلق
-r_index, all_roots, orbit_counter = load_lexicon_db(get_data_path("nibras_lexicon.json"))
-quran_data = load_quran_matrix()
-quran_roots_index = load_quran_roots()
+# 1. تحميل الليكسيكون الأساسي
+lex_path = get_absolute_path("nibras_lexicon.json")
+r_index, all_roots, orbit_counter = load_lexicon_db(lex_path)
 
-# دمج إضافي (بدون استبدال الجذور الأصلية لضمان الاستقرار)
+# 2. تحميل مصفوفة الآيات (الملف الجديد)
+quran_data = load_quran_matrix()
+
+# 3. تحميل ودمج جذور القرآن (الملف الجديد)
+quran_roots_index = load_quran_roots()
 for k, v in quran_roots_index.items():
     if k not in r_index:
         r_index[k] = v
@@ -702,7 +718,7 @@ with tabs[8]:
     st.markdown("### 📖 استنطاق الآيات القرآنية (Q-Mode)")
     
     if not quran_data:
-        st.error("⚠️ ملف quran_matrix.json غير موجود. يرجى التأكد من وجوده في مجلد data/")
+        st.error("🚨 ملف matrix_data.json غير موجود أو فارغ. يرجى التأكد من وجوده في مجلد data/")
     else:
         # اختيار السورة
         surahs = sorted(set(r["surah_number"] for r in quran_data))
