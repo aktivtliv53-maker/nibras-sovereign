@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v55.2
-# الإصدار: الميثاقي - الدمج الكامل مع حل مشكلة الاتصال
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v56.0
+# الإصدار: الميثاقي - الحل النهائي لمشكلة الاتصال
 # الربط العضوي الكامل: القرآن ⬅️ المفاعل ⬅️ الوعي الفوقي
 # المستخدم المهيمن: محمّد
 # ==============================================================================
@@ -37,11 +37,12 @@ def get_absolute_path(filename):
     return None
 
 # ==============================================================================
-# [2] تهيئة الذاكرة المركزية (Global Session State)
+# [2] تهيئة الذاكرة المركزية (Global Session State) - ضمان وجود جميع الحاويات
 # ==============================================================================
-# متغيرات v40.2 للنصوص المدارة
+# التأكد من وجود كل متغير في session_state منعاً للأخطاء
 if 'orbit_bodies' not in st.session_state:
     st.session_state.orbit_bodies = []
+if 'orbit_active' not in st.session_state:
     st.session_state.orbit_active = False
 if 'input_area' not in st.session_state:
     st.session_state.input_area = ""
@@ -71,18 +72,22 @@ if "cosmic_radar_data" not in st.session_state:
 if "root_frequency_data" not in st.session_state:
     st.session_state.root_frequency_data = Counter()
 
-# متغيرات الحَقن الإجباري
-if "r_index_ready" not in st.session_state:
-    st.session_state.r_index_ready = False
+# الحاويات الأساسية - هذا هو الحل لمشكلة AttributeError
+if "all_roots" not in st.session_state:
+    st.session_state.all_roots = []
 if "r_index" not in st.session_state:
     st.session_state.r_index = {}
 if "quran_data" not in st.session_state:
     st.session_state.quran_data = []
+if "orbit_counter" not in st.session_state:
+    st.session_state.orbit_counter = Counter()
+if "initialized" not in st.session_state:
+    st.session_state.initialized = False
 
 # ==============================================================================
 # [3] إعدادات الهوية السيادية
 # ==============================================================================
-st.set_page_config(page_title="Nibras v55.2 - المعمار المحكم", layout="wide")
+st.set_page_config(page_title="Nibras v56.0 - المعمار المحكم", layout="wide")
 
 st.markdown("""
 <style>
@@ -443,6 +448,8 @@ def load_quran_matrix():
                 for item in data:
                     if "roots" not in item:
                         item["roots"] = []
+                    if "index" not in item:
+                        item["index"] = 0
                 return data
         except Exception as e:
             st.error(f"❌ خطأ في تحميل مصفوفة القرآن: {e}")
@@ -584,15 +591,10 @@ def run_orbital_analysis(text, r_index):
     """المحرك المركزي للاستنطاق المداري - قلب النظام"""
     if not text:
         st.warning("⚠️ لا يوجد نص للتحليل.")
-        return
+        return False
     
-    # التحقق من عدم تكرار التحليل لنفس النص
-    if st.session_state.last_processed_text == text:
-        st.info("ℹ️ هذا النص تم تحليله بالفعل في هذه الجلسة.")
-        return
-    
-    # تحديث آخر نص تم تحليله
-    st.session_state.last_processed_text = text
+    # مسح آخر نص تم تحليله لفرض إعادة التحليل
+    st.session_state.last_processed_text = ""
     
     with st.spinner("🌀 جاري كسر الجمود وتفعيل المدارات للنص الجديد..."):
         bodies, unique_roots = process_text_and_generate_bodies(text, r_index)
@@ -600,12 +602,13 @@ def run_orbital_analysis(text, r_index):
     if bodies:
         st.session_state.orbit_bodies = bodies
         st.session_state.orbit_active = True
+        st.session_state.last_processed_text = text
         
         ascent_score = compute_ascent_vector(bodies)
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v55.2</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v56.0</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
             <p style='margin:0;'>{'صعود طاقي نحو المعاني العلوية' if ascent_score > 0 else 'تثبيت مادي في الجذور الأرضية' if ascent_score < 0 else 'توازن بين الصعود والثبات'}</p>
         </div>
@@ -630,9 +633,11 @@ def run_orbital_analysis(text, r_index):
         """, unsafe_allow_html=True)
         
         display_insight_cards(bodies)
-        st.success("✅ تم الاستنطاق الميثاقي بنجاح (v55.2).")
+        st.success("✅ تم الاستنطاق الميثاقي بنجاح (v56.0).")
+        return True
     else:
         st.error("⚠️ لم يتم العثور على جذور مطابقة.")
+        return False
 
 # ==============================================================================
 # [15] دوال v54.2 للرادار السيادي (مستقلة عن بيانات الآيات)
@@ -708,46 +713,54 @@ def update_cosmic_radar(quran_data, r_index, meta_law):
         st.session_state.root_frequency_data = generate_sample_root_frequency()
 
 # ==============================================================================
-# [16] المحرك المركزي لضخ البيانات (Data Injection Engine)
+# [16] محرك الحقن السيادي - الضمان الشامل لتدفق البيانات
 # ==============================================================================
-# 1. استحضار المسارات
-lex_path = get_absolute_path("nibras_lexicon.json")
-quran_path = get_absolute_path("matrix_data.json")
-roots_path = get_absolute_path("quran_roots_complete.json")
+def initialize_sovereign_memory():
+    """وظيفة الحقن لمرة واحدة عند التشغيل"""
+    lex_path = get_absolute_path("nibras_lexicon.json")
+    q_path = get_absolute_path("matrix_data.json")
+    qr_path = get_absolute_path("quran_roots_complete.json")
 
-# 2. تحميل البيانات في الذاكرة المؤقتة
-r_index, all_roots, orbit_counter = load_lexicon_db(lex_path)
-quran_data = load_quran_matrix()
-quran_roots_index = load_quran_roots()
+    # تحميل الليكسيكون
+    r_idx, roots_list, orbit_cnt = load_lexicon_db(lex_path)
+    # تحميل مصفوفة القرآن
+    q_data = load_quran_matrix()
+    # تحميل جذور القرآن
+    q_roots = load_quran_roots()
 
-# 3. الدمج السيادي للجذور
-if quran_roots_index:
-    for k, v in quran_roots_index.items():
-        if k not in r_index:
-            r_index[k] = v
+    # الدمج
+    if q_roots:
+        for k, v in q_roots.items():
+            if k not in r_idx:
+                r_idx[k] = v
+                roots_list.append(v)
 
-# 4. الحَقن الإجباري في session_state (هنا يكمن الحل للربط)
-if 'r_index_ready' not in st.session_state:
-    st.session_state.r_index = r_index
-    st.session_state.quran_data = quran_data
-    st.session_state.r_index_ready = True
-    st.session_state.all_roots = all_roots
-    st.session_state.orbit_counter = orbit_counter
+    # حقن الذاكرة السيادية
+    st.session_state.r_index = r_idx
+    st.session_state.all_roots = roots_list
+    st.session_state.quran_data = q_data
+    st.session_state.orbit_counter = orbit_cnt
+    
+    # إضافة index لكل آية
+    for i, entry in enumerate(st.session_state.quran_data):
+        entry['index'] = i
+    
+    # تحديث الرادار فوراً إذا كانت البيانات موجودة
+    if q_data:
+        update_cosmic_radar(q_data, r_idx, st.session_state.active_meta_law)
+    
+    st.session_state.initialized = True
 
-# 5. إضافة index لكل آية لتوليد مفاتيح ديناميكية
-for i, entry in enumerate(st.session_state.quran_data):
-    entry['index'] = i
-
-# 6. تفعيل الرادار فوراً إذا كانت البيانات موجودة
-if st.session_state.quran_data and st.session_state.cosmic_radar_data.empty:
-    update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
+# تشغيل الحقن إذا كانت الذاكرة فارغة أو لم تتم التهيئة
+if not st.session_state.initialized or not st.session_state.all_roots:
+    initialize_sovereign_memory()
 
 # الشريط الجانبي
 with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center; overflow: hidden; white-space: nowrap;">
         <h2 style="color:#4fc3f7; margin:0; padding:0;">🛡️ نبراس السيادي</h2>
-        <p style="margin:0; padding:0;">الإصدار v55.2 - الميثاقي</p>
+        <p style="margin:0; padding:0;">الإصدار v56.0 - الميثاقي</p>
         <p style="margin:0; padding:0;">المستخدم: محمد</p>
     </div>
     ---
@@ -767,6 +780,9 @@ with st.sidebar:
     if st.sidebar.button("♻️ إعادة الضبط الجذري"):
         st.session_state.active_meta_law = {"root_influence": 1.0, "ascent_bias": 1.0, "energy_bias": 1.0, "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}}
         st.session_state.system_log = []
+        st.session_state.orbit_bodies = []
+        st.session_state.orbit_active = False
+        st.session_state.last_processed_text = ""
         update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
         st.rerun()
     
@@ -821,17 +837,12 @@ with tabs[0]:
             
             btn_key = f"btn_run_{v_obj.get('index', hash(v_obj['text']))}"
             if st.button("🚀 تفعيل المفاعل السيادي للآية", use_container_width=True, key=btn_key):
-                # شحن النص وتشغيل المحرك فوراً لكسر الجمود
-                bodies, unique_roots = process_text_and_generate_bodies(v_obj['text'], st.session_state.r_index)
-                if bodies:
-                    st.session_state.orbit_bodies = bodies
-                    st.session_state.orbit_active = True
+                # تشغيل المحرك فوراً لكسر الجمود
+                success = run_orbital_analysis(v_obj['text'], st.session_state.r_index)
+                if success:
                     st.session_state.input_area = v_obj['text']
-                    st.session_state.last_processed_text = v_obj['text']
                     st.success("✅ تَمَّ الشحن وتفعيل المدارات بنجاح!")
                     st.rerun()
-                else:
-                    st.error("⚠️ لم يتم العثور على جذور مطابقة في هذه الآية.")
 
 # ==============================================================================
 # [19] التبويب [1]: الاستنطاق المداري (من v40.2)
@@ -839,13 +850,7 @@ with tabs[0]:
 with tabs[1]:
     st.markdown("### 🔍 المفاعل السيادي للاستنطاق المداري")
     
-    c_key = st.session_state.get('widget_key', 'orbital_init_v1')
-    c_text = st.session_state.get('input_area', "")
-    
-    if st.session_state.get(c_key) is None:
-        st.session_state[c_key] = c_text
-    
-    input_text = st.text_area("النص محل الاستنطاق:", key=c_key, height=180)
+    input_text = st.text_area("النص محل الاستنطاق:", value=st.session_state.input_area, height=180, key="main_orbital_input")
     st.session_state.input_area = input_text
     
     col1, col2 = st.columns([3, 1])
@@ -855,7 +860,7 @@ with tabs[1]:
         archive_btn = st.button("🏁 خِت فِت (ختم الجلسة)", use_container_width=True)
     
     # التحقق من وجود بيانات مدارية مسبقة
-    if st.session_state.orbit_active and st.session_state.orbit_bodies:
+    if st.session_state.orbit_active and st.session_state.orbit_bodies and not manual_btn:
         st.info(f"✅ توجد بيانات مدارية محللة مسبقاً ({len(st.session_state.orbit_bodies)} جذر). اضغط 'تفعيل المفاعل يدوياً' لإعادة التحليل إذا تغير النص.")
         
         # عرض النتائج المحفوظة
@@ -883,8 +888,7 @@ with tabs[1]:
         
         display_insight_cards(st.session_state.orbit_bodies)
     
-    elif st.session_state.get('trigger_analysis', False) or manual_btn:
-        st.session_state.trigger_analysis = False
+    elif manual_btn:
         if input_text:
             run_orbital_analysis(input_text, st.session_state.r_index)
         else:
@@ -978,8 +982,8 @@ with tabs[5]:
             cols[i].markdown(f"<div class='ultra-card' style='border-top-color:{info['color']}'><h2>{info['icon']}</h2><h3>{info['name']}</h3><p>{info['meaning']}</p></div>", unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("### 📖 استنطاق جذر محدد")
-    root_options = sorted([r['root_raw'] for r in st.session_state.all_roots])
-    if root_options:
+    if st.session_state.all_roots:
+        root_options = sorted([r['root_raw'] for r in st.session_state.all_roots])
         selected = st.selectbox("اختر جذراً:", options=root_options)
         if selected:
             norm = normalize_lexicon_root(selected)
@@ -987,6 +991,8 @@ with tabs[5]:
             if found:
                 gi = GENE_STYLE.get(found.get('gene_base', 'N'), GENE_STYLE['N'])
                 st.markdown(f"<div class='insight-card' style='border-right-color:{gi['color']}'><b style='color:{gi['color']}'>📌 الجذر: {found['root_raw']}</b><br>🧬 الجين القاعدي: {gi['icon']} {gi['name']}<br>🔄 المدار: {found['orbit']} (ID: {found.get('orbit_id', 0)})<br>⚡ الوزن الأصلي: {found.get('weight', 1.0)} | الطاقة الأساسية: {found.get('raw_energy', 0):.1f}<br><hr><p>🔮 {found['insight']}</p></div>", unsafe_allow_html=True)
+    else:
+        st.info("⚙️ جاري تحميل البيانات...")
 
 with tabs[6]:
     st.markdown("### 📈 التحليل الكمي للمدار")
@@ -1009,7 +1015,7 @@ with tabs[7]:
         total_e = sum(b['energy'] for b in bodies)
         genes_count = Counter(b['gene'] for b in bodies)
         dom_gene = max(genes_count, key=genes_count.get)
-        st.markdown(f"<div class='story-box'><b>بيان الاستواء الوجودي v55.2:</b><br>تم استنطاق <b>{len(bodies)}</b> جذراً.<br>الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>مجموع الطاقة الديناميكية: <b>{total_e:.1f}</b></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='story-box'><b>بيان الاستواء الوجودي v56.0:</b><br>تم استنطاق <b>{len(bodies)}</b> جذراً.<br>الهيمنة الجينية: <b>{GENE_STYLE[dom_gene]['icon']} {GENE_STYLE[dom_gene]['name']}</b><br>مجموع الطاقة الديناميكية: <b>{total_e:.1f}</b></div>", unsafe_allow_html=True)
         display_insight_cards(bodies)
     else:
         st.info("⚙️ انتظر تفعيل المفاعل.")
@@ -1028,5 +1034,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار v55.2 النهائي - حل مشكلة الاتصال
+# نهاية الكود - الإصدار v56.0 النهائي - حل مشكلة الاتصال نهائياً
 # ==============================================================================
