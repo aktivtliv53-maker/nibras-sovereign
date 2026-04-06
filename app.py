@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V67.4
-# Neuro‑Sovereign Layer with Prediction Engine
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V70
+# Omni Sovereign Layer - Neuro-Resonance + Prediction Engine
 # المستخدم المهيمن: محمّد
 # ==============================================================================
 
@@ -207,6 +207,37 @@ GENE_TO_ACTION = {
 PROTECTION_OVERRIDE = "حماية"
 
 # ==============================================================================
+# [6.5] V70 – Neuro-Resonance Layer
+# ==============================================================================
+RESONANCE_MAP = {
+    "UP": "الطك",
+    "FLAT": "بتثسشصض",
+    "DEEP": "نقيمجحخ"
+}
+
+def calculate_resonance(text: str) -> float:
+    """
+    حساب رنين النص بشكل منضبط (مجال آمن ~ 0.9 – 1.1)
+    """
+    if not text:
+        return 1.0
+
+    score = 0.0
+    length = len(text)
+
+    for c in text:
+        if c in RESONANCE_MAP["UP"]:
+            score += 1.1
+        elif c in RESONANCE_MAP["DEEP"]:
+            score += 0.9
+        else:
+            score += 1.0
+
+    raw = score / max(1, length)
+    # تطبيع إلى مجال ضيق
+    return max(0.9, min(1.1, raw))
+
+# ==============================================================================
 # [7] تحليل الجينات – إغلاق الثغرة
 # ==============================================================================
 def analyze_genes_for_text(text):
@@ -239,7 +270,7 @@ def analyze_genes_for_text(text):
     return dominant_gene
 
 # ==============================================================================
-# [8] محرك الطاقة النيوروني + التنبؤ V67.4
+# [8] محرك الطاقة النيوروني
 # ==============================================================================
 def get_neuro_boost(word):
     if not word: 
@@ -263,6 +294,36 @@ def compute_final_energy_v674(base_w, count, mode, morph_rank, orbit_id, root_si
     final_energy = base_energy * neuro_boost * throne_factor
     return round(final_energy, 2)
 
+# ==============================================================================
+# [8.5] V70 – Omni Energy Wrapper
+# ==============================================================================
+def compute_omni_energy(word: str, orbit_id: int, base_w: float = 1.0) -> float:
+    """
+    دمج:
+    - compute_dynamic_energy (المحرك الأصلي)
+    - get_neuro_boost (V67)
+    - calculate_resonance (V70)
+    - معامل العرش للمدارات العليا
+    """
+    try:
+        base = compute_dynamic_energy(
+            base_w,
+            1,
+            "NORMAL",
+            1,
+            orbit_id,
+            {"eb": 0.0, "n_factor": 50}
+        )
+    except Exception:
+        base = 1.0
+
+    neuro = get_neuro_boost(word)
+    resonance = calculate_resonance(word)
+    throne = 1.15 if int(orbit_id or 0) >= 7 else 1.0
+
+    omni = base * neuro * throne * (1 + (resonance - 1) * 0.5)
+    return round(omni, 3)
+
 def generate_sovereign_v67_4_output(text, orbit_id=0):
     """توليد توصية V67.4 مع تنبؤ V68"""
     if not text:
@@ -270,7 +331,6 @@ def generate_sovereign_v67_4_output(text, orbit_id=0):
     
     dominant_gene = analyze_genes_for_text(text)
     
-    # حساب الطاقة النهائية
     rec_energy = compute_final_energy_v674(
         base_w=1.0, count=1, mode="NORMAL", 
         morph_rank=1, orbit_id=orbit_id, 
@@ -295,7 +355,6 @@ def generate_sovereign_v67_4_output(text, orbit_id=0):
     if "sovereign_recommendations" in st.session_state:
         st.session_state.sovereign_recommendations.append(rec)
     
-    # التنبؤ V68
     pred_action = action_type
     if len(st.session_state.get("recommendation_history", [])) > 0:
         last_rec = st.session_state.recommendation_history[-1]
@@ -318,8 +377,8 @@ def generate_sovereign_v67_4_output(text, orbit_id=0):
 # ==============================================================================
 sanitize_session_state()
 init_manifestation_state()
-init_sovereign_v67_4_logic()  # تهيئة V67.4
-st.set_page_config(page_title="Nibras V67.4 - السيادة المطلقة", layout="wide")
+init_sovereign_v67_4_logic()
+st.set_page_config(page_title="Nibras V70 - السيادة المطلقة", layout="wide")
 
 st.markdown("""
 <style>
@@ -675,14 +734,12 @@ def render_sovereign_v67_4_panel():
     
     with st.expander("✨ التوصية السيادية النشطة | Sovereign Directive V67.4", expanded=True):
         
-        # التوصية الحالية
         st.markdown(f"### 🧬 الجين المسيطر: `{rec.get('dominant_gene', '')}`")
         st.markdown(f"**الحركة الموصى بها:** `{rec.get('action_type', '')}`")
         st.markdown(f"**الطاقة النهائية:** `{rec.get('energy', 0):.2f}`")
         
         st.markdown("---")
         
-        # التنبؤ الاستباقي V68
         if pred:
             st.markdown("### 🔮 التنبؤ الاستباقي V68")
             pred_color = "#9c27b0"
@@ -695,14 +752,12 @@ def render_sovereign_v67_4_panel():
         
         st.markdown("---")
         
-        # أزرار الالتزام السيادي
         c1, c2 = st.columns(2)
         
         if c1.button("✅ التزمت بهذا المسار", key="apply_v674"):
             rec["user_response"] = "APPLIED"
             st.session_state.recommendation_history.append(rec)
             
-            # تسجيل التغذية الراجعة للتنبؤ
             if pred:
                 key = hash(str(pred.get("timestamp", 0))) % 1000000
                 st.session_state.prediction_feedback[str(key)] = {
@@ -730,7 +785,69 @@ def render_sovereign_v67_4_panel():
             st.rerun()
 
 # ==============================================================================
-# [20] دوال المحرك المداري (معدلة لدعم V67.4)
+# [19.5] V70 – Behavioral Prediction
+# ==============================================================================
+def get_behavioral_insight() -> str:
+    """
+    قراءة st.session_state.prediction_feedback
+    لاستخراج جاهزية الحقل (Applied vs Skipped)
+    """
+    feedback = st.session_state.get("prediction_feedback", {})
+    if not feedback:
+        return "⚪ النظام في حالة انتظار – لا توجد بيانات التزام بعد."
+
+    total = len(feedback)
+    applied = sum(1 for v in feedback.values() if v.get("committed") is True)
+    ratio = applied / total if total > 0 else 0.0
+
+    if ratio >= 0.8:
+        return "🟢 ذروة سيادية: الحقل مستعد لمسارات الاتساع والفتح."
+    if ratio <= 0.4:
+        return "🛡️ وضع حماية: يوصى بمسارات السكينة والجبر والتثبيت."
+    return "⚖️ توازن مداري: استمر في المسار الحالي مع مراقبة الجينات."
+
+# ==============================================================================
+# [19.6] V70 – Final Sovereign Panel
+# ==============================================================================
+def render_v70_final_panel():
+    rec = st.session_state.get("current_sovereign_recommendation")
+    pred = st.session_state.get("current_prediction")
+
+    if not rec:
+        st.info("🜃 V70 | بانتظار نص أو آية لتفعيل المرصد الكوني.")
+        return
+
+    text = rec.get("text", "")
+    orbit_id = rec.get("orbit_id", 7)
+    omni_energy = compute_omni_energy(text, orbit_id)
+    behavior_state = get_behavioral_insight()
+
+    st.markdown("### 🧭 V70 – المرصد السيادي الكوني")
+    st.markdown(f"**النص / الآية:** {text[:100]}..." if len(text) > 100 else f"**النص / الآية:** {text}")
+    st.markdown(f"**الطاقة الكونية (Omni Energy):** {omni_energy}")
+    st.markdown(f"**الحركة الحالية:** {rec.get('action_type', 'N/A')}")
+    st.markdown(f"**التنبؤ V68:** {pred.get('pred_action', 'N/A') if pred else 'N/A'}")
+    st.markdown(f"**حالة السلوك:** {behavior_state}")
+
+    key = hash(text) % 1000000
+
+    c1, c2 = st.columns(2)
+    if c1.button("✅ التزمت بهذا المسار (V70)", key=f"v70_commit_{key}"):
+        if "prediction_feedback" not in st.session_state:
+            st.session_state.prediction_feedback = {}
+        st.session_state.prediction_feedback[str(key)] = {"committed": True, "timestamp": time.time()}
+        st.success("تم تسجيل الالتزام السيادي في طبقة V70.")
+        st.rerun()
+
+    if c2.button("⏭ تخطيت هذا المسار (V70)", key=f"v70_skip_{key}"):
+        if "prediction_feedback" not in st.session_state:
+            st.session_state.prediction_feedback = {}
+        st.session_state.prediction_feedback[str(key)] = {"committed": False, "timestamp": time.time()}
+        st.warning("تم تسجيل التخطي – سيُعاد وزن المسارات القادمة في V70.")
+        st.rerun()
+
+# ==============================================================================
+# [20] دوال المحرك المداري
 # ==============================================================================
 def display_insight_cards(bodies):
     if not bodies:
@@ -839,7 +956,7 @@ def display_orbital_results(key_suffix="orbital"):
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V67.4</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V70</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -859,7 +976,7 @@ def display_orbital_results(key_suffix="orbital"):
     return False
 
 # ==============================================================================
-# [21] دوال v63 - الحوكمة الاستراتيجية (محفوظة بالكامل)
+# [21] دوال v63 - الحوكمة الاستراتيجية
 # ==============================================================================
 def get_current_cycle_index():
     return len(st.session_state.get("system_log", []))
@@ -1058,11 +1175,10 @@ def reset_nibras_system():
     st.session_state.orbit_bodies = []
     st.session_state.input_area = ""
     st.session_state.current_text = ""
-    # إعادة تهيئة مفاتيح V67.4
     init_sovereign_v67_4_logic()
 
 # ==============================================================================
-# [22] دوال ألواح التكوين (Manifestation Dashboard) - محفوظة بالكامل
+# [22] دوال ألواح التكوين (Manifestation Dashboard)
 # ==============================================================================
 def safe_get_latest_analysis_snapshot():
     """Return a safe, normalized snapshot of the latest meaningful system analysis"""
@@ -1338,7 +1454,7 @@ def render_manifestation_dashboard():
             st.dataframe(history_df[available_cols].head(10), use_container_width=True)
 
 # ==============================================================================
-# [23] دوال الرادار - محفوظة بالكامل
+# [23] دوال الرادار
 # ==============================================================================
 def generate_sample_radar_data():
     sample_data = pd.DataFrame({
@@ -1426,7 +1542,7 @@ with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
         <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-        <p>الإصدار V67.4 - Neuro‑Sovereign + Prediction</p>
+        <p>الإصدار V70 - Omni Sovereign Layer</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -1482,7 +1598,6 @@ with tabs[0]:
                     st.session_state.orbit_active = True
                     st.session_state.last_processed_text = v_obj['text']
                     update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
-                    # توليد توصية V67.4
                     generate_sovereign_v67_4_output(v_obj['text'], 0)
                     st.success(f"✅ تم تحليل الآية بنجاح! ({len(bodies)} جذر)")
                     st.rerun()
@@ -1640,7 +1755,7 @@ with tabs[4]:
             st.success("✨ النظام في حالة تمدد استراتيجي نتيجة استقرار مرتفع.")
         else:
             st.info("⚖️ النظام يعمل في الوضع القياسي المتوازن.")
-    with st.expander("🛡️ حالة التثبيت الفائق (V67.4)", expanded=False):
+    with st.expander("🛡️ حالة التثبيت الفائق (V70)", expanded=False):
         st.markdown(f"**Cooldown الحالي:** `{st.session_state.get('correction_cooldown', 2)}` دورة")
         st.markdown(f"**آخر دورة تصحيح:** `{st.session_state.get('last_correction_cycle', -9999)}`")
         snap = st.session_state.get("last_correction_snapshot", {})
@@ -1700,11 +1815,14 @@ with tabs[5]:
             """, unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V67.4)
+# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V67.4 + V70)
 # ==============================================================================
 with tabs[6]:
-    # اللوحة السيادية V67.4 في أعلى التبويب
+    # اللوحة السيادية V67.4
     render_sovereign_v67_4_panel()
+    
+    # اللوحة النهائية V70
+    render_v70_final_panel()
     
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
@@ -1747,5 +1865,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار V67.4 النهائي مع Neuro‑Sovereign Layer و Prediction Engine
+# نهاية الكود - الإصدار V70 النهائي مع Omni Sovereign Layer
 # ==============================================================================
