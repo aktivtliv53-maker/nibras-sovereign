@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v67.1
-# الإصدار: الميثاقي - مع محرك التوصية السيادي (Sovereign Recommendation Engine)
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار v66.2
+# الإصدار: الميثاقي - مع ألواح التكوين (Manifestation Dashboard)
 # المستخدم المهيمن: محمّد
 # ==============================================================================
 
@@ -21,130 +21,7 @@ from itertools import combinations
 from datetime import datetime
 
 # ==============================================================================
-# [1] إعدادات الهوية السيادية (يجب أن تكون في أعلى الملف)
-# ==============================================================================
-st.set_page_config(page_title="Nibras v67.1 - السيادة المطلقة", layout="wide", initial_sidebar_state="auto")
-
-st.markdown("""
-<style>
-    /* إخفاء عناصر Streamlit العلوية والسفلية */
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
-    .stAppHeader {display: none;}
-    .st-emotion-cache-1v0mbdj {display: none;}
-    .st-emotion-cache-1wivap2 {display: none;}
-    .st-emotion-cache-zq5wmm {display: none;}
-    .st-emotion-cache-18ni7ap {display: none;}
-    .st-emotion-cache-1dp5vir {display: none;}
-    #MainMenu {visibility: hidden;}
-    .stDeployButton {display: none;}
-    [data-testid="stToolbar"] {display: none;}
-    [data-testid="stDecoration"] {display: none;}
-    
-    /* اتجاه RTL والخط */
-    .stApp, .stAppViewContainer, .st-emotion-cache-1v0mbdj, .st-emotion-cache-1wivap2 {
-        direction: rtl !important;
-    }
-    
-    /* تخصيص الخلفية السوداء */
-    [data-testid="stAppViewContainer"] { 
-        background: #050505 !important; 
-        color: #e0e0e0 !important; 
-    }
-    .stApp {
-        background: #050505 !important;
-    }
-    .main > div {
-        background: #050505 !important;
-    }
-    
-    /* منع تمدد الحروف العمودي */
-    h1, h2, h3, .stMarkdown, .st-emotion-cache-1v0mbdj, .st-emotion-cache-1wivap2 {
-        word-break: normal !important;
-        overflow-wrap: normal !important;
-        white-space: nowrap !important;
-    }
-    
-    /* إخفاء أي نصوص زائدة */
-    [data-testid="stSidebar"] div, [data-testid="stAppViewContainer"] {
-        overflow: hidden !important;
-    }
-    
-    /* إصلاح العناوين الجانبية */
-    .sidebar-title, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-        display: block;
-        width: 100%;
-        text-align: center;
-        white-space: nowrap;
-    }
-    
-    /* تخصيص الخط */
-    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
-    * {
-        font-family: 'Amiri', serif !important;
-    }
-    
-    /* تنسيق التبويبات */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .stTabs [aria-selected="true"] { 
-        color: #FFD700 !important; 
-        border-bottom: 2px solid #FFD700 !important;
-        background-color: rgba(255,215,0,0.1) !important;
-    }
-    .stTabs [data-baseweb="tab"] {
-        background-color: #0d0d14 !important;
-        border-radius: 10px 10px 0 0 !important;
-        padding: 8px 16px !important;
-    }
-    
-    /* كروت الاستنطاق */
-    .insight-card {
-        background: linear-gradient(135deg, #0d0d14 0%, #161625 100%);
-        padding: 25px; border-radius: 15px; border-right: 8px solid #FFD700;
-        margin-bottom: 20px; line-height: 1.8; font-size: 1.1em;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .energy-badge { background: #1a3a1a; color: #00ffcc; padding: 2px 10px; border-radius: 5px; font-family: monospace; }
-    .story-box {
-        background: linear-gradient(135deg, rgba(10,21,10,0.85) 0%, rgba(1,1,3,0.95) 100%);
-        padding: 35px; border-radius: 25px; border-right: 15px solid #4CAF50;
-        line-height: 2; font-size: 1.2em; margin-bottom: 30px;
-    }
-    .ultra-card {
-        background: #0d0d14; padding: 20px; border-radius: 20px;
-        border-top: 8px solid #4fc3f7; text-align: center; margin-bottom: 20px;
-    }
-    .ascent-positive { background: linear-gradient(135deg, #0a2a0a 0%, #0a1a0a 100%); border-right: 5px solid #00ffcc; }
-    .ascent-negative { background: linear-gradient(135deg, #2a0a0a 0%, #1a0a0a 100%); border-right: 5px solid #ff5252; }
-    .gene-badge { background: rgba(255,215,0,0.15); padding: 4px 12px; border-radius: 20px; margin: 2px; display: inline-block; }
-    
-    /* تنسيق الشريط الجانبي */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0a0a0f 0%, #050508 100%);
-        border-left: 1px solid #222;
-    }
-    
-    /* تنسيق الأزرار */
-    .stButton > button {
-        background-color: #1a1a2e;
-        color: #e0e0e0;
-        border: 1px solid #FFD700;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-    .stButton > button:hover {
-        background-color: #FFD700;
-        color: #000;
-        border-color: #FFD700;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# ==============================================================================
-# [2] دوال المسار السيادية
+# [1] دوال المسار السيادية
 # ==============================================================================
 def get_absolute_path(filename):
     base_path = os.path.dirname(os.path.abspath(__file__))
@@ -159,7 +36,7 @@ def get_absolute_path(filename):
     return None
 
 # ==============================================================================
-# [3] دوال التطهير الأساسية
+# [2] دوال التطهير الأساسية
 # ==============================================================================
 ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]')
 
@@ -184,7 +61,7 @@ def ensure_dot(text):
     return s
 
 # ==============================================================================
-# [4] دوال مساعدة آمنة
+# [3] دوال مساعدة آمنة
 # ==============================================================================
 def safe_float(value, default=0.0):
     try:
@@ -216,445 +93,137 @@ def human_ts(ts):
         return "غير معروف"
 
 # ==============================================================================
-# [5] الإصلاح الذاتي السيادي (Sovereign Auto-Repair)
+# [4] تهيئة الذاكرة المركزية وحماية الفساد
 # ==============================================================================
-def sovereign_auto_repair():
-    """إصلاح تلقائي لحالة الجلسة - ضمان عدم وجود بيانات فاسدة"""
-    # قائمة المفاتيح الأساسية المطلوبة
-    critical_keys = [
-        "active_meta_law", "system_log", "orbit_active", "orbit_bodies",
-        "input_area", "current_text", "r_index", "all_roots", "quran_data",
-        "cosmic_radar_data", "root_frequency_data", "initialized",
-        "current_strategy", "last_correction_cycle", "last_correction_snapshot",
-        "correction_cooldown"
-    ]
+def sanitize_session_state():
+    if "active_meta_law" not in st.session_state or not isinstance(st.session_state.active_meta_law, dict):
+        st.session_state.active_meta_law = {"root_influence": 1.0, "energy_bias": 1.0, "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}}
+    else:
+        law = st.session_state.active_meta_law
+        if not isinstance(law.get("root_influence"), (int, float)) or math.isnan(law.get("root_influence", 0)):
+            law["root_influence"] = 1.0
+        if not isinstance(law.get("energy_bias"), (int, float)) or math.isnan(law.get("energy_bias", 0)):
+            law["energy_bias"] = 1.0
+        law["root_influence"] = min(max(law["root_influence"], 0.85), 1.80)
+        law["energy_bias"] = min(max(law["energy_bias"], 0.80), 2.50)
     
-    for key in critical_keys:
-        if key not in st.session_state:
-            if key == "active_meta_law":
-                st.session_state.active_meta_law = {"root_influence": 1.0, "energy_bias": 1.0, "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}}
-            elif key == "system_log":
-                st.session_state.system_log = []
-            elif key == "orbit_active":
-                st.session_state.orbit_active = False
-            elif key == "orbit_bodies":
-                st.session_state.orbit_bodies = []
-            elif key == "input_area":
-                st.session_state.input_area = ""
-            elif key == "current_text":
-                st.session_state.current_text = ""
-            elif key == "r_index":
-                st.session_state.r_index = {}
-            elif key == "all_roots":
-                st.session_state.all_roots = []
-            elif key == "quran_data":
-                st.session_state.quran_data = []
-            elif key == "cosmic_radar_data":
-                st.session_state.cosmic_radar_data = pd.DataFrame()
-            elif key == "root_frequency_data":
-                st.session_state.root_frequency_data = Counter()
-            elif key == "initialized":
-                st.session_state.initialized = False
-            elif key == "current_strategy":
-                st.session_state.current_strategy = "STANDARD"
-            elif key == "last_correction_cycle":
-                st.session_state.last_correction_cycle = -9999
-            elif key == "last_correction_snapshot":
-                st.session_state.last_correction_snapshot = {"root_influence": None, "energy_bias": None, "strategy": None}
-            elif key == "correction_cooldown":
-                st.session_state.correction_cooldown = 2
-    
-    # إصلاح القوانين النشطة
-    law = st.session_state.active_meta_law
-    if not isinstance(law.get("root_influence"), (int, float)) or math.isnan(law.get("root_influence", 0)):
-        law["root_influence"] = 1.0
-    if not isinstance(law.get("energy_bias"), (int, float)) or math.isnan(law.get("energy_bias", 0)):
-        law["energy_bias"] = 1.0
-    law["root_influence"] = min(max(law["root_influence"], 0.85), 1.80)
-    law["energy_bias"] = min(max(law["energy_bias"], 0.80), 2.50)
-    
-    # إصلاح سجل النظام
-    if not isinstance(st.session_state.system_log, list):
+    if "system_log" not in st.session_state or not isinstance(st.session_state.system_log, list):
         st.session_state.system_log = []
     
-    # إصلاح حالة ألواح التكوين
-    if "manifestation_target" not in st.session_state:
+    if "orbit_active" not in st.session_state:
+        st.session_state.orbit_active = False
+    if "orbit_bodies" not in st.session_state:
+        st.session_state.orbit_bodies = []
+    if "input_area" not in st.session_state:
+        st.session_state.input_area = ""
+    if "current_text" not in st.session_state:
+        st.session_state.current_text = ""
+    if "trigger_analysis" not in st.session_state:
+        st.session_state.trigger_analysis = False
+    if "last_processed_text" not in st.session_state:
+        st.session_state.last_processed_text = ""
+    if "widget_key" not in st.session_state:
+        st.session_state.widget_key = "orbital_init_v1"
+    
+    if "current_strategy" not in st.session_state:
+        st.session_state.current_strategy = "STANDARD"
+    if "last_correction_cycle" not in st.session_state:
+        st.session_state.last_correction_cycle = -9999
+    if "last_correction_snapshot" not in st.session_state:
+        st.session_state.last_correction_snapshot = {"root_influence": None, "energy_bias": None, "strategy": None}
+    if "correction_cooldown" not in st.session_state:
+        st.session_state.correction_cooldown = 2
+    
+    if "r_index" not in st.session_state:
+        st.session_state.r_index = {}
+    if "all_roots" not in st.session_state:
+        st.session_state.all_roots = []
+    if "quran_data" not in st.session_state:
+        st.session_state.quran_data = []
+    if "orbit_counter" not in st.session_state:
+        st.session_state.orbit_counter = Counter()
+    if "cosmic_radar_data" not in st.session_state:
+        st.session_state.cosmic_radar_data = pd.DataFrame()
+    if "root_frequency_data" not in st.session_state:
+        st.session_state.root_frequency_data = Counter()
+    if "initialized" not in st.session_state:
+        st.session_state.initialized = False
+
+# ==============================================================================
+# [5] تهيئة ألواح التكوين (Manifestation State)
+# ==============================================================================
+def init_manifestation_state():
+    if "manifestation_target" not in st.session_state or not isinstance(st.session_state.manifestation_target, str):
         st.session_state.manifestation_target = "رزق"
-    if "manifestation_custom_target" not in st.session_state:
+    if "manifestation_custom_target" not in st.session_state or not isinstance(st.session_state.manifestation_custom_target, str):
         st.session_state.manifestation_custom_target = ""
-    if "manifestation_protocol" not in st.session_state:
+    if "manifestation_protocol" not in st.session_state or not isinstance(st.session_state.manifestation_protocol, list):
         st.session_state.manifestation_protocol = []
-    if "manifestation_missing_genes" not in st.session_state:
+    if "manifestation_missing_genes" not in st.session_state or not isinstance(st.session_state.manifestation_missing_genes, list):
         st.session_state.manifestation_missing_genes = []
-    if "manifestation_active_covenant" not in st.session_state:
+    if "manifestation_active_covenant" not in st.session_state or not isinstance(st.session_state.manifestation_active_covenant, dict):
         st.session_state.manifestation_active_covenant = {}
-    if "manifestation_history" not in st.session_state:
+    if "manifestation_history" not in st.session_state or not isinstance(st.session_state.manifestation_history, list):
         st.session_state.manifestation_history = []
+    if "manifestation_enabled" not in st.session_state or not isinstance(st.session_state.manifestation_enabled, bool):
+        st.session_state.manifestation_enabled = True
+    if "manifestation_last_build_ts" not in st.session_state:
+        st.session_state.manifestation_last_build_ts = 0.0
     if "manifestation_signal_score" not in st.session_state:
         st.session_state.manifestation_signal_score = 0.0
-    if "manifestation_recommendation" not in st.session_state:
+    if "manifestation_recommendation" not in st.session_state or not isinstance(st.session_state.manifestation_recommendation, str):
         st.session_state.manifestation_recommendation = ""
-    
-    # إصلاح حالة محرك التوصية
-    if "sovereign_recommendations" not in st.session_state:
-        st.session_state.sovereign_recommendations = []
-    if "current_sovereign_recommendation" not in st.session_state:
-        st.session_state.current_sovereign_recommendation = {}
-    if "recommendation_history" not in st.session_state:
-        st.session_state.recommendation_history = []
-    if "recommendation_engine_enabled" not in st.session_state:
-        st.session_state.recommendation_engine_enabled = True
-    if "last_recommendation_snapshot" not in st.session_state:
-        st.session_state.last_recommendation_snapshot = {}
 
 # ==============================================================================
-# [6] محرك التوصية السيادي (Sovereign Recommendation Engine)
+# [6] إعدادات الهوية السيادية
 # ==============================================================================
-def analyze_sovereign_state():
-    """بناء لقطة طبيعية للحالة الحالية"""
-    snapshot = {
-        "ready": False,
-        "active_goal": "غير محدد",
-        "latest_verse": "",
-        "signal_score": 50.0,
-        "dominant_genes": [],
-        "missing_genes": [],
-        "current_strategy": "STANDARD",
-        "meta_law": {"root_influence": 1.0, "energy_bias": 1.0},
-        "recent_pattern": "مستقر",
-        "recommendation_ready": False
-    }
-    
-    try:
-        # الهدف النشط من ألواح التكوين
-        if st.session_state.get("manifestation_active_covenant"):
-            covenant = st.session_state.manifestation_active_covenant
-            snapshot["active_goal"] = covenant.get("target", "غير محدد")
-            snapshot["missing_genes"] = covenant.get("missing_genes", [])
-            snapshot["signal_score"] = covenant.get("signal_score", 50.0)
-        
-        # الاستراتيجية الحالية
-        if st.session_state.get("current_strategy"):
-            snapshot["current_strategy"] = st.session_state.current_strategy
-        
-        # القانون النشط
-        if st.session_state.get("active_meta_law"):
-            law = st.session_state.active_meta_law
-            snapshot["meta_law"] = {"root_influence": law.get("root_influence", 1.0), "energy_bias": law.get("energy_bias", 1.0)}
-        
-        # النص المحلل مؤخراً
-        if st.session_state.get("current_text"):
-            snapshot["latest_verse"] = st.session_state.current_text[:100]
-        
-        # الجينات المهيمنة من المدارات
-        if st.session_state.get("orbit_bodies"):
-            bodies = st.session_state.orbit_bodies
-            genes = [b.get("gene", "N") for b in bodies if isinstance(b, dict)]
-            if genes:
-                snapshot["dominant_genes"] = list(set(genes))
-        
-        # تحليل النمط من السجل
-        log = safe_list(st.session_state.get("system_log", []))
-        if len(log) > 1:
-            recent_influences = [safe_float(e.get("new_influence", 0), 0) for e in log[-5:] if isinstance(e, dict)]
-            if recent_influences:
-                trend = recent_influences[-1] - recent_influences[0]
-                if trend > 0.05:
-                    snapshot["recent_pattern"] = "تصاعدي"
-                elif trend < -0.05:
-                    snapshot["recent_pattern"] = "تنازلي"
-                else:
-                    snapshot["recent_pattern"] = "مستقر"
-        
-        snapshot["ready"] = bool(st.session_state.get("orbit_bodies") or st.session_state.get("manifestation_active_covenant"))
-        snapshot["recommendation_ready"] = snapshot["ready"]
-        
-    except Exception as e:
-        pass
-    
-    return snapshot
+sanitize_session_state()
+init_manifestation_state()
+st.set_page_config(page_title="Nibras v66.2 - السيادة المطلقة", layout="wide")
 
-def detect_critical_gene_need(state_snapshot):
-    """تحديد الجين الأكثر احتياجاً"""
-    missing_genes = state_snapshot.get("missing_genes", [])
-    dominant_genes = state_snapshot.get("dominant_genes", [])
-    current_strategy = state_snapshot.get("current_strategy", "STANDARD")
-    signal_score = state_snapshot.get("signal_score", 50.0)
+st.markdown("""
+<style>
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stAppHeader {display: none;}
+    .st-emotion-cache-1v0mbdj {display: none;}
+    .st-emotion-cache-1wivap2 {display: none;}
+    .st-emotion-cache-zq5wmm {display: none;}
+    .st-emotion-cache-18ni7ap {display: none;}
+    .st-emotion-cache-1dp5vir {display: none;}
+    #MainMenu {visibility: hidden;}
+    .stDeployButton {display: none;}
+    [data-testid="stToolbar"] {display: none;}
+    [data-testid="stDecoration"] {display: none;}
     
-    gene_priority = {
-        "ثبات": 1,
-        "ترسيخ": 1,
-        "تفعيل": 2,
-        "فتح": 2,
-        "حماية": 3,
-        "جذب": 3,
-        "اتساع": 4,
-        "تطهير": 4,
-        "تجلّي": 5
+    h1, h2, h3, .stMarkdown { word-break: normal !important; white-space: nowrap !important; }
+    [data-testid="stSidebar"] div { overflow: hidden !important; }
+    
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+    [data-testid="stAppViewContainer"] { background: #050505; color: #e0e0e0; direction: rtl; font-family: 'Amiri', serif; }
+    .stTabs [aria-selected="true"] { color: #FFD700 !important; border-bottom: 2px solid #FFD700 !important; }
+    
+    .insight-card {
+        background: linear-gradient(135deg, #0d0d14 0%, #161625 100%);
+        padding: 25px; border-radius: 15px; border-right: 8px solid #FFD700;
+        margin-bottom: 20px; line-height: 1.8; font-size: 1.1em;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    
-    if missing_genes:
-        for gene in missing_genes:
-            if gene in gene_priority:
-                return gene
-    
-    if signal_score < 40:
-        return "ثبات"
-    elif signal_score > 80:
-        return "اتساع"
-    
-    if current_strategy == "AGGRESSIVE":
-        return "حماية"
-    elif current_strategy == "EXPANSIVE":
-        return "اتساع"
-    
-    return "تفعيل"
-
-def recommend_supportive_verses(target_gene, goal=None, top_n=3):
-    """توصية بآيات داعمة من قاعدة البيانات الموجودة"""
-    supportive_verses = []
-    
-    # قاعدة بيانات بسيطة للآيات الداعمة
-    gene_verse_map = {
-        "ثبات": [{"surah": "الفاتحة", "ayah": 1, "text": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "reason": "تثبيت النية"},
-                  {"surah": "الإخلاص", "ayah": 1, "text": "قُلْ هُوَ اللَّهُ أَحَدٌ", "reason": "ترسيخ التوحيد"}],
-        "اتساع": [{"surah": "الشرح", "ayah": 1, "text": "أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ", "reason": "شرح الصدر والتوسع"},
-                  {"surah": "الرحمن", "ayah": 33, "text": "يَا مَعْشَرَ الْجِنِّ وَالْإِنْسِ إِنِ اسْتَطَعْتُمْ أَنْ تَنْفُذُوا مِنْ أَقْطَارِ السَّمَاوَاتِ وَالْأَرْضِ فَانْفُذُوا", "reason": "توسيع الأفق"}],
-        "تفعيل": [{"surah": "العلق", "ayah": 1, "text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "reason": "تفعيل الحركة"},
-                  {"surah": "المدثر", "ayah": 1, "text": "يَا أَيُّهَا الْمُدَّثِّرُ قُمْ فَأَنْذِرْ", "reason": "النهوض للعمل"}],
-        "حماية": [{"surah": "الفلق", "ayah": 1, "text": "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", "reason": "تحصين وحماية"},
-                  {"surah": "الناس", "ayah": 1, "text": "قُلْ أَعُوذُ بِرَبِّ النَّاسِ", "reason": "حماية من الشرور"}],
-        "جذب": [{"surah": "الرعد", "ayah": 28, "text": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", "reason": "جذب الطمأنينة"},
-                {"surah": "البقرة", "ayah": 186, "text": "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ", "reason": "جذب القرب الإلهي"}]
+    .energy-badge { background: #1a3a1a; color: #00ffcc; padding: 2px 10px; border-radius: 5px; font-family: monospace; }
+    .story-box {
+        background: linear-gradient(135deg, rgba(10,21,10,0.85) 0%, rgba(1,1,3,0.95) 100%);
+        padding: 35px; border-radius: 25px; border-right: 15px solid #4CAF50;
+        line-height: 2; font-size: 1.2em; margin-bottom: 30px;
     }
-    
-    verses = gene_verse_map.get(target_gene, gene_verse_map.get("تفعيل", []))
-    
-    for v in verses[:top_n]:
-        supportive_verses.append({
-            "surah": v["surah"],
-            "ayah": v["ayah"],
-            "text": v["text"],
-            "reason": v.get("reason", "دعم مسار الجين")
-        })
-    
-    return supportive_verses
-
-def generate_sovereign_recommendation():
-    """توليد التوصية السيادية"""
-    state = analyze_sovereign_state()
-    
-    if not state.get("recommendation_ready", False):
-        return {
-            "recommended_move": "بانتظار التحليل",
-            "recommended_move_ar": "بانتظار الإدخال السيادي",
-            "action_type": "Awaiting",
-            "critical_gene": "—",
-            "critical_gene_reason": "لا توجد بيانات كافية للتحليل",
-            "rationale": "🜃 Waiting for Sovereign Input | بانتظار الإدخال السيادي",
-            "time_window": "غير محدد",
-            "time_window_ar": "غير محدد",
-            "recommended_repetition": "—",
-            "supportive_verses": [],
-            "priority": "منخفضة",
-            "linked_contract_id": None,
-            "signal_context": {},
-            "created_at": time.time(),
-            "ready": False
-        }
-    
-    critical_gene = detect_critical_gene_need(state)
-    signal_score = state.get("signal_score", 50.0)
-    current_strategy = state.get("current_strategy", "STANDARD")
-    missing_genes = state.get("missing_genes", [])
-    recent_pattern = state.get("recent_pattern", "مستقر")
-    
-    # تحديد الحركة المقترحة بناءً على الحالة
-    action_type_map = {
-        "ثبات": "Stabilization",
-        "ترسيخ": "Stabilization",
-        "تفعيل": "Activation",
-        "فتح": "Activation",
-        "اتساع": "Expansion",
-        "تطهير": "Protection",
-        "حماية": "Protection",
-        "جذب": "Attraction",
-        "تجلّي": "Expansion"
+    .ultra-card {
+        background: #0d0d14; padding: 20px; border-radius: 20px;
+        border-top: 8px solid #4fc3f7; text-align: center; margin-bottom: 20px;
     }
-    
-    action_type = action_type_map.get(critical_gene, "Activation")
-    
-    # توصيات الحركة بالعربية
-    move_ar_map = {
-        "ثبات": "ترسيخ المسار وتثبيت الإيقاع",
-        "ترسيخ": "تثبيت المكتسبات في الوعي",
-        "تفعيل": "بدء حركة فعلية نحو الهدف",
-        "فتح": "فتح المجال لاستقبال فرص جديدة",
-        "اتساع": "توسيع حدود القدرة والاستيعاب",
-        "تطهير": "تفريغ العوائق والسموم",
-        "حماية": "تحديد الحدود وحماية الطاقة",
-        "جذب": "تنشيط طاقة الجذب والاستحقاق",
-        "تجلّي": "ممارسة الشهود والتأمل"
-    }
-    
-    move_ar = move_ar_map.get(critical_gene, "مواصلة المسار بثبات")
-    
-    # بناء التبرير
-    rationale_parts = []
-    if state.get("active_goal") and state["active_goal"] != "غير محدد":
-        rationale_parts.append(f"بناءً على الميثاق النشط نحو '{state['active_goal']}'")
-    else:
-        rationale_parts.append("بناءً على تحليل الحالة السيادية الحالية")
-    
-    if missing_genes:
-        rationale_parts.append(f"والجينات الغائبة: {', '.join(missing_genes[:3])}")
-    
-    rationale_parts.append(f"ودرجة الإشارة: {signal_score:.1f}")
-    rationale_parts.append(f"والنمط السلوكي: {recent_pattern}")
-    
-    if signal_score < 40:
-        rationale_parts.append("فالحاجة ملحة لترسيخ القاعدة قبل الانطلاق")
-    elif signal_score > 80:
-        rationale_parts.append("فالاستقرار مرتفع ويتيح فرصة للتوسع")
-    
-    rationale = "، ".join(rationale_parts) + "."
-    
-    # تحديد نافذة التنفيذ
-    if signal_score < 30:
-        time_window = "طويلة (14-21 يوم)"
-        time_window_ar = "طويلة (14-21 يوم)"
-    elif signal_score < 60:
-        time_window = "متوسطة (7-14 يوم)"
-        time_window_ar = "متوسطة (7-14 يوم)"
-    else:
-        time_window = "قصيرة (3-7 يوم)"
-        time_window_ar = "قصيرة (3-7 يوم)"
-    
-    # التكرار المقترح
-    if action_type == "Stabilization":
-        recommended_repetition = "يومياً (صباحاً ومساءً)"
-    elif action_type == "Activation":
-        recommended_repetition = "صباحياً"
-    elif action_type == "Expansion":
-        recommended_repetition = "مساءً"
-    else:
-        recommended_repetition = "حسب الحاجة"
-    
-    # تحديد الأولوية
-    if signal_score < 35:
-        priority = "عالية"
-    elif signal_score < 70:
-        priority = "متوسطة"
-    else:
-        priority = "منخفضة"
-    
-    # الآيات الداعمة
-    supportive_verses = recommend_supportive_verses(critical_gene, state.get("active_goal"), top_n=2)
-    
-    return {
-        "recommended_move": action_type,
-        "recommended_move_ar": move_ar,
-        "action_type": action_type,
-        "critical_gene": critical_gene,
-        "critical_gene_reason": f"الجين {critical_gene} هو الأكثر احتياجاً بناءً على الميثاق النشط ودرجة الإشارة",
-        "rationale": rationale,
-        "time_window": time_window,
-        "time_window_ar": time_window_ar,
-        "recommended_repetition": recommended_repetition,
-        "supportive_verses": supportive_verses,
-        "priority": priority,
-        "linked_contract_id": st.session_state.get("manifestation_active_covenant", {}).get("target"),
-        "signal_context": {
-            "signal_score": signal_score,
-            "current_strategy": current_strategy,
-            "recent_pattern": recent_pattern,
-            "dominant_genes": state.get("dominant_genes", [])
-        },
-        "created_at": time.time(),
-        "ready": True
-    }
-
-def save_sovereign_recommendation(recommendation):
-    """حفظ التوصية في حالة الجلسة"""
-    if not recommendation:
-        return False
-    
-    try:
-        st.session_state.current_sovereign_recommendation = recommendation
-        history = safe_list(st.session_state.get("recommendation_history", []))
-        history.insert(0, {
-            "timestamp": recommendation.get("created_at", time.time()),
-            "recommended_move": recommendation.get("recommended_move", ""),
-            "recommended_move_ar": recommendation.get("recommended_move_ar", ""),
-            "critical_gene": recommendation.get("critical_gene", ""),
-            "priority": recommendation.get("priority", ""),
-            "signal_score": recommendation.get("signal_context", {}).get("signal_score", 0)
-        })
-        st.session_state.recommendation_history = history[:30]
-        return True
-    except Exception:
-        return False
-
-def render_recommendation_panel():
-    """عرض لوحة التوصية السيادية"""
-    st.markdown("---")
-    st.markdown("### 🜁 التوصية السيادية التالية | Next Sovereign Move")
-    
-    # توليد التوصية
-    recommendation = generate_sovereign_recommendation()
-    save_sovereign_recommendation(recommendation)
-    
-    if not recommendation.get("ready", False):
-        st.info(recommendation.get("rationale", "🜃 Waiting for Sovereign Input | بانتظار الإدخال السيادي"))
-        return
-    
-    # عرض التوصية
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #0d0d14 0%, #1a1a2e 100%); padding: 20px; border-radius: 15px; border-right: 5px solid #FFD700;">
-            <p style="color: #FFD700; margin-bottom: 5px;">🎯 الحركة المقترحة</p>
-            <p style="font-size: 1.3em; font-weight: bold;">{recommendation.get('recommended_move_ar', '—')}</p>
-            <p style="color: #888; margin-top: 10px;">🧬 الجين الحرج: <strong style="color: #00ffcc;">{recommendation.get('critical_gene', '—')}</strong></p>
-            <p style="margin-top: 15px; line-height: 1.6;">📝 {recommendation.get('rationale', '—')}</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown(f"""
-        <div style="background: #0d0d14; padding: 15px; border-radius: 10px;">
-            <p>⏱️ <strong>نافذة التنفيذ:</strong><br>{recommendation.get('time_window_ar', '—')}</p>
-            <p>🔄 <strong>التكرار المقترح:</strong><br>{recommendation.get('recommended_repetition', '—')}</p>
-            <p>⚡ <strong>مستوى الأولوية:</strong><br>{recommendation.get('priority', '—')}</p>
-            <p>📡 <strong>السياق الإشاري:</strong><br>{recommendation.get('signal_context', {}).get('signal_score', 0):.1f} / 100</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    # عرض الآيات الداعمة
-    supportive_verses = recommendation.get("supportive_verses", [])
-    if supportive_verses:
-        st.markdown("#### 📖 آيات داعمة")
-        for verse in supportive_verses:
-            st.markdown(f"""
-            <div style="background: rgba(255,215,0,0.1); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid #FFD700;">
-                <p style="font-size: 1.1em; font-family: 'Amiri', serif;">{verse.get('text', '')}</p>
-                <p style="color: #888; font-size: 0.9em;">{verse.get('surah', '')} - آية {verse.get('ayah', '')}<br>💡 {verse.get('reason', '')}</p>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    # أزرار الإجراء
-    col_a, col_b = st.columns(2)
-    with col_a:
-        if st.button("🔄 تفعيل التوصية", use_container_width=True, key="activate_rec_btn"):
-            st.success("✅ تم تفعيل التوصية السيادية")
-            st.rerun()
-    with col_b:
-        if st.button("🔗 ربطها بالميثاق الحالي", use_container_width=True, key="link_rec_btn"):
-            if st.session_state.get("manifestation_active_covenant"):
-                st.success("🔗 تم ربط التوصية بالميثاق النشط")
-            else:
-                st.warning("⚠️ لا يوجد ميثاق نشط للربط")
+    .ascent-positive { background: linear-gradient(135deg, #0a2a0a 0%, #0a1a0a 100%); border-right: 5px solid #00ffcc; }
+    .ascent-negative { background: linear-gradient(135deg, #2a0a0a 0%, #1a0a0a 100%); border-right: 5px solid #ff5252; }
+    .gene-badge { background: rgba(255,215,0,0.15); padding: 4px 12px; border-radius: 20px; margin: 2px; display: inline-block; }
+</style>
+""", unsafe_allow_html=True)
 
 # ==============================================================================
 # [7] مصفوفة الجينات
@@ -865,7 +434,7 @@ def load_lexicon_db(path):
     with open(path, 'r', encoding='utf-8') as f:
         try:
             data = json.load(f)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             return {}, [], Counter()
     r_index = {}
     all_roots = []
@@ -1061,7 +630,7 @@ def display_orbital_results(key_suffix="orbital"):
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v67.1</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي v66.2</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1298,6 +867,7 @@ def safe_get_latest_analysis_snapshot():
     }
     
     try:
+        # محاولة استخراج البيانات من system_log
         log = safe_list(st.session_state.get("system_log", []))
         valid_entries = [e for e in log if isinstance(e, dict) and "new_influence" in e]
         
@@ -1308,19 +878,23 @@ def safe_get_latest_analysis_snapshot():
             snapshot["source"] = "system_log"
             snapshot["timestamp"] = safe_float(latest.get("timestamp", time.time()), time.time())
             
+            # حساب التقلب
             if len(valid_entries) > 1:
                 influences = [safe_float(e.get("new_influence", 1.0), 1.0) for e in valid_entries[-10:]]
                 if influences:
                     snapshot["volatility"] = max(influences) - min(influences)
         
+        # محاولة استخراج من orbit_bodies إذا كانت موجودة
         if st.session_state.get("orbit_bodies") and not snapshot["genes"]:
             bodies = safe_list(st.session_state.orbit_bodies)
             if bodies:
                 genes = [b.get("gene", "N") for b in bodies if isinstance(b, dict)]
                 snapshot["genes"] = list(set(genes))
         
+        # حساب التماسك الميداني
         snapshot["field_coherence"] = clamp(1.0 - (snapshot["volatility"] * 2), 0.5, 1.0)
         
+        # التقاط law_vector من active_meta_law
         law = safe_dict(st.session_state.get("active_meta_law", {}))
         snapshot["law_vector"] = {
             "root_influence": safe_float(law.get("root_influence", 1.0), 1.0),
@@ -1341,6 +915,7 @@ def extract_missing_genes_from_state(snapshot, target_type):
     coherence = safe_float(snapshot.get("field_coherence", 1.0), 1.0)
     volatility = safe_float(snapshot.get("volatility", 0.0), 0.0)
     
+    # قواعد الاستدلال
     if root_inf < 0.95:
         missing_genes.append("ثبات")
     if energy_bias < 0.95:
@@ -1355,6 +930,7 @@ def extract_missing_genes_from_state(snapshot, target_type):
     if volatility < 0.02 and target_type in ["رزق", "فتح", "علم"]:
         missing_genes.append("اتساع")
     
+    # أهداف محددة
     target_gene_map = {
         "رزق": "جذب",
         "فتح": "فتح",
@@ -1370,6 +946,7 @@ def extract_missing_genes_from_state(snapshot, target_type):
         if required not in missing_genes:
             missing_genes.append(required)
     
+    # إزالة التكرار والحفاظ على الترتيب
     seen = set()
     ordered = []
     for g in missing_genes:
@@ -1383,6 +960,7 @@ def build_manifestation_covenant(target_type, snapshot):
     """Build the covenant/protocol for the user"""
     missing_genes = extract_missing_genes_from_state(snapshot, target_type)
     
+    # حساب signal_score
     root_inf = safe_float(snapshot.get("root_influence", 1.0), 1.0)
     energy_bias = safe_float(snapshot.get("energy_bias", 1.0), 1.0)
     coherence = safe_float(snapshot.get("field_coherence", 1.0), 1.0)
@@ -1392,14 +970,17 @@ def build_manifestation_covenant(target_type, snapshot):
     energy_factor = 1.0 - abs(energy_bias - 1.0) * 0.5
     signal_score = clamp(base_score * energy_factor, 0, 100)
     
+    # recommended_focus
     if missing_genes:
         recommended_focus = missing_genes[0]
     else:
         recommended_focus = "استمرار"
     
+    # بناء البروتوكول
     protocol = []
     step_num = 1
     
+    # خريطة الجينات إلى الإجراءات
     gene_action_map = {
         "ثبات": {"action": "ترسيخ الروتين اليومي وتكرار العهد", "duration": "7 أيام", "intensity": "متوسطة"},
         "فتح": {"action": "فتح المجال لاستقبال فرص جديدة", "duration": "5 أيام", "intensity": "عالية"},
@@ -1458,6 +1039,7 @@ def save_manifestation_protocol(covenant):
         st.session_state.manifestation_recommendation = covenant.get("recommended_focus", "")
         st.session_state.manifestation_last_build_ts = time.time()
         
+        # إضافة إلى التاريخ
         history_entry = {
             "target": covenant.get("target", ""),
             "signal_score": covenant.get("signal_score", 0.0),
@@ -1470,6 +1052,7 @@ def save_manifestation_protocol(covenant):
         history.insert(0, history_entry)
         st.session_state.manifestation_history = history[:50]
         
+        # إضافة إلى system_log
         if "system_log" in st.session_state and isinstance(st.session_state.system_log, list):
             st.session_state.system_log.append({
                 "event": "manifestation_covenant_built",
@@ -1489,6 +1072,7 @@ def render_manifestation_dashboard():
     st.subheader("ألواح التكوين")
     st.caption("بناء الميثاق السيادي من حالة النظام الحالية")
     
+    # عرض لقطة الحالة الحالية
     snapshot = safe_get_latest_analysis_snapshot()
     
     with st.expander("📊 لقطة الحالة السيادية", expanded=False):
@@ -1499,6 +1083,7 @@ def render_manifestation_dashboard():
         c4.metric("التقلب", f"{snapshot.get('volatility', 0.0):.3f}")
         st.caption(f"📌 مصدر البيانات: {snapshot.get('source', 'غير معروف')}")
     
+    # اختيار الهدف
     target_options = ["رزق", "فتح", "علم", "شفاء", "هيبة", "تمكين", "صفاء", "مخصص"]
     selected_target = st.selectbox("🎯 اختر هدف التكوين", target_options, index=target_options.index(st.session_state.manifestation_target) if st.session_state.manifestation_target in target_options else 0)
     
@@ -1509,6 +1094,7 @@ def render_manifestation_dashboard():
     else:
         final_target = selected_target
     
+    # زر بناء الميثاق
     if st.button("🏛️ بناء الميثاق السيادي", use_container_width=True):
         covenant = build_manifestation_covenant(final_target, snapshot)
         if save_manifestation_protocol(covenant):
@@ -1517,6 +1103,7 @@ def render_manifestation_dashboard():
         else:
             st.error("❌ فشل في حفظ الميثاق")
     
+    # عرض الميثاق النشط
     if st.session_state.manifestation_active_covenant:
         covenant = st.session_state.manifestation_active_covenant
         st.markdown("---")
@@ -1533,6 +1120,7 @@ def render_manifestation_dashboard():
         
         st.caption(f"🕐 بني في: {human_ts(covenant.get('timestamp', 0))}")
         
+        # عرض البروتوكول
         protocol = covenant.get("protocol", [])
         if protocol:
             st.markdown("#### 🔧 بروتوكول التفعيل")
@@ -1547,6 +1135,7 @@ def render_manifestation_dashboard():
                     </div>
                     """, unsafe_allow_html=True)
     
+    # عرض التاريخ
     history = safe_list(st.session_state.manifestation_history)
     if history:
         st.markdown("---")
@@ -1638,318 +1227,324 @@ def initialize_sovereign_memory():
         update_cosmic_radar(q_data, r_idx, st.session_state.active_meta_law)
     st.session_state.initialized = True
 
+if not st.session_state.initialized or not st.session_state.all_roots:
+    initialize_sovereign_memory()
+
+# الشريط الجانبي
+with st.sidebar:
+    st.markdown("""
+    <div style="width: 100%; text-align: center;">
+        <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
+        <p>الإصدار v66.2 - الميثاقي</p>
+        <p>المستخدم: محمد</p>
+    </div>
+    ---
+    """, unsafe_allow_html=True)
+    st.sidebar.metric("قوة الإزاحة", round(st.session_state.active_meta_law.get("root_influence", 1.0), 3))
+    if st.sidebar.button("♻️ إعادة الضبط الجذري"):
+        reset_nibras_system()
+        st.rerun()
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("<p>خِت فِت.</p>", unsafe_allow_html=True)
+
 # ==============================================================================
-# [21] التطبيق الرئيسي
+# [21] التبويبات الرئيسية (9 تبويبات كاملة)
 # ==============================================================================
-def main():
-    # الإصلاح الذاتي السيادي
-    sovereign_auto_repair()
-    
-    # التهيئة الإضافية
-    init_manifestation_state()
-    
-    if not st.session_state.initialized or not st.session_state.all_roots:
-        initialize_sovereign_memory()
-    
-    # الشريط الجانبي
-    with st.sidebar:
-        st.markdown("""
-        <div style="width: 100%; text-align: center;">
-            <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-            <p>الإصدار v67.1 - الميثاقي</p>
-            <p>المستخدم: محمد</p>
-        </div>
-        ---
-        """, unsafe_allow_html=True)
-        st.sidebar.metric("قوة الإزاحة", round(st.session_state.active_meta_law.get("root_influence", 1.0), 3))
-        if st.sidebar.button("♻️ إعادة الضبط الجذري"):
-            reset_nibras_system()
-            st.rerun()
-        st.sidebar.markdown("---")
-        st.sidebar.markdown("<p>خِت فِت.</p>", unsafe_allow_html=True)
-    
-    # التبويبات
-    tab_titles = [
-        "📖 النسخة القرآنية", "🔍 الاستنطاق المداري", "🛰️ الرادار السيادي",
-        "⚖️ مولّد القوانين", "🌐 الواقع الفوقي", "🌌 الرنين الجيني",
-        "📈 اللوحة الوجودية", "📜 البيان الختامي", "📡 الرنين السياقي"
-    ]
-    tabs = st.tabs(tab_titles)
-    
-    # تبويب 0: النسخة القرآنية
-    with tabs[0]:
-        st.markdown("### 📖 استنطاق الآيات القرآنية (Q-Mode)")
-        if not st.session_state.quran_data:
-            st.error("🚨 ملف matrix_data.json غير موجود أو فارغ.")
-        else:
-            surah_map = {}
-            for entry in st.session_state.quran_data:
-                if entry['surah_number'] not in surah_map:
-                    surah_map[entry['surah_number']] = entry['surah_name']
-            s_list = sorted(surah_map.keys())
-            col1, col2 = st.columns(2)
-            with col1:
-                s_num = st.selectbox("📌 اختر السورة", s_list, format_func=lambda x: f"{x} - {surah_map[x]}", key="q_s_num")
-            current_v = [d for d in st.session_state.quran_data if d['surah_number'] == s_num]
-            with col2:
-                v_obj = st.selectbox("📑 اختر الآية", current_v, format_func=lambda x: f"آية {x['ayah_number']}", key=f"q_v_sel_{s_num}")
-            if v_obj:
-                st.markdown(f"""
-                <div style="text-align:center; padding:20px; border-right:5px solid #FFD700; background:rgba(255,255,255,0.05); font-size:1.8em; font-family:'Amiri'; margin-bottom:20px;">
-                    {v_obj["text"]}
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("🚀 تحليل هذه الآية مباشرة", use_container_width=True, key=f"q_btn_{v_obj.get('index', hash(v_obj['text']))}"):
-                    st.session_state.current_text = v_obj['text']
-                    st.session_state.input_area = v_obj['text']
-                    bodies = calculate_orbits(v_obj['text'], st.session_state.r_index)
-                    if bodies:
-                        st.session_state.orbit_bodies = bodies
-                        st.session_state.orbit_active = True
-                        st.session_state.last_processed_text = v_obj['text']
-                        update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
-                        st.success(f"✅ تم تحليل الآية بنجاح! ({len(bodies)} جذر)")
-                        st.rerun()
-                    else:
-                        st.error("⚠️ لم يتم العثور على جذور مطابقة.")
-    
-    # تبويب 1: الاستنطاق المداري
-    with tabs[1]:
-        st.markdown("### 🔍 المفاعل السيادي للاستنطاق المداري")
-        current_display = st.session_state.get('input_area', '')
-        if current_display:
-            st.info(f"📝 النص الحالي: {current_display[:100]}..." if len(current_display) > 100 else f"📝 النص الحالي: {current_display}")
-        input_text = st.text_area("النص محل الاستنطاق:", value=current_display, height=180, key="main_orbital_input")
-        if input_text != st.session_state.input_area:
-            st.session_state.input_area = input_text
-            st.session_state.current_text = input_text
-        col1, col2 = st.columns([3, 1])
+tab_titles = [
+    "📖 النسخة القرآنية", "🔍 الاستنطاق المداري", "🛰️ الرادار السيادي",
+    "⚖️ مولّد القوانين", "🌐 الواقع الفوقي", "🌌 الرنين الجيني",
+    "📈 اللوحة الوجودية", "📜 البيان الختامي", "📡 الرنين السياقي"
+]
+tabs = st.tabs(tab_titles)
+
+# ==============================================================================
+# تبويب 0: النسخة القرآنية
+# ==============================================================================
+with tabs[0]:
+    st.markdown("### 📖 استنطاق الآيات القرآنية (Q-Mode)")
+    if not st.session_state.quran_data:
+        st.error("🚨 ملف matrix_data.json غير موجود أو فارغ.")
+    else:
+        surah_map = {}
+        for entry in st.session_state.quran_data:
+            if entry['surah_number'] not in surah_map:
+                surah_map[entry['surah_number']] = entry['surah_name']
+        s_list = sorted(surah_map.keys())
+        col1, col2 = st.columns(2)
         with col1:
-            manual_btn = st.button("🚀 تفعيل المفاعل يدوياً", use_container_width=True)
+            s_num = st.selectbox("📌 اختر السورة", s_list, format_func=lambda x: f"{x} - {surah_map[x]}", key="q_s_num")
+        current_v = [d for d in st.session_state.quran_data if d['surah_number'] == s_num]
         with col2:
-            archive_btn = st.button("🏁 خِت فِت (ختم الجلسة)", use_container_width=True)
-        if manual_btn:
-            if input_text:
-                bodies = calculate_orbits(input_text, st.session_state.r_index)
+            v_obj = st.selectbox("📑 اختر الآية", current_v, format_func=lambda x: f"آية {x['ayah_number']}", key=f"q_v_sel_{s_num}")
+        if v_obj:
+            st.markdown(f"""
+            <div style="text-align:center; padding:20px; border-right:5px solid #FFD700; background:rgba(255,255,255,0.05); font-size:1.8em; font-family:'Amiri'; margin-bottom:20px;">
+                {v_obj["text"]}
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("🚀 تحليل هذه الآية مباشرة", use_container_width=True, key=f"q_btn_{v_obj.get('index', hash(v_obj['text']))}"):
+                st.session_state.current_text = v_obj['text']
+                st.session_state.input_area = v_obj['text']
+                bodies = calculate_orbits(v_obj['text'], st.session_state.r_index)
                 if bodies:
                     st.session_state.orbit_bodies = bodies
                     st.session_state.orbit_active = True
-                    st.session_state.last_processed_text = input_text
-                    st.session_state.current_text = input_text
+                    st.session_state.last_processed_text = v_obj['text']
                     update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
-                    st.success(f"✅ تم تحليل النص بنجاح! ({len(bodies)} جذر)")
+                    st.success(f"✅ تم تحليل الآية بنجاح! ({len(bodies)} جذر)")
                     st.rerun()
                 else:
                     st.error("⚠️ لم يتم العثور على جذور مطابقة.")
-            else:
-                st.warning("⚠️ الرجاء إدخال نص للتحليل.")
-        if st.session_state.orbit_active and st.session_state.orbit_bodies:
-            display_orbital_results(key_suffix="orbital")
-        elif not st.session_state.orbit_bodies:
-            st.warning("⚠️ المفاعل بانتظار إشارة البدء من التبويب القرآني")
-            if st.button("🔄 تنشيط يدوي للمفاعل", use_container_width=True):
-                if st.session_state.input_area:
-                    bodies = calculate_orbits(st.session_state.input_area, st.session_state.r_index)
-                    if bodies:
-                        st.session_state.orbit_bodies = bodies
-                        st.session_state.orbit_active = True
-                        st.rerun()
-        if archive_btn:
-            if st.session_state.orbit_active and st.session_state.orbit_bodies:
-                ascent_score = compute_ascent_vector(st.session_state.orbit_bodies)
-                if khit_fit_archive(st.session_state.orbit_bodies, ascent_score):
-                    st.success("🔒 تم تشفير الجلسة.")
-                    st.rerun()
-            else:
-                st.warning("⚠️ لا توجد بيانات لأرشفتها.")
-    
-    # تبويب 2: الرادار السيادي
-    with tabs[2]:
-        st.markdown("### 🛰️ رادار التموضع الوجودي")
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("تأثير الجذر", f"{st.session_state.active_meta_law.get('root_influence', 1.0):.3f}")
-        c2.metric("انحياز الطاقة", f"{st.session_state.active_meta_law.get('energy_bias', 1.0):.3f}")
-        c3.metric("الاستراتيجية", st.session_state.get("current_strategy", "STANDARD"))
-        c4.metric("عدد الدورات", len(st.session_state.system_log))
-        col_a, col_b, col_c = st.columns(3)
-        with col_a:
-            if st.button("🔁 تشغيل دورة واحدة", use_container_width=True):
-                sovereign_autonomous_cycle()
-                st.rerun()
-        with col_b:
-            if st.button("🔁🔁 تشغيل 5 دورات", use_container_width=True):
-                for _ in range(5):
-                    sovereign_autonomous_cycle()
-                st.rerun()
-        with col_c:
-            if st.button("🔁🔁🔁 تشغيل 10 دورات", use_container_width=True):
-                for _ in range(10):
-                    sovereign_autonomous_cycle()
-                st.rerun()
-        df_log = normalize_system_log_for_df()
-        if not df_log.empty and "cycle" in df_log.columns:
-            df_valid = df_log.dropna(subset=["cycle", "new_influence"]).copy()
-            if not df_valid.empty:
-                fig = px.line(df_valid, x="cycle", y="new_influence", title="تطور تأثير الجذر", markers=True)
-                fig.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig, use_container_width=True, key="evolution_chart")
-            else:
-                st.info("📊 لا توجد بيانات كافية لعرض الرسم البياني")
-        else:
-            st.info("📊 لا توجد دورات بعد. قم بتشغيل دورة واحدة لبدء الرصد")
-        if st.session_state.cosmic_radar_data.empty:
-            st.warning("⚠️ الرادار بانتظار نبض البيانات. قم بتحليل آية أولاً.")
-        else:
-            fig = px.scatter(st.session_state.cosmic_radar_data, x="energy", y="ascent", text="name", color="ascent", size="energy", hover_data=["surah"], height=500, color_continuous_scale="Tealrose")
-            st.plotly_chart(fig, use_container_width=True, key="cosmic_radar_scatter")
-    
-    # تبويب 3: مولّد القوانين
-    with tabs[3]:
-        st.markdown("### ⚖️ محرك حقن القوانين")
-        st.info(f"⚙️ القانون الحالي: قوة الإزاحة = {st.session_state.active_meta_law.get('root_influence', 1.0):.3f}")
-        shift = st.select_slider("اختر معامل الإزاحة:", options=[1.02, 1.05, 1.10, 1.15, 1.20], value=1.05)
-        if st.button("🚀 تفعيل القانون الجديد", key="activate_law_btn", use_container_width=True):
-            new_influence = st.session_state.active_meta_law["root_influence"] * shift
-            st.session_state.active_meta_law["root_influence"] = new_influence
-            st.session_state.system_log.append({
-                "step": len(st.session_state.system_log) + 1,
-                "shift_value": shift,
-                "new_influence": new_influence,
-                "timestamp": pd.Timestamp.now().strftime("%H:%M:%S")
-            })
-            if st.session_state.get('current_text'):
-                st.session_state.orbit_bodies = calculate_orbits(st.session_state.current_text, st.session_state.r_index)
-                if st.session_state.orbit_bodies:
-                    st.session_state.orbit_active = True
-                    update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
-            st.success(f"✅ تم حقن الإزاحة {shift}x وتحديث المدارات")
-            st.rerun()
-        st.markdown("#### التحكم اليدوي")
-        new_root = st.number_input("تأثير الجذر", value=float(st.session_state.active_meta_law.get("root_influence", 1.0)), min_value=0.85, max_value=1.80, step=0.01)
-        new_energy = st.number_input("انحياز الطاقة", value=float(st.session_state.active_meta_law.get("energy_bias", 1.0)), min_value=0.80, max_value=2.50, step=0.01)
-        if st.button("تطبيق التغييرات", use_container_width=True):
-            st.session_state.active_meta_law["root_influence"] = round(new_root, 4)
-            st.session_state.active_meta_law["energy_bias"] = round(new_energy, 4)
-            if st.session_state.get('current_text'):
-                st.session_state.orbit_bodies = calculate_orbits(st.session_state.current_text, st.session_state.r_index)
-                st.session_state.orbit_active = True
-            st.rerun()
-        with st.expander("📜 سجل القوانين"):
-            if st.session_state.system_log:
-                st.table(st.session_state.system_log[-10:])
-            else:
-                st.info("لا توجد سجلات بعد.")
-    
-    # تبويب 4: الواقع الفوقي
-    with tabs[4]:
-        st.markdown("## 🌐 محرك الواقع الفوقي")
-        with st.expander("🧠 الوعي المصحح الاستراتيجي", expanded=False):
-            current_strat = st.session_state.get("current_strategy", "STANDARD")
-            st.markdown(f"**📍 نمط الاستراتيجية الحالي:** `{current_strat}`")
-            if current_strat == "AGGRESSIVE":
-                st.error("⚠️ النظام في حالة كبح شديد نتيجة تذبذب مرتفع.")
-            elif current_strat == "EXPANSIVE":
-                st.success("✨ النظام في حالة تمدد استراتيجي نتيجة استقرار مرتفع.")
-            else:
-                st.info("⚖️ النظام يعمل في الوضع القياسي المتوازن.")
-        with st.expander("🛡️ حالة التثبيت الفائق (v67.1)", expanded=False):
-            st.markdown(f"**Cooldown الحالي:** `{st.session_state.get('correction_cooldown', 2)}` دورة")
-            st.markdown(f"**آخر دورة تصحيح:** `{st.session_state.get('last_correction_cycle', -9999)}`")
-            snap = st.session_state.get("last_correction_snapshot", {})
-            st.json({"root_influence": snap.get("root_influence"), "energy_bias": snap.get("energy_bias"), "strategy": snap.get("strategy")})
-        st.markdown("---")
-        st.markdown("### 📜 السجل التفصيلي للنظام")
-        df_display = normalize_system_log_for_df()
-        if not df_display.empty:
-            cols_to_show = ["cycle", "old_influence", "new_influence", "energy_score", "strategy", "self_healed"]
-            available_cols = [c for c in cols_to_show if c in df_display.columns]
-            st.dataframe(df_display[available_cols], use_container_width=True)
-        else:
-            st.info("لا توجد سجلات بعد. قم بتشغيل دورات من تبويب الرادار.")
-        if st.session_state.cosmic_radar_data.empty:
-            st.warning("⚠️ الرادار بانتظار نبض البيانات.")
-        else:
-            top_surah = st.session_state.cosmic_radar_data.nlargest(1, "ascent").iloc[0] if not st.session_state.cosmic_radar_data.empty else None
-            top_root = st.session_state.root_frequency_data.most_common(1)[0] if st.session_state.root_frequency_data else ("لا يوجد", 0)
-            c1, c2, c3 = st.columns(3)
-            c1.metric("السورة القائدة", top_surah["name"] if top_surah is not None else "—")
-            c2.metric("الجذر المهيمن", f"{top_root[0]} ({top_root[1]})")
-            c3.metric("مستوى الوعي", len(st.session_state.system_log))
-    
-    # تبويب 5: الرنين الجيني
-    with tabs[5]:
-        st.markdown("### 🌌 مصفوفة الرنين والاستحقاق المداري")
-        cols = st.columns(4)
-        for i, (code, info) in enumerate(GENE_STYLE.items()):
-            if i < 4:
-                cols[i].markdown(f"<div class='ultra-card' style='border-top-color:{info['color']}'><h2>{info['icon']}</h2><h3>{info['name']}</h3><p>{info['meaning']}</p></div>", unsafe_allow_html=True)
-        st.markdown("---")
-        st.markdown("### 📖 استنطاق جذر محدد")
-        if st.session_state.r_index:
-            root_keys = sorted(st.session_state.r_index.keys())
-            selected_root = st.selectbox("اختر جذراً للاستنطاق:", options=root_keys)
-            if st.button("🔍 استنطاق الجذر", use_container_width=True):
-                target_data = st.session_state.r_index[selected_root]
-                sig = signature_from_root(selected_root)
-                dynamic_energy = compute_dynamic_energy(base_w=target_data.get('weight', 1.0), count=1, mode="direct", morph_rank=3, orbit_id=target_data.get('orbit_id', 0), root_sig=sig)
-                final_gene = resolve_sovereign_gene(orbit_id=target_data.get('orbit_id', 0), morph_rank=3, root_sig=sig, base_energy=dynamic_energy)
-                gene_info = GENE_STYLE.get(final_gene, GENE_STYLE['N'])
-                base_info = GENE_STYLE.get(target_data.get('gene_base', 'N'), GENE_STYLE['N'])
-                st.markdown(f"""
-                <div class="insight-card">
-                    <b style="font-size:1.2em;">📌 الجذر: {target_data['root_raw']}</b><br>
-                    🧬 الجين القاعدي: {base_info['icon']} {base_info['name']}<br>
-                    🧬 الجين النهائي: {gene_info['icon']} {gene_info['name']}<br>
-                    🔄 المدار: {target_data['orbit']} (ID: {target_data.get('orbit_id', 0)})<br>
-                    ⚡ الوزن الأصلي: {target_data.get('weight', 1.0)}<br>
-                    ⚡ الطاقة الديناميكية: {dynamic_energy:.1f}<br>
-                    ✨ عامل الإشراق: {sig['n_factor']}<br>
-                    📍 التموضع: ({sig['x']}, {sig['y']})<br>
-                    <hr><p>🔮 {target_data['insight']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-    
-    # تبويب 6: اللوحة الوجودية (مع ألواح التكوين والتوصية)
-    with tabs[6]:
-        st.markdown("### 📈 التحليل الكمي للمدار")
-        if st.session_state.orbit_active and st.session_state.orbit_bodies:
-            df = pd.DataFrame(st.session_state.orbit_bodies)
-            col1, col2 = st.columns(2)
-            col1.plotly_chart(px.pie(df, names='gene', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, hole=0.5, title="توزيع الجينات"), key="gene_pie_chart")
-            col2.plotly_chart(px.bar(df.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="تعداد الأجسام"), key="gene_bar_chart")
-            st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة الطاقة"), key="energy_scatter_chart")
-        else:
-            st.info("⚙️ انتظر تفعيل المفاعل.")
-        
-        st.markdown("---")
-        render_recommendation_panel()
-        st.markdown("---")
-        render_manifestation_dashboard()
-    
-    # تبويب 7: البيان الختامي
-    with tabs[7]:
-        st.markdown("### 📜 البيان الختامي")
-        if st.session_state.orbit_active and st.session_state.orbit_bodies:
-            display_orbital_results(key_suffix="final_statement")
-        else:
-            st.info("⚙️ انتظر تفعيل المفاعل.")
-    
-    # تبويب 8: الرنين السياقي
-    with tabs[8]:
-        st.markdown("### 📡 الرنين السياقي")
-        if st.session_state.orbit_active and st.session_state.orbit_bodies:
-            resonance_edges = build_resonance_network(st.session_state.orbit_bodies)
-            if resonance_edges:
-                st.dataframe(pd.DataFrame(resonance_edges), use_container_width=True)
-                strongest = resonance_edges[0]
-                st.success(f"✨ أقوى رابط: **{strongest['source']}** ⇄ **{strongest['target']}** | القوة: {strongest['strength']}")
-            else:
-                st.info("لا توجد روابط قوية.")
-        else:
-            st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# تشغيل التطبيق
+# تبويب 1: الاستنطاق المداري
 # ==============================================================================
-if __name__ == "__main__":
-    main()
+with tabs[1]:
+    st.markdown("### 🔍 المفاعل السيادي للاستنطاق المداري")
+    current_display = st.session_state.get('input_area', '')
+    if current_display:
+        st.info(f"📝 النص الحالي: {current_display[:100]}..." if len(current_display) > 100 else f"📝 النص الحالي: {current_display}")
+    input_text = st.text_area("النص محل الاستنطاق:", value=current_display, height=180, key="main_orbital_input")
+    if input_text != st.session_state.input_area:
+        st.session_state.input_area = input_text
+        st.session_state.current_text = input_text
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        manual_btn = st.button("🚀 تفعيل المفاعل يدوياً", use_container_width=True)
+    with col2:
+        archive_btn = st.button("🏁 خِت فِت (ختم الجلسة)", use_container_width=True)
+    if manual_btn:
+        if input_text:
+            bodies = calculate_orbits(input_text, st.session_state.r_index)
+            if bodies:
+                st.session_state.orbit_bodies = bodies
+                st.session_state.orbit_active = True
+                st.session_state.last_processed_text = input_text
+                st.session_state.current_text = input_text
+                update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
+                st.success(f"✅ تم تحليل النص بنجاح! ({len(bodies)} جذر)")
+                st.rerun()
+            else:
+                st.error("⚠️ لم يتم العثور على جذور مطابقة.")
+        else:
+            st.warning("⚠️ الرجاء إدخال نص للتحليل.")
+    if st.session_state.orbit_active and st.session_state.orbit_bodies:
+        display_orbital_results(key_suffix="orbital")
+    elif not st.session_state.orbit_bodies:
+        st.warning("⚠️ المفاعل بانتظار إشارة البدء من التبويب القرآني")
+        if st.button("🔄 تنشيط يدوي للمفاعل", use_container_width=True):
+            if st.session_state.input_area:
+                bodies = calculate_orbits(st.session_state.input_area, st.session_state.r_index)
+                if bodies:
+                    st.session_state.orbit_bodies = bodies
+                    st.session_state.orbit_active = True
+                    st.rerun()
+    if archive_btn:
+        if st.session_state.orbit_active and st.session_state.orbit_bodies:
+            ascent_score = compute_ascent_vector(st.session_state.orbit_bodies)
+            if khit_fit_archive(st.session_state.orbit_bodies, ascent_score):
+                st.success("🔒 تم تشفير الجلسة.")
+                st.rerun()
+        else:
+            st.warning("⚠️ لا توجد بيانات لأرشفتها.")
+
+# ==============================================================================
+# تبويب 2: الرادار السيادي
+# ==============================================================================
+with tabs[2]:
+    st.markdown("### 🛰️ رادار التموضع الوجودي")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("تأثير الجذر", f"{st.session_state.active_meta_law.get('root_influence', 1.0):.3f}")
+    c2.metric("انحياز الطاقة", f"{st.session_state.active_meta_law.get('energy_bias', 1.0):.3f}")
+    c3.metric("الاستراتيجية", st.session_state.get("current_strategy", "STANDARD"))
+    c4.metric("عدد الدورات", len(st.session_state.system_log))
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        if st.button("🔁 تشغيل دورة واحدة", use_container_width=True):
+            sovereign_autonomous_cycle()
+            st.rerun()
+    with col_b:
+        if st.button("🔁🔁 تشغيل 5 دورات", use_container_width=True):
+            for _ in range(5):
+                sovereign_autonomous_cycle()
+            st.rerun()
+    with col_c:
+        if st.button("🔁🔁🔁 تشغيل 10 دورات", use_container_width=True):
+            for _ in range(10):
+                sovereign_autonomous_cycle()
+            st.rerun()
+    df_log = normalize_system_log_for_df()
+    if not df_log.empty and "cycle" in df_log.columns:
+        df_valid = df_log.dropna(subset=["cycle", "new_influence"]).copy()
+        if not df_valid.empty:
+            fig = px.line(df_valid, x="cycle", y="new_influence", title="تطور تأثير الجذر", markers=True)
+            fig.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+            st.plotly_chart(fig, use_container_width=True, key="evolution_chart")
+        else:
+            st.info("📊 لا توجد بيانات كافية لعرض الرسم البياني")
+    else:
+        st.info("📊 لا توجد دورات بعد. قم بتشغيل دورة واحدة لبدء الرصد")
+    if st.session_state.cosmic_radar_data.empty:
+        st.warning("⚠️ الرادار بانتظار نبض البيانات. قم بتحليل آية أولاً.")
+    else:
+        fig = px.scatter(st.session_state.cosmic_radar_data, x="energy", y="ascent", text="name", color="ascent", size="energy", hover_data=["surah"], height=500, color_continuous_scale="Tealrose")
+        st.plotly_chart(fig, use_container_width=True, key="cosmic_radar_scatter")
+
+# ==============================================================================
+# تبويب 3: مولّد القوانين
+# ==============================================================================
+with tabs[3]:
+    st.markdown("### ⚖️ محرك حقن القوانين")
+    st.info(f"⚙️ القانون الحالي: قوة الإزاحة = {st.session_state.active_meta_law.get('root_influence', 1.0):.3f}")
+    shift = st.select_slider("اختر معامل الإزاحة:", options=[1.02, 1.05, 1.10, 1.15, 1.20], value=1.05)
+    if st.button("🚀 تفعيل القانون الجديد", key="activate_law_btn", use_container_width=True):
+        new_influence = st.session_state.active_meta_law["root_influence"] * shift
+        st.session_state.active_meta_law["root_influence"] = new_influence
+        st.session_state.system_log.append({
+            "step": len(st.session_state.system_log) + 1,
+            "shift_value": shift,
+            "new_influence": new_influence,
+            "timestamp": pd.Timestamp.now().strftime("%H:%M:%S")
+        })
+        if st.session_state.get('current_text'):
+            st.session_state.orbit_bodies = calculate_orbits(st.session_state.current_text, st.session_state.r_index)
+            if st.session_state.orbit_bodies:
+                st.session_state.orbit_active = True
+                update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
+        st.success(f"✅ تم حقن الإزاحة {shift}x وتحديث المدارات")
+        st.rerun()
+    st.markdown("#### التحكم اليدوي")
+    new_root = st.number_input("تأثير الجذر", value=float(st.session_state.active_meta_law.get("root_influence", 1.0)), min_value=0.85, max_value=1.80, step=0.01)
+    new_energy = st.number_input("انحياز الطاقة", value=float(st.session_state.active_meta_law.get("energy_bias", 1.0)), min_value=0.80, max_value=2.50, step=0.01)
+    if st.button("تطبيق التغييرات", use_container_width=True):
+        st.session_state.active_meta_law["root_influence"] = round(new_root, 4)
+        st.session_state.active_meta_law["energy_bias"] = round(new_energy, 4)
+        if st.session_state.get('current_text'):
+            st.session_state.orbit_bodies = calculate_orbits(st.session_state.current_text, st.session_state.r_index)
+            st.session_state.orbit_active = True
+        st.rerun()
+    with st.expander("📜 سجل القوانين"):
+        if st.session_state.system_log:
+            st.table(st.session_state.system_log[-10:])
+        else:
+            st.info("لا توجد سجلات بعد.")
+
+# ==============================================================================
+# تبويب 4: الواقع الفوقي
+# ==============================================================================
+with tabs[4]:
+    st.markdown("## 🌐 محرك الواقع الفوقي")
+    with st.expander("🧠 الوعي المصحح الاستراتيجي", expanded=False):
+        current_strat = st.session_state.get("current_strategy", "STANDARD")
+        st.markdown(f"**📍 نمط الاستراتيجية الحالي:** `{current_strat}`")
+        if current_strat == "AGGRESSIVE":
+            st.error("⚠️ النظام في حالة كبح شديد نتيجة تذبذب مرتفع.")
+        elif current_strat == "EXPANSIVE":
+            st.success("✨ النظام في حالة تمدد استراتيجي نتيجة استقرار مرتفع.")
+        else:
+            st.info("⚖️ النظام يعمل في الوضع القياسي المتوازن.")
+    with st.expander("🛡️ حالة التثبيت الفائق (v66.2)", expanded=False):
+        st.markdown(f"**Cooldown الحالي:** `{st.session_state.get('correction_cooldown', 2)}` دورة")
+        st.markdown(f"**آخر دورة تصحيح:** `{st.session_state.get('last_correction_cycle', -9999)}`")
+        snap = st.session_state.get("last_correction_snapshot", {})
+        st.json({"root_influence": snap.get("root_influence"), "energy_bias": snap.get("energy_bias"), "strategy": snap.get("strategy")})
+    st.markdown("---")
+    st.markdown("### 📜 السجل التفصيلي للنظام")
+    df_display = normalize_system_log_for_df()
+    if not df_display.empty:
+        cols_to_show = ["cycle", "old_influence", "new_influence", "energy_score", "strategy", "self_healed"]
+        available_cols = [c for c in cols_to_show if c in df_display.columns]
+        st.dataframe(df_display[available_cols], use_container_width=True)
+    else:
+        st.info("لا توجد سجلات بعد. قم بتشغيل دورات من تبويب الرادار.")
+    if st.session_state.cosmic_radar_data.empty:
+        st.warning("⚠️ الرادار بانتظار نبض البيانات.")
+    else:
+        top_surah = st.session_state.cosmic_radar_data.nlargest(1, "ascent").iloc[0] if not st.session_state.cosmic_radar_data.empty else None
+        top_root = st.session_state.root_frequency_data.most_common(1)[0] if st.session_state.root_frequency_data else ("لا يوجد", 0)
+        c1, c2, c3 = st.columns(3)
+        c1.metric("السورة القائدة", top_surah["name"] if top_surah is not None else "—")
+        c2.metric("الجذر المهيمن", f"{top_root[0]} ({top_root[1]})")
+        c3.metric("مستوى الوعي", len(st.session_state.system_log))
+
+# ==============================================================================
+# تبويب 5: الرنين الجيني
+# ==============================================================================
+with tabs[5]:
+    st.markdown("### 🌌 مصفوفة الرنين والاستحقاق المداري")
+    cols = st.columns(4)
+    for i, (code, info) in enumerate(GENE_STYLE.items()):
+        if i < 4:
+            cols[i].markdown(f"<div class='ultra-card' style='border-top-color:{info['color']}'><h2>{info['icon']}</h2><h3>{info['name']}</h3><p>{info['meaning']}</p></div>", unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown("### 📖 استنطاق جذر محدد")
+    if st.session_state.r_index:
+        root_keys = sorted(st.session_state.r_index.keys())
+        selected_root = st.selectbox("اختر جذراً للاستنطاق:", options=root_keys)
+        if st.button("🔍 استنطاق الجذر", use_container_width=True):
+            target_data = st.session_state.r_index[selected_root]
+            sig = signature_from_root(selected_root)
+            dynamic_energy = compute_dynamic_energy(base_w=target_data.get('weight', 1.0), count=1, mode="direct", morph_rank=3, orbit_id=target_data.get('orbit_id', 0), root_sig=sig)
+            final_gene = resolve_sovereign_gene(orbit_id=target_data.get('orbit_id', 0), morph_rank=3, root_sig=sig, base_energy=dynamic_energy)
+            gene_info = GENE_STYLE.get(final_gene, GENE_STYLE['N'])
+            base_info = GENE_STYLE.get(target_data.get('gene_base', 'N'), GENE_STYLE['N'])
+            st.markdown(f"""
+            <div class="insight-card">
+                <b style="font-size:1.2em;">📌 الجذر: {target_data['root_raw']}</b><br>
+                🧬 الجين القاعدي: {base_info['icon']} {base_info['name']}<br>
+                🧬 الجين النهائي: {gene_info['icon']} {gene_info['name']}<br>
+                🔄 المدار: {target_data['orbit']} (ID: {target_data.get('orbit_id', 0)})<br>
+                ⚡ الوزن الأصلي: {target_data.get('weight', 1.0)}<br>
+                ⚡ الطاقة الديناميكية: {dynamic_energy:.1f}<br>
+                ✨ عامل الإشراق: {sig['n_factor']}<br>
+                📍 التموضع: ({sig['x']}, {sig['y']})<br>
+                <hr><p>🔮 {target_data['insight']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+# ==============================================================================
+# تبويب 6: اللوحة الوجودية (مع ألواح التكوين)
+# ==============================================================================
+with tabs[6]:
+    st.markdown("### 📈 التحليل الكمي للمدار")
+    if st.session_state.orbit_active and st.session_state.orbit_bodies:
+        df = pd.DataFrame(st.session_state.orbit_bodies)
+        col1, col2 = st.columns(2)
+        col1.plotly_chart(px.pie(df, names='gene', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, hole=0.5, title="توزيع الجينات"), key="gene_pie_chart")
+        col2.plotly_chart(px.bar(df.groupby('gene').size().reset_index(name='count'), x='gene', y='count', color='gene', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="تعداد الأجسام"), key="gene_bar_chart")
+        st.plotly_chart(px.scatter(df, x='root', y='energy', color='gene', size='energy', color_discrete_map={g: GENE_STYLE[g]['color'] for g in GENE_STYLE}, title="خارطة الطاقة"), key="energy_scatter_chart")
+    else:
+        st.info("⚙️ انتظر تفعيل المفاعل.")
+    
+    st.markdown("---")
+    render_manifestation_dashboard()
+
+# ==============================================================================
+# تبويب 7: البيان الختامي
+# ==============================================================================
+with tabs[7]:
+    st.markdown("### 📜 البيان الختامي")
+    if st.session_state.orbit_active and st.session_state.orbit_bodies:
+        display_orbital_results(key_suffix="final_statement")
+    else:
+        st.info("⚙️ انتظر تفعيل المفاعل.")
+
+# ==============================================================================
+# تبويب 8: الرنين السياقي
+# ==============================================================================
+with tabs[8]:
+    st.markdown("### 📡 الرنين السياقي")
+    if st.session_state.orbit_active and st.session_state.orbit_bodies:
+        resonance_edges = build_resonance_network(st.session_state.orbit_bodies)
+        if resonance_edges:
+            st.dataframe(pd.DataFrame(resonance_edges), use_container_width=True)
+            strongest = resonance_edges[0]
+            st.success(f"✨ أقوى رابط: **{strongest['source']}** ⇄ **{strongest['target']}** | القوة: {strongest['strength']}")
+        else:
+            st.info("لا توجد روابط قوية.")
+    else:
+        st.info("⚙️ انتظر تفعيل المفاعل.")
+
+# ==============================================================================
+# نهاية الكود - الإصدار v66.2 النهائي مع ألواح التكوين
+# ==============================================================================
