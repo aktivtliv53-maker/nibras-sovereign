@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.2.1-STABLE
-# Omni Sovereign Layer - Neuro-Resonance + Prediction Engine + Navigation
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.3.1-FINAL
+# Protected Semantic Navigator - Omni Sovereign Layer
 # المستخدم المهيمن: محمّد
 # ==============================================================================
 
@@ -364,7 +364,7 @@ def generate_sovereign_v67_4_output(text, orbit_id=0):
 sanitize_session_state()
 init_manifestation_state()
 init_sovereign_v67_4_logic()
-st.set_page_config(page_title="Nibras V71.2.1-STABLE - السيادة المطلقة", layout="wide")
+st.set_page_config(page_title="Nibras V71.3.1-FINAL - السيادة المطلقة", layout="wide")
 
 st.markdown("""
 <style>
@@ -423,8 +423,18 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [10.5] V71.2.1-STABLE – قاعدة البيانات التشغيلية والمحرك الدلالي
+# [10.5] V71.3.1-FINAL – قاعدة البيانات الدلالية الموحدة
 # ==============================================================================
+SEMANTIC_MASTER_DB = {
+    "رزق": {"gene": "Expansion", "orbit": 8, "text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3},
+    "فتح": {"gene": "Expansion", "orbit": 7, "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1},
+    "عمل": {"gene": "Stabilization", "orbit": 5, "text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ وَرَسُولُهُ", "surah": "التوبة", "num": 105},
+    "نصر": {"gene": "Power", "orbit": 9, "text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3},
+    "سكينة": {"gene": "Serenity", "orbit": 3, "text": "هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ", "surah": "الفتح", "num": 4},
+    "فهم": {"gene": "Illumination", "orbit": 9, "text": "وَعَلَّمْنَاهُ مِن لَّدُنَّا عِلْمًا", "surah": "الكهف", "num": 65}
+}
+
+# قاعدة بيانات الجينات للآيات الاحتياطية
 GENE_AYAH_DB = {
     "Power": {"text": "فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ", "surah": "آل عمران", "num": 159},
     "Stabilization": {"text": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا بِالْقَوْلِ الثَّابِتِ", "surah": "إبراهيم", "num": 27},
@@ -433,29 +443,24 @@ GENE_AYAH_DB = {
     "Illumination": {"text": "اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ", "surah": "النور", "num": 35}
 }
 
-def resolve_goal_logic(target_goal: str):
-    """المحرك الدلالي المصغر: يربط الكلمات المفتاحية بالجينات والمدارات المستهدفة"""
-    target_goal = target_goal.lower()
-    mapping = {
-        "فتح": ("Expansion", 7), "رزق": ("Expansion", 8),
-        "سكينة": ("Serenity", 3), "هدوء": ("Serenity", 3),
-        "قوة": ("Power", 5), "عزم": ("Power", 5),
-        "فهم": ("Illumination", 9), "نور": ("Illumination", 9),
-        "ثبات": ("Stabilization", 6), "صبر": ("Stabilization", 6)
-    }
-    for key, (gene, orbit) in mapping.items():
-        if key in target_goal:
-            return gene, orbit
-    return "Expansion", 7
-
 def get_gene_ayah_safe(gene_name):
-    """استدعاء آمن لمحتوى الآية"""
-    return GENE_AYAH_DB.get(gene_name, GENE_AYAH_DB["Stabilization"])
+    """جلب آمن للآية مع ضمان عدم الانهيار"""
+    fallback = {"text": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا", "surah": "إبراهيم", "num": 27}
+    return GENE_AYAH_DB.get(gene_name, fallback)
 
-def render_v71_2_1_stable_navigation():
+def resolve_semantic_path(goal_text):
+    """المحرك الدلالي مع تطبيع النص (Strip & Lower)"""
+    normalized = (goal_text or "").strip().lower()
+    for key, data in SEMANTIC_MASTER_DB.items():
+        if key in normalized:
+            return data
+    return {"gene": "Expansion", "orbit": 7, "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1}
+
+def render_v71_3_1_final_navigation():
     st.markdown("---")
-    st.header("🚀 V71.2.1-STABLE | محرك العبور السيادي")
+    st.header("🚀 V71.3.1-FINAL | الملاحة السيادية المحصنة")
 
+    # تهيئة الذاكرة المحمية
     if "v71_active_path_id" not in st.session_state:
         st.session_state.v71_active_path_id = None
     if "v71_progress" not in st.session_state:
@@ -463,65 +468,72 @@ def render_v71_2_1_stable_navigation():
     if "v71_locked_goal" not in st.session_state:
         st.session_state.v71_locked_goal = ""
 
-    with st.form("v71_goal_lock_form"):
-        st.write("### 📝 إبرام عقد المسار")
-        goal_input = st.text_input("ما هو هدفك السيادي الحالي؟", value=st.session_state.v71_locked_goal, 
-                                  help="اكتب كلمة مفتاحية مثل (فتح، رزق، سكينة، قوة...) لضبط المحرك.")
-        submit_goal = st.form_submit_button("🚀 اعتماد وتثبيت مسار العبور")
+    # واجهة الإدخال المحمية (Form)
+    with st.form("v71_secure_form"):
+        goal_input = st.text_input("أدخل هدفك السيادي (رزق، فتح، عمل، سكينة...):", value=st.session_state.v71_locked_goal)
+        submit_goal = st.form_submit_button("🚀 اعتماد وتثبيت المسار")
         
-        if submit_goal and goal_input:
-            path_id = hashlib.md5(goal_input.encode()).hexdigest()[:8]
-            st.session_state.v71_active_path_id = path_id
-            st.session_state.v71_locked_goal = goal_input
-            st.rerun()
+        if submit_goal:
+            if goal_input.strip():
+                path_id = hashlib.md5(goal_input.encode()).hexdigest()[:8]
+                st.session_state.v71_active_path_id = path_id
+                st.session_state.v71_locked_goal = goal_input
+                st.rerun()
+            else:
+                st.warning("⚠️ يرجى إدخال هدف واضح قبل الاعتماد.")
 
+    # تنفيذ الملاحة وعرض التقدم
     if st.session_state.v71_active_path_id:
         active_goal = st.session_state.v71_locked_goal
         path_id = st.session_state.v71_active_path_id
         
-        current_rec = st.session_state.get("current_sovereign_recommendation", {})
-        start_orbit = current_rec.get("orbit_id", 4)
+        semantic_data = resolve_semantic_path(active_goal)
+        target_gene, end_orbit = semantic_data["gene"], semantic_data["orbit"]
         
-        target_gene, end_orbit = resolve_goal_logic(active_goal)
+        start_orbit = st.session_state.get("current_sovereign_recommendation", {}).get("orbit_id", 4)
         orbit_gap = end_orbit - start_orbit
         direction = 1 if orbit_gap > 0 else (-1 if orbit_gap < 0 else 0)
         num_steps = max(2, abs(orbit_gap) + 1)
         
-        completed = sum(1 for i in range(num_steps) if st.session_state.v71_progress.get(f"{path_id}_{i}", False))
-        st.progress(completed / num_steps)
-        st.write(f"🎯 **المهمة النشطة:** {active_goal} | **المسار:** {start_orbit} ➔ {end_orbit}")
+        # استعادة شريط التقدم (Progress Bar Re-integration)
+        completed_count = sum(1 for i in range(num_steps) if st.session_state.v71_progress.get(f"{path_id}_{i}", False))
+        progress_perc = completed_count / num_steps
+        st.progress(progress_perc)
+        st.write(f"🎯 **المهمة:** {active_goal} | **التقدم:** {int(progress_perc*100)}%")
 
         for i in range(num_steps):
             step_orbit = start_orbit + (direction * i)
             step_key = f"{path_id}_{i}"
             is_done = st.session_state.v71_progress.get(step_key, False)
 
-            if i == 0:
-                stage_name, stage_gene, reps = "الكسر والتحويل (Initial Pulse)", "Power", 7
-            elif i == num_steps - 1:
+            if i == 0: 
+                stage_name, stage_gene, reps = "الكسر والتحويل", "Power", 7
+                ayah_p = get_gene_ayah_safe("Power")
+            elif i == num_steps - 1: 
                 stage_name, stage_gene, reps = f"الوصول النهائي ({target_gene})", target_gene, 11
-            else:
+                ayah_p = {"text": semantic_data["text"], "surah": semantic_data["surah"], "num": semantic_data["num"]}
+            else: 
                 stage_name, stage_gene, reps = f"تثبيت المدار {step_orbit}", "Stabilization", 3
-
-            ayah = get_gene_ayah_safe(stage_gene)
+                ayah_p = get_gene_ayah_safe("Stabilization")
 
             with st.expander(f"{'✅' if is_done else '⏳'} الخطوة {i+1}: {stage_name}", expanded=not is_done):
                 c1, c2 = st.columns([3, 1])
                 with c1:
-                    st.success(f"📖 {ayah['text']}")
-                    st.caption(f"سورة {ayah['surah']} | آية {ayah['num']}")
+                    st.success(f"📖 {ayah_p['text']}")
+                    st.caption(f"سورة {ayah_p['surah']} | آية {ayah_p['num']}")
                     try:
                         energy = compute_omni_energy(f"{active_goal}_{stage_gene}_{i}", step_orbit)
-                    except NameError:
-                        energy = "V70_OFFLINE"
-                    st.write(f"**الجين:** {stage_gene} | **الطاقة:** {energy}")
+                    except Exception:
+                        energy = "N/A"
+                    st.write(f"**الطاقة:** {energy}")
                 with c2:
                     st.metric("تكرار", f"×{reps}")
                     if st.button("تفعيل", key=f"btn_{step_key}"):
                         st.session_state.v71_progress[step_key] = True
                         st.rerun()
 
-        if st.button("🗑️ إنهاء المسار الحالي"):
+        # إضافة زر إعادة التعيين (Reset Functionality)
+        if st.button("🗑️ إعادة تعيين وإنهاء المسار الحالي"):
             st.session_state.v71_active_path_id = None
             st.session_state.v71_locked_goal = ""
             st.session_state.v71_progress = {}
@@ -1032,7 +1044,7 @@ def display_orbital_results(key_suffix="orbital"):
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V71.2.1</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V71.3.1</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1616,7 +1628,7 @@ with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
         <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-        <p>الإصدار V71.2.1-STABLE - Omni Navigation</p>
+        <p>الإصدار V71.3.1-FINAL - Protected Semantic Navigator</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -1829,7 +1841,7 @@ with tabs[4]:
             st.success("✨ النظام في حالة تمدد استراتيجي نتيجة استقرار مرتفع.")
         else:
             st.info("⚖️ النظام يعمل في الوضع القياسي المتوازن.")
-    with st.expander("🛡️ حالة التثبيت الفائق (V71.2.1)", expanded=False):
+    with st.expander("🛡️ حالة التثبيت الفائق (V71.3.1)", expanded=False):
         st.markdown(f"**Cooldown الحالي:** `{st.session_state.get('correction_cooldown', 2)}` دورة")
         st.markdown(f"**آخر دورة تصحيح:** `{st.session_state.get('last_correction_cycle', -9999)}`")
         snap = st.session_state.get("last_correction_snapshot", {})
@@ -1889,7 +1901,7 @@ with tabs[5]:
             """, unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية + محرك العبور)
+# تبويب 6: اللوحة الوجودية (النسخة الموحدة V71.3.1-FINAL)
 # ==============================================================================
 with tabs[6]:
     # اللوحة السيادية V67.4
@@ -1898,8 +1910,8 @@ with tabs[6]:
     # اللوحة النهائية V70
     render_v70_final_panel()
     
-    # محرك العبور السيادي V71.2.1-STABLE
-    render_v71_2_1_stable_navigation()
+    # محرك العبور السيادي المحصن V71.3.1-FINAL
+    render_v71_3_1_final_navigation()
     
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
@@ -1942,6 +1954,6 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار V71.2.1-STABLE النهائي
-# Omni Sovereign Layer + Navigation Engine
+# نهاية الكود - الإصدار V71.3.1-FINAL النهائي
+# Protected Semantic Navigator - Sovereign Complete
 # ==============================================================================
