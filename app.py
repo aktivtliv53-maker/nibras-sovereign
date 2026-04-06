@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V67
-# Neuro‑Sovereign Layer – مع ألواح التكوين والتوصية السيادية
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V67.4
+# Neuro‑Sovereign Layer with Prediction Engine
 # المستخدم المهيمن: محمّد
 # ==============================================================================
 
@@ -175,47 +175,151 @@ def init_manifestation_state():
         st.session_state.manifestation_recommendation = ""
 
 # ==============================================================================
-# [6] تهيئة مفاتيح V67 السيادية (حقن بعد الدوال السابقة)
+# [6] تهيئة الوعي المركب V67.4 (Initialization)
 # ==============================================================================
-def init_sovereign_v67_logic():
-    """حقن مفاتيح القرار السيادي والربط مع التاريخ الموجود"""
+def init_sovereign_v67_4_logic():
+    """تهيئة مفاتيح القرار والتنبؤ السيادي مع gene_dashboard"""
     keys = {
         "sovereign_recommendations": [],
         "current_sovereign_recommendation": {},
         "recommendation_history": [],
+        "prediction_history": [],
+        "current_prediction": {},
+        "prediction_feedback": {},
+        "gene_dashboard": {},
         "recommendation_engine_enabled": True
     }
     for k, v in keys.items():
         if k not in st.session_state:
             st.session_state[k] = v
 
-# معاملات التعديل الرمزي (Symbolic Modulation) - حد أقصى 1.3
-SYMBOLIC_MODIFIERS = {
-    'ا': 1.15,
-    'ل': 1.05,
-    'ر': 1.02,
-    'ق': 1.20,
-    'ن': 1.10,
-    'و': 1.05,
-    'ب': 1.00
-}
+# معاملات التعزيز الرمزي
+SYMBOLIC_MODIFIERS = {'ا': 1.15, 'ل': 1.05, 'ر': 1.02, 'ق': 1.20, 'ن': 1.10, 'و': 1.05, 'ب': 1.00}
 
+# خريطة الجين → الحركة
+GENE_TO_ACTION = {
+    "Expansion": "اتساع",
+    "Stabilization": "تثبيت",
+    "Serenity": "سكينة",
+    "Power": "قوة",
+    "Illumination": "إشراق"
+}
+PROTECTION_OVERRIDE = "حماية"
+
+# ==============================================================================
+# [7] تحليل الجينات – إغلاق الثغرة
+# ==============================================================================
+def analyze_genes_for_text(text):
+    """
+    يحلل النص ويملأ gene_dashboard
+    - يعيد dominant_gene متسق مع النظام
+    """
+    if not text:
+        return "Stabilization"
+    
+    # حساب وزن كل جين بناءً على تردد حروف محددة
+    gene_weights = {
+        "Expansion": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "اوي"),
+        "Stabilization": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "لر"),
+        "Serenity": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ن"),
+        "Power": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ق"),
+        "Illumination": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ب")
+    }
+    
+    # تطبيع الأوزان
+    total = sum(gene_weights.values())
+    if total > 0:
+        for k in gene_weights:
+            gene_weights[k] = gene_weights[k] / total
+    
+    key = hash(text) % 1000000
+    st.session_state.gene_dashboard[str(key)] = {"text": text[:100], "genes": gene_weights, "timestamp": time.time()}
+    
+    dominant_gene = max(gene_weights, key=gene_weights.get)
+    return dominant_gene
+
+# ==============================================================================
+# [8] محرك الطاقة النيوروني + التنبؤ V67.4
+# ==============================================================================
 def get_neuro_boost(word):
-    """تعزيز طاقي مبني على هندسة الحروف"""
-    if not word:
+    if not word: 
         return 1.0
     score = sum(SYMBOLIC_MODIFIERS.get(c, 1.0) for c in str(word))
     avg = score / max(1, len(str(word)))
     return min(1.3, max(0.9, avg))
 
+def compute_final_energy_v674(base_w, count, mode, morph_rank, orbit_id, root_sig, word):
+    """
+    Wrapper فوق compute_dynamic_energy مع تعزيز نيوروني
+    """
+    try:
+        base_energy = compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig)
+    except Exception:
+        base_energy = 1.0
+    
+    neuro_boost = get_neuro_boost(word)
+    throne_factor = 1.15 if int(orbit_id or 0) >= 7 else 1.0
+    
+    final_energy = base_energy * neuro_boost * throne_factor
+    return round(final_energy, 2)
+
+def generate_sovereign_v67_4_output(text, orbit_id=0):
+    """توليد توصية V67.4 مع تنبؤ V68"""
+    if not text:
+        return None, None
+    
+    dominant_gene = analyze_genes_for_text(text)
+    
+    # حساب الطاقة النهائية
+    rec_energy = compute_final_energy_v674(
+        base_w=1.0, count=1, mode="NORMAL", 
+        morph_rank=1, orbit_id=orbit_id, 
+        root_sig={"eb": 0.0, "n_factor": 50}, 
+        word=text[:50]
+    )
+    
+    action_type = GENE_TO_ACTION.get(dominant_gene, PROTECTION_OVERRIDE)
+    if rec_energy < 0.8:
+        action_type = PROTECTION_OVERRIDE
+    
+    rec = {
+        "text": text[:200],
+        "dominant_gene": dominant_gene,
+        "action_type": action_type,
+        "energy": rec_energy,
+        "orbit_id": orbit_id,
+        "timestamp": time.time(),
+        "user_response": "PENDING"
+    }
+    st.session_state.current_sovereign_recommendation = rec
+    if "sovereign_recommendations" in st.session_state:
+        st.session_state.sovereign_recommendations.append(rec)
+    
+    # التنبؤ V68
+    pred_action = action_type
+    if len(st.session_state.get("recommendation_history", [])) > 0:
+        last_rec = st.session_state.recommendation_history[-1]
+        if last_rec.get("action_type") == "اتساع" and action_type == "اتساع":
+            pred_action = "حماية"
+        elif last_rec.get("action_type") == "حماية" and action_type == "حماية":
+            pred_action = "تفعيل"
+    
+    st.session_state.current_prediction = {
+        "text": text[:200], 
+        "pred_action": pred_action,
+        "confidence": round(0.75 + (rec_energy * 0.1), 2),
+        "timestamp": time.time()
+    }
+    
+    return rec, st.session_state.current_prediction
+
 # ==============================================================================
-# [7] إعدادات الهوية السيادية
+# [9] إعدادات الهوية السيادية
 # ==============================================================================
 sanitize_session_state()
 init_manifestation_state()
-init_sovereign_v67_logic()  # حقن V67
-
-st.set_page_config(page_title="Nibras V67 - السيادة المطلقة", layout="wide")
+init_sovereign_v67_4_logic()  # تهيئة V67.4
+st.set_page_config(page_title="Nibras V67.4 - السيادة المطلقة", layout="wide")
 
 st.markdown("""
 <style>
@@ -258,11 +362,12 @@ st.markdown("""
     .ascent-positive { background: linear-gradient(135deg, #0a2a0a 0%, #0a1a0a 100%); border-right: 5px solid #00ffcc; }
     .ascent-negative { background: linear-gradient(135deg, #2a0a0a 0%, #1a0a0a 100%); border-right: 5px solid #ff5252; }
     .gene-badge { background: rgba(255,215,0,0.15); padding: 4px 12px; border-radius: 20px; margin: 2px; display: inline-block; }
+    .prediction-card { background: linear-gradient(135deg, #1a0a2a 0%, #0a0a1a 100%); border-right: 5px solid #9c27b0; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [8] مصفوفة الجينات
+# [10] مصفوفة الجينات
 # ==============================================================================
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 'meaning': 'طاقة المسير والتمكين البعيد'},
@@ -273,7 +378,7 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [9] المستخرج الاحتمالي v31
+# [11] المستخرج الاحتمالي v31
 # ==============================================================================
 COMMON_PREFIXES = ["وال", "بال", "كال", "فال", "لل", "ال", "و", "ف", "ب", "ك", "ل", "س"]
 COMMON_SUFFIXES = ["يات", "ات", "ون", "ين", "ان", "وا", "نا", "ها", "هم", "هن", "كم", "ني", "ة", "ه", "ي"]
@@ -329,7 +434,7 @@ def extract_candidate_root_v31(word, index_keys):
     return None, "unresolved", pattern_name, morph_rank
 
 # ==============================================================================
-# [10] التوقيع الجذري
+# [12] التوقيع الجذري
 # ==============================================================================
 def signature_from_root(root: str):
     if not root:
@@ -344,7 +449,7 @@ def signature_from_root(root: str):
     }
 
 # ==============================================================================
-# [11] الاستحقاق الجيني
+# [13] الاستحقاق الجيني
 # ==============================================================================
 def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
     orbit = int(orbit_id or 0)
@@ -377,7 +482,7 @@ def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
     return base_gene
 
 # ==============================================================================
-# [12] الطاقة الديناميكية (لا يتم تعديلها)
+# [14] الطاقة الديناميكية (لا يتم تعديلها)
 # ==============================================================================
 def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
     base_energy = base_w * 100 if base_w < 10 else base_w
@@ -390,28 +495,7 @@ def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
     return round(max(1.0, energy), 2)
 
 # ==============================================================================
-# [13] طبقة الطاقة النهائية V67 (Wrapper فوق compute_dynamic_energy)
-# ==============================================================================
-def compute_final_energy(word, base_w, count, mode, morph_rank, orbit_id, root_sig):
-    """
-    طبقة التعزيز النيوروني فوق compute_dynamic_energy دون المساس بالمنطق القديم.
-    """
-    try:
-        base_energy = compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig)
-    except Exception:
-        base_energy = 1.0
-
-    # تعزيز هندسة الحروف
-    neuro_boost = get_neuro_boost(word)
-
-    # تعزيز المدارات العلوية (وثيقة العرش)
-    throne_factor = 1.15 if int(orbit_id or 0) >= 7 else 1.0
-
-    final_energy = base_energy * neuro_boost * throne_factor
-    return round(final_energy, 2)
-
-# ==============================================================================
-# [14] مؤشر الصعود
+# [15] مؤشر الصعود
 # ==============================================================================
 def compute_ascent_vector(bodies):
     if not bodies:
@@ -425,7 +509,7 @@ def compute_ascent_vector(bodies):
     return round(total / len(bodies), 2)
 
 # ==============================================================================
-# [15] شبكة الرنين
+# [16] شبكة الرنين
 # ==============================================================================
 def build_resonance_network(bodies):
     edges = []
@@ -454,7 +538,7 @@ def build_resonance_network(bodies):
     return sorted(edges, key=lambda x: x['strength'], reverse=True)
 
 # ==============================================================================
-# [16] بروتوكول خِت فِت للأرشفة
+# [17] بروتوكول خِت فِت للأرشفة
 # ==============================================================================
 def khit_fit_archive(res_bodies, ascent_score):
     if not res_bodies:
@@ -482,7 +566,7 @@ def khit_fit_archive(res_bodies, ascent_score):
     return True
 
 # ==============================================================================
-# [17] تحميل قواعد البيانات
+# [18] تحميل قواعد البيانات
 # ==============================================================================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
@@ -578,7 +662,75 @@ def load_quran_roots():
     return roots_map
 
 # ==============================================================================
-# [18] دوال المحرك المداري
+# [19] لوحة الاشتباك السيادي V67.4 – The Sovereign Panel
+# ==============================================================================
+def render_sovereign_v67_4_panel():
+    """واجهة التوصية السيادية مع أزرار الالتزام والتنبؤ"""
+    rec = st.session_state.get("current_sovereign_recommendation", {})
+    pred = st.session_state.get("current_prediction", {})
+    
+    if not rec:
+        st.info("🜃 لا توجد توصية سيادية بعد — قم بتحليل نص أولاً.")
+        return
+    
+    with st.expander("✨ التوصية السيادية النشطة | Sovereign Directive V67.4", expanded=True):
+        
+        # التوصية الحالية
+        st.markdown(f"### 🧬 الجين المسيطر: `{rec.get('dominant_gene', '')}`")
+        st.markdown(f"**الحركة الموصى بها:** `{rec.get('action_type', '')}`")
+        st.markdown(f"**الطاقة النهائية:** `{rec.get('energy', 0):.2f}`")
+        
+        st.markdown("---")
+        
+        # التنبؤ الاستباقي V68
+        if pred:
+            st.markdown("### 🔮 التنبؤ الاستباقي V68")
+            pred_color = "#9c27b0"
+            st.markdown(f"""
+            <div style="background: #1a0a2a; padding: 15px; border-radius: 10px; border-right: 5px solid {pred_color}; margin-bottom: 15px;">
+                <b>📌 الحركة المتوقعة:</b> {pred.get('pred_action', '')}<br>
+                <b>🎯 درجة اليقين:</b> {pred.get('confidence', 0) * 100:.0f}%
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        
+        # أزرار الالتزام السيادي
+        c1, c2 = st.columns(2)
+        
+        if c1.button("✅ التزمت بهذا المسار", key="apply_v674"):
+            rec["user_response"] = "APPLIED"
+            st.session_state.recommendation_history.append(rec)
+            
+            # تسجيل التغذية الراجعة للتنبؤ
+            if pred:
+                key = hash(str(pred.get("timestamp", 0))) % 1000000
+                st.session_state.prediction_feedback[str(key)] = {
+                    "pred_action": pred.get("pred_action"),
+                    "actual_action": rec.get("action_type"),
+                    "committed": True,
+                    "timestamp": time.time()
+                }
+            st.success("تم تسجيل الالتزام السيادي.")
+            st.rerun()
+        
+        if c2.button("⏭ تخطيت الآن", key="skip_v674"):
+            rec["user_response"] = "SKIPPED"
+            st.session_state.recommendation_history.append(rec)
+            
+            if pred:
+                key = hash(str(pred.get("timestamp", 0))) % 1000000
+                st.session_state.prediction_feedback[str(key)] = {
+                    "pred_action": pred.get("pred_action"),
+                    "actual_action": None,
+                    "committed": False,
+                    "timestamp": time.time()
+                }
+            st.warning("تم تسجيل التخطي — سيُعاد وزن التوصيات القادمة.")
+            st.rerun()
+
+# ==============================================================================
+# [20] دوال المحرك المداري (معدلة لدعم V67.4)
 # ==============================================================================
 def display_insight_cards(bodies):
     if not bodies:
@@ -628,18 +780,10 @@ def process_text_and_generate_bodies(input_text, r_index):
         if not data:
             continue
         sig = signature_from_root(m['rk'])
-        
-        # استخدام compute_final_energy بدلاً من compute_dynamic_energy مباشرة (V67)
-        dynamic_energy = compute_final_energy(
-            word=m['word'],
-            base_w=data['weight'],
-            count=counts[m['rk']],
-            mode=m['mode'],
-            morph_rank=m['morph_rank'],
-            orbit_id=data.get('orbit_id', 0),
-            root_sig=sig
+        dynamic_energy = compute_dynamic_energy(
+            base_w=data['weight'], count=counts[m['rk']], mode=m['mode'],
+            morph_rank=m['morph_rank'], orbit_id=data.get('orbit_id', 0), root_sig=sig
         )
-        
         final_gene = resolve_sovereign_gene(
             orbit_id=data.get('orbit_id', 0), morph_rank=m['morph_rank'],
             root_sig=sig, base_energy=dynamic_energy
@@ -695,7 +839,7 @@ def display_orbital_results(key_suffix="orbital"):
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V67</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V67.4</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -713,8 +857,9 @@ def display_orbital_results(key_suffix="orbital"):
         display_insight_cards(bodies)
         return True
     return False
+
 # ==============================================================================
-# [19] دوال v63 - الحوكمة الاستراتيجية (محفوظة بالكامل)
+# [21] دوال v63 - الحوكمة الاستراتيجية (محفوظة بالكامل)
 # ==============================================================================
 def get_current_cycle_index():
     return len(st.session_state.get("system_log", []))
@@ -913,11 +1058,11 @@ def reset_nibras_system():
     st.session_state.orbit_bodies = []
     st.session_state.input_area = ""
     st.session_state.current_text = ""
-    # إعادة تعيين مفاتيح V67
-    init_sovereign_v67_logic()
+    # إعادة تهيئة مفاتيح V67.4
+    init_sovereign_v67_4_logic()
 
 # ==============================================================================
-# [20] دوال ألواح التكوين (Manifestation Dashboard) - محفوظة بالكامل
+# [22] دوال ألواح التكوين (Manifestation Dashboard) - محفوظة بالكامل
 # ==============================================================================
 def safe_get_latest_analysis_snapshot():
     """Return a safe, normalized snapshot of the latest meaningful system analysis"""
@@ -1193,7 +1338,7 @@ def render_manifestation_dashboard():
             st.dataframe(history_df[available_cols].head(10), use_container_width=True)
 
 # ==============================================================================
-# [21] دوال الرادار - محفوظة بالكامل
+# [23] دوال الرادار - محفوظة بالكامل
 # ==============================================================================
 def generate_sample_radar_data():
     sample_data = pd.DataFrame({
@@ -1251,200 +1396,6 @@ def update_cosmic_radar(quran_data, r_index, meta_law):
         st.session_state.root_frequency_data = generate_sample_root_frequency()
 
 # ==============================================================================
-# [22] دوال تحليل الحالة السيادية والتوصية V67
-# ==============================================================================
-def analyze_sovereign_state():
-    """
-    تحليل الحالة السيادية الحالية للنظام.
-    يُفترض وجودها من باتشات سابقة، تم إضافتها هنا إذا لم تكن موجودة.
-    """
-    snapshot = safe_get_latest_analysis_snapshot()
-    
-    # استخراج آخر هدف من ألواح التكوين
-    last_goal = st.session_state.get("manifestation_target", "رزق")
-    if st.session_state.get("manifestation_custom_target"):
-        last_goal = st.session_state.manifestation_custom_target
-    
-    # حساب مستوى الطاقة
-    energy_level = snapshot.get("energy_bias", 1.0) * 50
-    
-    state = {
-        "root_influence": snapshot.get("root_influence", 1.0),
-        "energy_bias": snapshot.get("energy_bias", 1.0),
-        "field_coherence": snapshot.get("field_coherence", 1.0),
-        "volatility": snapshot.get("volatility", 0.0),
-        "strategy": st.session_state.get("current_strategy", "STANDARD"),
-        "last_goal": last_goal,
-        "energy_level": round(energy_level, 2)
-    }
-    return state
-
-def detect_critical_gene_need(state):
-    """
-    كشف الجين الحرج بناءً على حالة النظام.
-    يُفترض وجودها من باتشات سابقة.
-    """
-    root_inf = state.get("root_influence", 1.0)
-    energy_bias = state.get("energy_bias", 1.0)
-    coherence = state.get("field_coherence", 1.0)
-    volatility = state.get("volatility", 0.0)
-    strategy = state.get("strategy", "STANDARD")
-    
-    # تحديد نوع الحاجة
-    if root_inf < 0.92 or coherence < 0.85 or volatility > 0.15:
-        need_type = "structural"
-        if root_inf < 0.92:
-            target_gene = "ثبات"
-        elif coherence < 0.85:
-            target_gene = "ترسيخ"
-        else:
-            target_gene = "حماية"
-    elif energy_bias < 0.90 or (strategy == "EXPANSIVE" and volatility < 0.02):
-        need_type = "compensatory"
-        if energy_bias < 0.90:
-            target_gene = "تفعيل"
-        else:
-            target_gene = "اتساع"
-    else:
-        need_type = "stabilization"
-        target_gene = "استمرار"
-    
-    return target_gene, need_type
-
-def calculate_rec_confidence(need_type, strategy, history):
-    """
-    حساب درجة اليقين للتوصية.
-    يُفترض وجودها من باتشات سابقة.
-    """
-    history_list = safe_list(history)
-    history_count = len(history_list)
-    
-    base_confidence = {
-        "structural": 0.92,
-        "compensatory": 0.85,
-        "stabilization": 0.78
-    }.get(need_type, 0.80)
-    
-    # تعديل حسب الاستراتيجية
-    strategy_factor = {
-        "AGGRESSIVE": 0.95,
-        "STANDARD": 1.00,
-        "EXPANSIVE": 1.05
-    }.get(strategy, 1.00)
-    
-    # تعديل حسب التاريخ (تجنب التكرار)
-    history_penalty = min(0.15, history_count * 0.01)
-    
-    confidence = base_confidence * strategy_factor * (1 - history_penalty)
-    confidence = clamp(confidence, 0.65, 0.98)
-    
-    if confidence >= 0.90:
-        text = "يقين سيادي عالٍ"
-    elif confidence >= 0.80:
-        text = "يقين سيادي متوسط"
-    else:
-        text = "يقين سيادي مقبول"
-    
-    return round(confidence, 2), text
-
-def generate_recommendation_v67():
-    """
-    اشتقاق التوصية السيادية من الحالة الفعلية للنظام.
-    لا يُسمح بتوليد بيانات وهمية.
-    """
-    state = analyze_sovereign_state()
-    target_gene, need_type = detect_critical_gene_need(state)
-    
-    # نوع الحركة
-    if need_type == "structural":
-        action_type = "Expansion"
-        priority = "HIGH"
-        duration = 7
-        repetition = 11
-    elif need_type == "compensatory":
-        action_type = "Consolidation"
-        priority = "MEDIUM"
-        duration = 5
-        repetition = 9
-    else:
-        action_type = "Stabilization"
-        priority = "LOW"
-        duration = 3
-        repetition = 7
-    
-    # حساب اليقين
-    level, text = calculate_rec_confidence(
-        need_type,
-        state.get("strategy", "STANDARD"),
-        st.session_state.get("recommendation_history", [])
-    )
-    
-    rec = {
-        "target_gene": target_gene,
-        "action_type": action_type,
-        "priority": priority,
-        "duration_days": duration,
-        "repetition": repetition,
-        "confidence_level": level,
-        "confidence_text": text,
-        "goal": state.get("last_goal", "رزق"),
-        "strategy": state.get("strategy", "STANDARD"),
-        "energy_level": state.get("energy_level", 0.0),
-        "user_response": "PENDING",
-        "ts": time.time()
-    }
-    
-    # حفظ التوصية
-    st.session_state.current_sovereign_recommendation = rec
-    st.session_state.recommendation_history.append(rec)
-    
-    return rec
-
-def run_sovereign_recommendation_cycle():
-    if not st.session_state.get("recommendation_engine_enabled", True):
-        return
-    generate_recommendation_v67()
-
-# ==============================================================================
-# [23] لوحة الاشتباك السيادي V67 – The Sovereign Panel
-# ==============================================================================
-def render_sovereign_panel():
-    """
-    واجهة التوصية السيادية مع أزرار الالتزام.
-    تُعرض في أعلى تبويب اللوحة الوجودية.
-    """
-    rec = st.session_state.get("current_sovereign_recommendation", {})
-    if not rec:
-        st.info("🜃 لا توجد توصية سيادية بعد — قم بتشغيل دورة التوصية.")
-        return
-    
-    with st.expander("✨ التوصية السيادية النشطة | Sovereign Directive", expanded=True):
-        
-        # العنوان واليقين
-        st.markdown(f"### {rec.get('confidence_text', '')}")
-        st.markdown(f"**الجين الحرج:** `{rec.get('target_gene', '')}`")
-        st.markdown(f"**نوع الحركة:** `{rec.get('action_type', '')}`")
-        st.markdown(f"**الأولوية:** `{rec.get('priority', '')}`")
-        st.markdown(f"**المدة المقترحة:** {rec.get('duration_days', 0)} يومًا")
-        st.markdown(f"**التكرار المقترح:** {rec.get('repetition', 0)} مرة")
-        st.markdown(f"**الهدف:** {rec.get('goal', '')}")
-        st.markdown(f"**الاستراتيجية الحالية:** {rec.get('strategy', '')}")
-        st.markdown(f"**متوسط الطاقة:** {round(rec.get('energy_level', 0), 2)}")
-        
-        st.markdown("---")
-        
-        # أزرار الالتزام السيادي
-        c1, c2 = st.columns(2)
-        
-        if c1.button("✅ التزمت بهذا المسار", key="apply_v67"):
-            rec["user_response"] = "APPLIED"
-            st.success("تم تسجيل الالتزام السيادي.")
-        
-        if c2.button("⏭ تخطيت الآن", key="skip_v67"):
-            rec["user_response"] = "SKIPPED"
-            st.warning("تم تسجيل التخطي — سيُعاد وزن التوصيات القادمة.")
-
-# ==============================================================================
 # [24] محرك الحقن السيادي
 # ==============================================================================
 def initialize_sovereign_memory():
@@ -1466,9 +1417,6 @@ def initialize_sovereign_memory():
     if q_data:
         update_cosmic_radar(q_data, r_idx, st.session_state.active_meta_law)
     st.session_state.initialized = True
-    
-    # تشغيل دورة توصية أولية
-    run_sovereign_recommendation_cycle()
 
 if not st.session_state.initialized or not st.session_state.all_roots:
     initialize_sovereign_memory()
@@ -1478,7 +1426,7 @@ with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
         <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-        <p>الإصدار V67 - Neuro‑Sovereign Layer</p>
+        <p>الإصدار V67.4 - Neuro‑Sovereign + Prediction</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -1534,8 +1482,8 @@ with tabs[0]:
                     st.session_state.orbit_active = True
                     st.session_state.last_processed_text = v_obj['text']
                     update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
-                    # تشغيل دورة التوصية بعد التحليل
-                    run_sovereign_recommendation_cycle()
+                    # توليد توصية V67.4
+                    generate_sovereign_v67_4_output(v_obj['text'], 0)
                     st.success(f"✅ تم تحليل الآية بنجاح! ({len(bodies)} جذر)")
                     st.rerun()
                 else:
@@ -1567,7 +1515,7 @@ with tabs[1]:
                 st.session_state.last_processed_text = input_text
                 st.session_state.current_text = input_text
                 update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
-                run_sovereign_recommendation_cycle()
+                generate_sovereign_v67_4_output(input_text, 0)
                 st.success(f"✅ تم تحليل النص بنجاح! ({len(bodies)} جذر)")
                 st.rerun()
             else:
@@ -1584,7 +1532,7 @@ with tabs[1]:
                 if bodies:
                     st.session_state.orbit_bodies = bodies
                     st.session_state.orbit_active = True
-                    run_sovereign_recommendation_cycle()
+                    generate_sovereign_v67_4_output(st.session_state.input_area, 0)
                     st.rerun()
     if archive_btn:
         if st.session_state.orbit_active and st.session_state.orbit_bodies:
@@ -1609,19 +1557,16 @@ with tabs[2]:
     with col_a:
         if st.button("🔁 تشغيل دورة واحدة", use_container_width=True):
             sovereign_autonomous_cycle()
-            run_sovereign_recommendation_cycle()
             st.rerun()
     with col_b:
         if st.button("🔁🔁 تشغيل 5 دورات", use_container_width=True):
             for _ in range(5):
                 sovereign_autonomous_cycle()
-            run_sovereign_recommendation_cycle()
             st.rerun()
     with col_c:
         if st.button("🔁🔁🔁 تشغيل 10 دورات", use_container_width=True):
             for _ in range(10):
                 sovereign_autonomous_cycle()
-            run_sovereign_recommendation_cycle()
             st.rerun()
     df_log = normalize_system_log_for_df()
     if not df_log.empty and "cycle" in df_log.columns:
@@ -1661,7 +1606,7 @@ with tabs[3]:
             if st.session_state.orbit_bodies:
                 st.session_state.orbit_active = True
                 update_cosmic_radar(st.session_state.quran_data, st.session_state.r_index, st.session_state.active_meta_law)
-                run_sovereign_recommendation_cycle()
+                generate_sovereign_v67_4_output(st.session_state.current_text, 0)
         st.success(f"✅ تم حقن الإزاحة {shift}x وتحديث المدارات")
         st.rerun()
     st.markdown("#### التحكم اليدوي")
@@ -1673,7 +1618,7 @@ with tabs[3]:
         if st.session_state.get('current_text'):
             st.session_state.orbit_bodies = calculate_orbits(st.session_state.current_text, st.session_state.r_index)
             st.session_state.orbit_active = True
-            run_sovereign_recommendation_cycle()
+            generate_sovereign_v67_4_output(st.session_state.current_text, 0)
         st.rerun()
     with st.expander("📜 سجل القوانين"):
         if st.session_state.system_log:
@@ -1695,7 +1640,7 @@ with tabs[4]:
             st.success("✨ النظام في حالة تمدد استراتيجي نتيجة استقرار مرتفع.")
         else:
             st.info("⚖️ النظام يعمل في الوضع القياسي المتوازن.")
-    with st.expander("🛡️ حالة التثبيت الفائق (V67)", expanded=False):
+    with st.expander("🛡️ حالة التثبيت الفائق (V67.4)", expanded=False):
         st.markdown(f"**Cooldown الحالي:** `{st.session_state.get('correction_cooldown', 2)}` دورة")
         st.markdown(f"**آخر دورة تصحيح:** `{st.session_state.get('last_correction_cycle', -9999)}`")
         snap = st.session_state.get("last_correction_snapshot", {})
@@ -1736,15 +1681,7 @@ with tabs[5]:
         if st.button("🔍 استنطاق الجذر", use_container_width=True):
             target_data = st.session_state.r_index[selected_root]
             sig = signature_from_root(selected_root)
-            dynamic_energy = compute_final_energy(
-                word=selected_root,
-                base_w=target_data.get('weight', 1.0),
-                count=1,
-                mode="direct",
-                morph_rank=3,
-                orbit_id=target_data.get('orbit_id', 0),
-                root_sig=sig
-            )
+            dynamic_energy = compute_dynamic_energy(base_w=target_data.get('weight', 1.0), count=1, mode="direct", morph_rank=3, orbit_id=target_data.get('orbit_id', 0), root_sig=sig)
             final_gene = resolve_sovereign_gene(orbit_id=target_data.get('orbit_id', 0), morph_rank=3, root_sig=sig, base_energy=dynamic_energy)
             gene_info = GENE_STYLE.get(final_gene, GENE_STYLE['N'])
             base_info = GENE_STYLE.get(target_data.get('gene_base', 'N'), GENE_STYLE['N'])
@@ -1755,7 +1692,7 @@ with tabs[5]:
                 🧬 الجين النهائي: {gene_info['icon']} {gene_info['name']}<br>
                 🔄 المدار: {target_data['orbit']} (ID: {target_data.get('orbit_id', 0)})<br>
                 ⚡ الوزن الأصلي: {target_data.get('weight', 1.0)}<br>
-                ⚡ الطاقة النهائية (V67): {dynamic_energy:.1f}<br>
+                ⚡ الطاقة الديناميكية: {dynamic_energy:.1f}<br>
                 ✨ عامل الإشراق: {sig['n_factor']}<br>
                 📍 التموضع: ({sig['x']}, {sig['y']})<br>
                 <hr><p>🔮 {target_data['insight']}</p>
@@ -1763,11 +1700,11 @@ with tabs[5]:
             """, unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V67)
+# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V67.4)
 # ==============================================================================
 with tabs[6]:
-    # اللوحة السيادية V67 في أعلى التبويب
-    render_sovereign_panel()
+    # اللوحة السيادية V67.4 في أعلى التبويب
+    render_sovereign_v67_4_panel()
     
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
@@ -1810,5 +1747,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار V67 النهائي مع Neuro‑Sovereign Layer
+# نهاية الكود - الإصدار V67.4 النهائي مع Neuro‑Sovereign Layer و Prediction Engine
 # ==============================================================================
