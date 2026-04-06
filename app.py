@@ -434,7 +434,6 @@ SEMANTIC_MASTER_DB = {
     "فهم": {"gene": "Illumination", "orbit": 9, "text": "وَعَلَّمْنَاهُ مِن لَّدُنَّا عِلْمًا", "surah": "الكهف", "num": 65}
 }
 
-# قاعدة بيانات الجينات للآيات الاحتياطية
 GENE_AYAH_DB = {
     "Power": {"text": "فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ", "surah": "آل عمران", "num": 159},
     "Stabilization": {"text": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا بِالْقَوْلِ الثَّابِتِ", "surah": "إبراهيم", "num": 27},
@@ -444,12 +443,10 @@ GENE_AYAH_DB = {
 }
 
 def get_gene_ayah_safe(gene_name):
-    """جلب آمن للآية مع ضمان عدم الانهيار"""
     fallback = {"text": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا", "surah": "إبراهيم", "num": 27}
     return GENE_AYAH_DB.get(gene_name, fallback)
 
 def resolve_semantic_path(goal_text):
-    """المحرك الدلالي مع تطبيع النص (Strip & Lower)"""
     normalized = (goal_text or "").strip().lower()
     for key, data in SEMANTIC_MASTER_DB.items():
         if key in normalized:
@@ -460,7 +457,6 @@ def render_v71_3_1_final_navigation():
     st.markdown("---")
     st.header("🚀 V71.3.1-FINAL | الملاحة السيادية المحصنة")
 
-    # تهيئة الذاكرة المحمية
     if "v71_active_path_id" not in st.session_state:
         st.session_state.v71_active_path_id = None
     if "v71_progress" not in st.session_state:
@@ -468,7 +464,6 @@ def render_v71_3_1_final_navigation():
     if "v71_locked_goal" not in st.session_state:
         st.session_state.v71_locked_goal = ""
 
-    # واجهة الإدخال المحمية (Form)
     with st.form("v71_secure_form"):
         goal_input = st.text_input("أدخل هدفك السيادي (رزق، فتح، عمل، سكينة...):", value=st.session_state.v71_locked_goal)
         submit_goal = st.form_submit_button("🚀 اعتماد وتثبيت المسار")
@@ -482,7 +477,6 @@ def render_v71_3_1_final_navigation():
             else:
                 st.warning("⚠️ يرجى إدخال هدف واضح قبل الاعتماد.")
 
-    # تنفيذ الملاحة وعرض التقدم
     if st.session_state.v71_active_path_id:
         active_goal = st.session_state.v71_locked_goal
         path_id = st.session_state.v71_active_path_id
@@ -495,7 +489,6 @@ def render_v71_3_1_final_navigation():
         direction = 1 if orbit_gap > 0 else (-1 if orbit_gap < 0 else 0)
         num_steps = max(2, abs(orbit_gap) + 1)
         
-        # استعادة شريط التقدم (Progress Bar Re-integration)
         completed_count = sum(1 for i in range(num_steps) if st.session_state.v71_progress.get(f"{path_id}_{i}", False))
         progress_perc = completed_count / num_steps
         st.progress(progress_perc)
@@ -532,7 +525,6 @@ def render_v71_3_1_final_navigation():
                         st.session_state.v71_progress[step_key] = True
                         st.rerun()
 
-        # إضافة زر إعادة التعيين (Reset Functionality)
         if st.button("🗑️ إعادة تعيين وإنهاء المسار الحالي"):
             st.session_state.v71_active_path_id = None
             st.session_state.v71_locked_goal = ""
