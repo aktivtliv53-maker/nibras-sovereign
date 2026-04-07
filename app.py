@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
+
 # ==============================================================================
 # نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.3.1-FINAL
 # Protected Semantic Navigator - Omni Sovereign Layer
 # المستخدم المهيمن: محمّد
 # ==============================================================================
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
