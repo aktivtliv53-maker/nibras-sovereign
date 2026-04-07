@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.4
-# Ascending Orbital Engine - Sovereign Semantic Navigator
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.5-TRUE-FINAL
+# True Sovereign Navigator - Complete Orbital Engine
 # ==============================================================================
 
 import streamlit as st
@@ -331,7 +331,7 @@ def generate_sovereign_v67_4_output(text, orbit_id=0):
 sanitize_session_state()
 init_manifestation_state()
 init_sovereign_v67_4_logic()
-st.set_page_config(page_title="Nibras V71.4 - السيادة المطلقة", layout="wide")
+st.set_page_config(page_title="Nibras V71.5-TRUE-FINAL - السيادة المطلقة", layout="wide")
 
 st.markdown("""
 <style>
@@ -386,122 +386,301 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [10.5] V71.3.1-FINAL – قاعدة البيانات الدلالية الموحدة
+# [10.10] V71.5-TRUE-FINAL - المحرك الملاحي السيادي الحقيقي (TRUE FINAL)
 # ==============================================================================
-SEMANTIC_MASTER_DB = {
-    "رزق": {"gene": "Expansion", "orbit": 8, "text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3},
-    "فتح": {"gene": "Expansion", "orbit": 7, "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1},
-    "عمل": {"gene": "Stabilization", "orbit": 5, "text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ وَرَسُولُهُ", "surah": "التوبة", "num": 105},
-    "نصر": {"gene": "Power", "orbit": 9, "text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3},
-    "سكينة": {"gene": "Serenity", "orbit": 3, "text": "هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ", "surah": "الفتح", "num": 4},
+
+# ------------------------------------------------------------------------------
+# [10.10.1] مصفوفة تثبيت المدارات (Self-contained)
+# ------------------------------------------------------------------------------
+ORBITAL_STABILIZERS = {
+    1: {"text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "surah": "العلق", "num": 1},
+    2: {"text": "عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ", "surah": "العلق", "num": 5},
+    3: {"text": "قُل رَّبِّ زِدْنِي عِلْمًا", "surah": "طه", "num": 114},
+    4: {"text": "فَسَنُيَسِّرُهُ لِلْيُسْرَىٰ", "surah": "الليل", "num": 7},
+    5: {"text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ", "surah": "التوبة", "num": 105},
+    6: {"text": "عَسَىٰ رَبِّي أَن يَهْدِيَنِي سَوَاءَ السَّبِيلِ", "surah": "القصص", "num": 22},
+    7: {"text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1},
+    8: {"text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3},
+    9: {"text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3},
 }
 
-GENE_AYAH_DB = {
-    "Power": {"text": "فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ", "surah": "آل عمران", "num": 159},
-    "Stabilization": {"text": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا بِالْقَوْلِ الثَّابِتِ", "surah": "إبراهيم", "num": 27},
-    "Expansion": {"text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1},
-    "Serenity": {"text": "هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ", "surah": "الفتح", "num": 4},
-    "Illumination": {"text": "اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ", "surah": "النور", "num": 35}
+# ------------------------------------------------------------------------------
+# [10.10.2] أهداف سيادية دلالية (Self-contained)
+# ------------------------------------------------------------------------------
+SOVEREIGN_TARGETS = {
+    "رزق": {
+        "keywords": ["رزق", "الرزق", "مال", "عمل", "وظيفة", "وظيفه", "بركة", "وفرة"],
+        "target_orbit": 8,
+        "gene": "Expansion",
+        "text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ",
+        "surah": "الطلاق",
+        "num": 3,
+    },
+    "فتح": {
+        "keywords": ["فتح", "الفتح", "تيسير", "يسر", "انفراج", "فرج"],
+        "target_orbit": 7,
+        "gene": "Expansion",
+        "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا",
+        "surah": "الفتح",
+        "num": 1,
+    },
+    "علم": {
+        "keywords": ["علم", "العلم", "فهم", "دراسة", "حكمة", "حكمه", "معرفة"],
+        "target_orbit": 3,
+        "gene": "Illumination",
+        "text": "قُل رَّبِّ زِدْنِي عِلْمًا",
+        "surah": "طه",
+        "num": 114,
+    },
+    "نصر": {
+        "keywords": ["نصر", "النصر", "قوة", "قوه", "غلبة", "تمكين"],
+        "target_orbit": 9,
+        "gene": "Power",
+        "text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا",
+        "surah": "الفتح",
+        "num": 3,
+    },
+    "سكينة": {
+        "keywords": ["سكينة", "سكينه", "هدوء", "طمأنينة", "سلام", "راحة"],
+        "target_orbit": 4,
+        "gene": "Serenity",
+        "text": "هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ",
+        "surah": "الفتح",
+        "num": 4,
+    },
 }
 
-def get_gene_ayah_safe(gene_name):
-    fallback = {"text": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا", "surah": "إبراهيم", "num": 27}
-    return GENE_AYAH_DB.get(gene_name, fallback)
-
-def resolve_semantic_path(goal_text):
+# ------------------------------------------------------------------------------
+# [10.10.3] محلل دلالي
+# ------------------------------------------------------------------------------
+def resolve_sovereign_target(goal_text):
+    """
+    يحلل النص المدخل ويطابقه مع الهدف السيادي المناسب.
+    إذا لم يجد تطابقاً، يعود افتراضياً إلى 'فتح'.
+    """
     normalized = (goal_text or "").strip().lower()
-    for key, data in SEMANTIC_MASTER_DB.items():
-        if key in normalized:
+
+    for _, data in SOVEREIGN_TARGETS.items():
+        if any(keyword in normalized for keyword in data["keywords"]):
             return data
-    return {"gene": "Expansion", "orbit": 7, "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1}
 
-# ==============================================================================
-# [10.6] V71.4 - محرك الآيات المداري المتصاعد (Sovereign Orbital Engine)
-# ==============================================================================
-ORBITAL_AYAH_MATRIX = {
-    1: {"text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "surah": "العلق", "num": 1, "gene": "Illumination"},
-    2: {"text": "عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ", "surah": "العلق", "num": 5, "gene": "Illumination"},
-    3: {"text": "قُل رَّبِّ زِدْنِي عِلْمًا", "surah": "طه", "num": 114, "gene": "Expansion"},
-    4: {"text": "فَسَنُيَسِّرُهُ لِلْيُسْرَىٰ", "surah": "الليل", "num": 7, "gene": "Serenity"},
-    5: {"text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ", "surah": "التوبة", "num": 105, "gene": "Stabilization"},
-    6: {"text": "عَسَىٰ رَبِّي أَن يَهْدِيَنِي سَوَاءَ السَّبِيلِ", "surah": "القصص", "num": 22, "gene": "Power"},
-    7: {"text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1, "gene": "Expansion"},
-    8: {"text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3, "gene": "Expansion"},
-    9: {"text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3, "gene": "Power"}
-}
+    return SOVEREIGN_TARGETS["فتح"]
 
-def get_dynamic_orbital_ayah(orbit_id, target_gene):
-    orbit = int(orbit_id or 4)
-    ayah = ORBITAL_AYAH_MATRIX.get(orbit, ORBITAL_AYAH_MATRIX[4])
-    return ayah
 
-def render_v71_3_1_final_navigation():
+# ------------------------------------------------------------------------------
+# [10.10.4] بناء المسار الحقيقي بين المدار الحالي والمدار الهدف
+# ------------------------------------------------------------------------------
+def build_true_orbit_path(start_orbit, target_orbit):
+    """
+    يبني المسار الحقيقي الكامل بين المدار الحالي والمدار الهدف.
+    
+    قواعد البناء:
+    1) إذا كان start == target:
+       - نبني مسار كسر نمط من 3 خطوات على الأقل: [start, next, target]
+       - وإذا next == target (حالة غير متوقعة) نضيف مداراً آخر احتياطياً.
+    
+    2) إذا كان الفرق = 1 أو -1:
+       - نبني 3 خطوات للتمكين: [start, overshoot, target]
+       - overshoot يكون مداراً إضافياً ذكيًا ضمن النطاق 1..9 لتجنب التكرار.
+    
+    3) إذا كان الفرق أكبر:
+       - نبني كل المدارات الوسيطة بالتسلسل الحقيقي.
+       - مثال: 2 -> 8 = [2,3,4,5,6,7,8]
+       - مثال: 8 -> 3 = [8,7,6,5,4,3]
+    """
+    # حماية
+    start = max(1, min(9, int(start_orbit)))
+    target = max(1, min(9, int(target_orbit)))
+
+    # حالة التطابق: gap = 0
+    if start == target:
+        next_orbit = (start % 9) + 1
+        if next_orbit == target:
+            next_orbit = ((start + 1) % 9) + 1
+        return [start, next_orbit, target]
+
+    gap = target - start
+    direction = 1 if gap > 0 else -1
+
+    # حالة الفرق خطوة واحدة فقط: gap = ±1
+    if abs(gap) == 1:
+        overshoot = target + direction
+        if overshoot < 1 or overshoot > 9:
+            overshoot = target - direction
+
+        if overshoot == target or overshoot == start:
+            fallback = target - direction
+            if 1 <= fallback <= 9 and fallback != start and fallback != target:
+                overshoot = fallback
+            else:
+                overshoot = 5 if 5 not in (start, target) else 6
+
+        return [start, overshoot, target]
+
+    # المسار الحقيقي الكامل
+    path = [start]
+    current = start
+
+    while current != target:
+        current += direction
+        current = max(1, min(9, current))
+        if path and current == path[-1]:
+            break
+        path.append(current)
+
+    return path
+
+
+# ------------------------------------------------------------------------------
+# [10.10.5] دالة عرض الملاحة النهائية
+# ------------------------------------------------------------------------------
+def render_v71_5_true_final_navigation():
     st.markdown("---")
-    st.header("🚀 V71.4 | الملاحة السيادية المتصاعدة")
+    st.header("🛡️ V71.5-TRUE-FINAL | الملاحة السيادية الحقيقية")
 
-    if "v71_active_path_id" not in st.session_state:
-        st.session_state.v71_active_path_id = None
-    if "v71_progress" not in st.session_state:
-        st.session_state.v71_progress = {}
-    if "v71_locked_goal" not in st.session_state:
-        st.session_state.v71_locked_goal = ""
+    current_user_orbit = 5
+    if "current_sovereign_recommendation" in st.session_state:
+        try:
+            current_user_orbit = int(
+                st.session_state.current_sovereign_recommendation.get("orbit_id", 5)
+            )
+        except Exception:
+            current_user_orbit = 5
 
-    with st.form("v71_secure_form"):
-        goal_input = st.text_input("أدخل هدفك السيادي (رزق، فتح، عمل، سكينة...):", value=st.session_state.v71_locked_goal)
-        submit_goal = st.form_submit_button("🚀 اعتماد وتثبيت المسار")
-        
-        if submit_goal:
-            if goal_input.strip():
-                path_id = hashlib.md5(goal_input.encode()).hexdigest()[:8]
-                st.session_state.v71_active_path_id = path_id
-                st.session_state.v71_locked_goal = goal_input
-                st.session_state.v71_progress = {}
+    if "v71_active_path" not in st.session_state:
+        st.session_state.v71_active_path = None
+
+    with st.form("v71_true_final_form"):
+        goal_input = st.text_input(
+            "ما هو هدفك السيادي؟ (رزق، فتح، علم، نصر، سكينة...)",
+            value="",
+            placeholder="مثال: أريد رزقًا واسعًا وفتحًا قريبًا",
+        )
+        submit = st.form_submit_button("🚀 بناء المسار الحقيقي")
+
+        if submit:
+            if goal_input and goal_input.strip():
+                target_data = resolve_sovereign_target(goal_input)
+                path_id = hashlib.md5(
+                    f"{goal_input}_{current_user_orbit}_{time.time()}".encode("utf-8")
+                ).hexdigest()[:10]
+
+                st.session_state.v71_active_path = {
+                    "id": path_id,
+                    "goal_text": goal_input,
+                    "target_data": target_data,
+                    "start_orbit": current_user_orbit,
+                    "target_orbit": target_data["target_orbit"],
+                    "progress": {},
+                }
                 st.rerun()
             else:
-                st.warning("⚠️ يرجى إدخال هدف واضح قبل الاعتماد.")
+                st.warning("⚠️ يرجى إدخال هدف واضح قبل بناء المسار.")
 
-    if st.session_state.v71_active_path_id:
-        active_goal = st.session_state.v71_locked_goal
-        path_id = st.session_state.v71_active_path_id
-        semantic_data = resolve_semantic_path(active_goal)
-        target_gene, end_orbit = semantic_data["gene"], semantic_data["orbit"]
-        
-        start_orbit = 4
-        orbit_gap = end_orbit - start_orbit
-        direction = 1 if orbit_gap > 0 else (-1 if orbit_gap < 0 else 0)
-        num_steps = max(3, abs(orbit_gap) + 1)
+    if st.session_state.v71_active_path:
+        p = st.session_state.v71_active_path
 
-        for i in range(num_steps):
-            step_orbit = start_orbit + (direction * i)
-            step_key = f"{path_id}_{i}"
-            is_done = st.session_state.v71_progress.get(step_key, False)
+        start_orbit = p["start_orbit"]
+        target_orbit = p["target_orbit"]
+        target_data = p["target_data"]
 
-            if i == num_steps - 1:
-                ayah_p = {"text": semantic_data["text"], "surah": semantic_data["surah"], "num": semantic_data["num"]}
-                stage_name, stage_gene = f"الوصول النهائي ({target_gene})", target_gene
+        path_orbits = build_true_orbit_path(start_orbit, target_orbit)
+        total_steps = len(path_orbits)
+
+        done_count = sum(1 for v in p["progress"].values() if v is True)
+        progress_ratio = done_count / total_steps if total_steps > 0 else 0.0
+
+        st.info(
+            f"📍 المسار السيادي: من المدار **{start_orbit}** ➜ "
+            f"الهدف **{p['goal_text']}** (المدار {target_orbit})"
+        )
+        st.progress(progress_ratio)
+
+        for i, orbit in enumerate(path_orbits):
+            step_key = f"v71_{p['id']}_{i}"
+            is_done = p["progress"].get(step_key, False)
+
+            if i == 0:
+                stage_name = "الكسر والتحويل (Pattern Break)"
+                reps = 7
+                content = ORBITAL_STABILIZERS.get(orbit, ORBITAL_STABILIZERS[5])
+
+            elif i == total_steps - 1:
+                stage_name = f"الوصول والتمكين (مدار {target_orbit})"
+                reps = 11
+                content = {
+                    "text": target_data["text"],
+                    "surah": target_data["surah"],
+                    "num": target_data["num"],
+                }
+
+                prev_orbit = path_orbits[i - 1] if i - 1 >= 0 else None
+                prev_content = ORBITAL_STABILIZERS.get(prev_orbit, ORBITAL_STABILIZERS[5]) if prev_orbit else None
+                if prev_content and prev_content["text"] == content["text"]:
+                    stage_name = f"الوصول والتمكين الخاص (مدار {target_orbit})"
+
             else:
-                ayah_p = get_dynamic_orbital_ayah(step_orbit, target_gene)
-                stage_name, stage_gene = f"تثبيت المدار {step_orbit}", ayah_p.get("gene", "Stabilization")
+                stage_name = f"تثبيت المدار الوسيط {orbit}"
+                reps = 3
+                content = ORBITAL_STABILIZERS.get(orbit, ORBITAL_STABILIZERS[5])
 
-            with st.expander(f"{'✅' if is_done else '⏳'} الخطوة {i+1}: {stage_name}", expanded=not is_done):
-                c1, c2 = st.columns([3, 1])
-                with c1:
-                    st.success(f"📖 {ayah_p['text']}")
-                    st.caption(f"سورة {ayah_p['surah']} | آية {ayah_p['num']}")
-                    energy = compute_omni_energy(f"{active_goal}_{step_orbit}", step_orbit)
-                    st.write(f"**طاقة الخطوة:** {energy}")
-                with c2:
-                    reps = 7 if i == 0 else (11 if i == num_steps-1 else 3)
+                if i == total_steps - 2:
+                    upcoming_final_text = target_data["text"]
+                    if content["text"] == upcoming_final_text:
+                        alt_orbit = orbit - 1 if orbit > 1 else orbit + 1
+                        alt_content = ORBITAL_STABILIZERS.get(alt_orbit, ORBITAL_STABILIZERS[5])
+                        if alt_content["text"] != upcoming_final_text:
+                            content = alt_content
+                            stage_name = f"تثبيت التمكين قبل الوصول (مدار {orbit})"
+
+            with st.expander(
+                f"{'✅' if is_done else '⏳'} الخطوة {i+1}: {stage_name}",
+                expanded=not is_done,
+            ):
+                col1, col2 = st.columns([4, 1])
+
+                with col1:
+                    st.success(f"📖 {content['text']}")
+                    st.caption(f"سورة {content['surah']} | آية {content['num']}")
+
+                    try:
+                        energy_value = compute_omni_energy(
+                            f"{p['goal_text']}_{orbit}_{i}",
+                            orbit
+                        )
+                        st.write(f"**طاقة الخطوة:** {energy_value}")
+                    except Exception:
+                        pass
+
+                with col2:
                     st.metric("تكرار", f"×{reps}")
-                    if st.button("تفعيل الرنين", key=f"btn_{step_key}"):
-                        st.session_state.v71_progress[step_key] = True
+                    if st.button("تفعيل", key=f"btn_{step_key}"):
+                        st.session_state.v71_active_path["progress"][step_key] = True
                         st.rerun()
 
-        if st.button("🗑️ إعادة تعيين وإنهاء المسار الحالي"):
-            st.session_state.v71_active_path_id = None
-            st.session_state.v71_locked_goal = ""
-            st.session_state.v71_progress = {}
-            st.rerun()
+        c_reset, c_close = st.columns(2)
+
+        with c_reset:
+            if st.button("🔄 إعادة بناء نفس المسار", key="v71_rebuild_same_path"):
+                target_data = resolve_sovereign_target(p["goal_text"])
+                new_path_id = hashlib.md5(
+                    f"{p['goal_text']}_{p['start_orbit']}_{time.time()}".encode("utf-8")
+                ).hexdigest()[:10]
+
+                st.session_state.v71_active_path = {
+                    "id": new_path_id,
+                    "goal_text": p["goal_text"],
+                    "target_data": target_data,
+                    "start_orbit": p["start_orbit"],
+                    "target_orbit": target_data["target_orbit"],
+                    "progress": {},
+                }
+                st.rerun()
+
+        with c_close:
+            if st.button("🗑️ إغلاق المسار الحالي", key="v71_close_path"):
+                st.session_state.v71_active_path = None
+                st.rerun()
 
 # ==============================================================================
 # [11] المستخرج الاحتمالي v31
@@ -714,7 +893,7 @@ def display_orbital_results(key_suffix="orbital"):
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V71.4</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V71.5</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1025,9 +1204,7 @@ def reset_nibras_system():
     st.session_state.orbit_bodies = []
     st.session_state.input_area = ""
     st.session_state.current_text = ""
-    st.session_state.v71_active_path_id = None
-    st.session_state.v71_progress = {}
-    st.session_state.v71_locked_goal = ""
+    st.session_state.v71_active_path = None
     init_sovereign_v67_4_logic()
 
 # ==============================================================================
@@ -1249,7 +1426,7 @@ with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
         <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-        <p>الإصدار V71.4 - Ascending Orbital Engine</p>
+        <p>الإصدار V71.5-TRUE-FINAL - True Sovereign Navigator</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -1407,12 +1584,12 @@ with tabs[5]:
             cols[i].markdown(f"<div class='ultra-card' style='border-top-color:{info['color']}'><h2>{info['icon']}</h2><h3>{info['name']}</h3><p>{info['meaning']}</p></div>", unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية (V71.4 مع المحرك المتصاعد)
+# تبويب 6: اللوحة الوجودية (V71.5-TRUE-FINAL)
 # ==============================================================================
 with tabs[6]:
     render_sovereign_v67_4_panel()
     render_v70_final_panel()
-    render_v71_3_1_final_navigation()  # <-- الآن تستخدم ORBITAL_AYAH_MATRIX
+    render_v71_5_true_final_navigation()
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
@@ -1446,5 +1623,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار V71.4 النهائي
+# نهاية الكود - الإصدار V71.5-TRUE-FINAL النهائي
 # ==============================================================================
