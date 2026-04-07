@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.3.1-FINAL
-# Protected Semantic Navigator - Omni Sovereign Layer
+# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.4
+# Ascending Orbital Engine - Sovereign Semantic Navigator
 # ==============================================================================
 
 import streamlit as st
@@ -331,7 +331,7 @@ def generate_sovereign_v67_4_output(text, orbit_id=0):
 sanitize_session_state()
 init_manifestation_state()
 init_sovereign_v67_4_logic()
-st.set_page_config(page_title="Nibras V71.3.1-FINAL - السيادة المطلقة", layout="wide")
+st.set_page_config(page_title="Nibras V71.4 - السيادة المطلقة", layout="wide")
 
 st.markdown("""
 <style>
@@ -415,9 +415,29 @@ def resolve_semantic_path(goal_text):
             return data
     return {"gene": "Expansion", "orbit": 7, "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1}
 
+# ==============================================================================
+# [10.6] V71.4 - محرك الآيات المداري المتصاعد (Sovereign Orbital Engine)
+# ==============================================================================
+ORBITAL_AYAH_MATRIX = {
+    1: {"text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "surah": "العلق", "num": 1, "gene": "Illumination"},
+    2: {"text": "عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ", "surah": "العلق", "num": 5, "gene": "Illumination"},
+    3: {"text": "قُل رَّبِّ زِدْنِي عِلْمًا", "surah": "طه", "num": 114, "gene": "Expansion"},
+    4: {"text": "فَسَنُيَسِّرُهُ لِلْيُسْرَىٰ", "surah": "الليل", "num": 7, "gene": "Serenity"},
+    5: {"text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ", "surah": "التوبة", "num": 105, "gene": "Stabilization"},
+    6: {"text": "عَسَىٰ رَبِّي أَن يَهْدِيَنِي سَوَاءَ السَّبِيلِ", "surah": "القصص", "num": 22, "gene": "Power"},
+    7: {"text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1, "gene": "Expansion"},
+    8: {"text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3, "gene": "Expansion"},
+    9: {"text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3, "gene": "Power"}
+}
+
+def get_dynamic_orbital_ayah(orbit_id, target_gene):
+    orbit = int(orbit_id or 4)
+    ayah = ORBITAL_AYAH_MATRIX.get(orbit, ORBITAL_AYAH_MATRIX[4])
+    return ayah
+
 def render_v71_3_1_final_navigation():
     st.markdown("---")
-    st.header("🚀 V71.3.1-FINAL | الملاحة السيادية المحصنة")
+    st.header("🚀 V71.4 | الملاحة السيادية المتصاعدة")
 
     if "v71_active_path_id" not in st.session_state:
         st.session_state.v71_active_path_id = None
@@ -435,6 +455,7 @@ def render_v71_3_1_final_navigation():
                 path_id = hashlib.md5(goal_input.encode()).hexdigest()[:8]
                 st.session_state.v71_active_path_id = path_id
                 st.session_state.v71_locked_goal = goal_input
+                st.session_state.v71_progress = {}
                 st.rerun()
             else:
                 st.warning("⚠️ يرجى إدخال هدف واضح قبل الاعتماد.")
@@ -442,48 +463,37 @@ def render_v71_3_1_final_navigation():
     if st.session_state.v71_active_path_id:
         active_goal = st.session_state.v71_locked_goal
         path_id = st.session_state.v71_active_path_id
-        
         semantic_data = resolve_semantic_path(active_goal)
         target_gene, end_orbit = semantic_data["gene"], semantic_data["orbit"]
         
-        start_orbit = st.session_state.get("current_sovereign_recommendation", {}).get("orbit_id", 4)
+        start_orbit = 4
         orbit_gap = end_orbit - start_orbit
         direction = 1 if orbit_gap > 0 else (-1 if orbit_gap < 0 else 0)
-        num_steps = max(2, abs(orbit_gap) + 1)
-        
-        completed_count = sum(1 for i in range(num_steps) if st.session_state.v71_progress.get(f"{path_id}_{i}", False))
-        progress_perc = completed_count / num_steps
-        st.progress(progress_perc)
-        st.write(f"🎯 **المهمة:** {active_goal} | **التقدم:** {int(progress_perc*100)}%")
+        num_steps = max(3, abs(orbit_gap) + 1)
 
         for i in range(num_steps):
             step_orbit = start_orbit + (direction * i)
             step_key = f"{path_id}_{i}"
             is_done = st.session_state.v71_progress.get(step_key, False)
 
-            if i == 0: 
-                stage_name, stage_gene, reps = "الكسر والتحويل", "Power", 7
-                ayah_p = get_gene_ayah_safe("Power")
-            elif i == num_steps - 1: 
-                stage_name, stage_gene, reps = f"الوصول النهائي ({target_gene})", target_gene, 11
+            if i == num_steps - 1:
                 ayah_p = {"text": semantic_data["text"], "surah": semantic_data["surah"], "num": semantic_data["num"]}
-            else: 
-                stage_name, stage_gene, reps = f"تثبيت المدار {step_orbit}", "Stabilization", 3
-                ayah_p = get_gene_ayah_safe("Stabilization")
+                stage_name, stage_gene = f"الوصول النهائي ({target_gene})", target_gene
+            else:
+                ayah_p = get_dynamic_orbital_ayah(step_orbit, target_gene)
+                stage_name, stage_gene = f"تثبيت المدار {step_orbit}", ayah_p.get("gene", "Stabilization")
 
             with st.expander(f"{'✅' if is_done else '⏳'} الخطوة {i+1}: {stage_name}", expanded=not is_done):
                 c1, c2 = st.columns([3, 1])
                 with c1:
                     st.success(f"📖 {ayah_p['text']}")
                     st.caption(f"سورة {ayah_p['surah']} | آية {ayah_p['num']}")
-                    try:
-                        energy = compute_omni_energy(f"{active_goal}_{stage_gene}_{i}", step_orbit)
-                    except Exception:
-                        energy = "N/A"
-                    st.write(f"**الطاقة:** {energy}")
+                    energy = compute_omni_energy(f"{active_goal}_{step_orbit}", step_orbit)
+                    st.write(f"**طاقة الخطوة:** {energy}")
                 with c2:
+                    reps = 7 if i == 0 else (11 if i == num_steps-1 else 3)
                     st.metric("تكرار", f"×{reps}")
-                    if st.button("تفعيل", key=f"btn_{step_key}"):
+                    if st.button("تفعيل الرنين", key=f"btn_{step_key}"):
                         st.session_state.v71_progress[step_key] = True
                         st.rerun()
 
@@ -704,7 +714,7 @@ def display_orbital_results(key_suffix="orbital"):
         ascent_class = "ascent-positive" if ascent_score > 0 else "ascent-negative" if ascent_score < 0 else ""
         st.markdown(f"""
         <div class="{ascent_class}" style='padding:20px;border-radius:15px;margin-bottom:20px;text-align:center;'>
-            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V71.3.1</h3>
+            <h3 style='margin:0;'>🚀 مؤشر الصعود والانحدار السيادي V71.4</h3>
             <p style='font-size:2em;margin:5px;font-weight:bold;'>{ascent_score}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1239,7 +1249,7 @@ with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
         <h2 style="color:#4fc3f7;">🛡️ نبراس السيادي</h2>
-        <p>الإصدار V71.3.1-FINAL - Protected Semantic Navigator</p>
+        <p>الإصدار V71.4 - Ascending Orbital Engine</p>
         <p>المستخدم: محمد</p>
     </div>
     ---
@@ -1397,12 +1407,12 @@ with tabs[5]:
             cols[i].markdown(f"<div class='ultra-card' style='border-top-color:{info['color']}'><h2>{info['icon']}</h2><h3>{info['name']}</h3><p>{info['meaning']}</p></div>", unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية (V71.3.1-FINAL مع التحديث الجديد)
+# تبويب 6: اللوحة الوجودية (V71.4 مع المحرك المتصاعد)
 # ==============================================================================
 with tabs[6]:
     render_sovereign_v67_4_panel()
     render_v70_final_panel()
-    render_v71_3_1_final_navigation()  # <-- التحديث الجديد هنا
+    render_v71_3_1_final_navigation()  # <-- الآن تستخدم ORBITAL_AYAH_MATRIX
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
@@ -1436,5 +1446,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار V71.3.1-FINAL النهائي
+# نهاية الكود - الإصدار V71.4 النهائي
 # ==============================================================================
