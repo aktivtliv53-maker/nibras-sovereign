@@ -847,6 +847,160 @@ def render_v70_final_panel():
         st.rerun()
 
 # ==============================================================================
+# [10.15] V71.5-V70-COMPAT FINAL - المحرك الملاحي السيادي المدمج
+# ==============================================================================
+
+def get_live_current_orbit():
+    """ استخراج المدار الحالي الحقيقي من تحليل V70 القائم لضمان دقة الانطلاق """
+    try:
+        rec = st.session_state.get("current_sovereign_recommendation", {})
+        if isinstance(rec, dict) and 1 <= int(rec.get("orbit_id", 0)) <= 9:
+            return int(rec["orbit_id"])
+        
+        bodies = st.session_state.get("orbit_bodies", [])
+        if bodies:
+            strongest = max(bodies, key=lambda x: float(x.get("energy", 0)), default=None)
+            if strongest and 1 <= int(strongest.get("orbit_id", 0)) <= 9:
+                return int(strongest["orbit_id"])
+    except:
+        pass
+    return 5
+
+def build_sovereign_path(start, target):
+    """ هندسة المسار الملاحي: تتابع منطقي يمنع القفز العشوائي """
+    start, target = int(start), int(target)
+    if start == target:
+        return [start, (start % 9) + 1, start]
+    step = 1 if target > start else -1
+    path = list(range(start, target + step, step))
+    if len(path) < 3:
+        overshoot = target + step
+        if not (1 <= overshoot <= 9):
+            overshoot = target - step
+        path.insert(1, overshoot)
+    return path
+
+def render_v71_5_v70_compat_navigation():
+    """ واجهة الملاحة السيادية: ربط النوايا بالمدارات القرآنية """
+    st.markdown("---")
+    st.subheader("🛡️ نِبراس | بوصلة المسار السيادي V71.5")
+    
+    current_orb = get_live_current_orbit()
+    
+    if "v71_active_path" not in st.session_state:
+        st.session_state.v71_active_path = None
+
+    # أهداف ملاحية مصححة دلالياً (فصل العمل عن الرزق)
+    SOV_TARGETS = {
+        "رزق": {
+            "keywords": ["رزق", "مال", "بركة"],
+            "target_orbit": 8,
+            "text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ",
+            "surah": "الطلاق",
+            "num": 3
+        },
+        "فتح": {
+            "keywords": ["فتح", "تيسير", "انفراج"],
+            "target_orbit": 7,
+            "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا",
+            "surah": "الفتح",
+            "num": 1
+        },
+        "عمل": {
+            "keywords": ["عمل", "وظيفة", "استقرار"],
+            "target_orbit": 5,
+            "text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ",
+            "surah": "التوبة",
+            "num": 105
+        },
+        "علم": {
+            "keywords": ["علم", "فهم", "حكمة"],
+            "target_orbit": 3,
+            "text": "قُل رَّبِّ زِدْنِي عِلْمًا",
+            "surah": "طه",
+            "num": 114
+        },
+        "نصر": {
+            "keywords": ["نصر", "تمكين"],
+            "target_orbit": 9,
+            "text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا",
+            "surah": "الفتح",
+            "num": 3
+        },
+        "سكينة": {
+            "keywords": ["سكينة", "هدوء"],
+            "target_orbit": 4,
+            "text": "هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ",
+            "surah": "الفتح",
+            "num": 4
+        }
+    }
+
+    with st.form("v71_nav_form"):
+        goal_input = st.text_input("ما هي غايتك الآن؟", placeholder="مثال: فتح في العمل")
+        if st.form_submit_button("🚀 تشييد المسار"):
+            if goal_input.strip():
+                try:
+                    norm_goal = normalize_sovereign(goal_input)
+                except:
+                    norm_goal = goal_input.lower()
+
+                target_data = next(
+                    (d for _, d in SOV_TARGETS.items() if any(kw in norm_goal for kw in d["keywords"])),
+                    SOV_TARGETS["فتح"]
+                )
+
+                p_id = hashlib.md5(f"{goal_input}{time.time()}".encode()).hexdigest()[:8]
+                st.session_state.v71_active_path = {
+                    "path_id": p_id,
+                    "goal": goal_input,
+                    "t_data": target_data,
+                    "start": current_orb,
+                    "progress": {}
+                }
+                st.rerun()
+
+    if st.session_state.v71_active_path:
+        p = st.session_state.v71_active_path
+        path = build_sovereign_path(p["start"], p["t_data"]["target_orbit"])
+
+        st.info(f"📍 المسار: من المدار {p['start']} إلى {p['t_data']['target_orbit']} (لتحقيق {p['goal']})")
+
+        for i, orb in enumerate(path):
+            s_key = f"v71_{p['path_id']}_{i}"
+            is_done = p["progress"].get(s_key, False)
+
+            try:
+                content = ORBITAL_STABILIZERS.get(orb, ORBITAL_STABILIZERS[5])
+            except:
+                content = {"text": "آية التثبيت", "surah": "القرآن", "num": "0"}
+
+            if i == len(path) - 1:
+                content = {
+                    "text": p["t_data"]["text"],
+                    "surah": p["t_data"]["surah"],
+                    "num": p["t_data"]["num"]
+                }
+
+            with st.expander(f"{'✅' if is_done else '⏳'} الخطوة {i+1}: المدار {orb}", expanded=not is_done):
+                try:
+                    energy = compute_omni_energy(content["text"], orb)
+                    st.write(f"**الطاقة الملاحية:** `{energy}`")
+                except:
+                    pass
+
+                st.success(f"📖 {content['text']}")
+                st.caption(f"سورة {content['surah']} | آية {content['num']}")
+
+                if st.button("تفعيل", key=f"btn_{s_key}"):
+                    p["progress"][s_key] = True
+                    st.rerun()
+
+        if st.button("🗑️ طي المسار"):
+            st.session_state.v71_active_path = None
+            st.rerun()
+
+# ==============================================================================
 # [20] دوال المحرك المداري
 # ==============================================================================
 def display_insight_cards(bodies):
@@ -1815,14 +1969,17 @@ with tabs[5]:
             """, unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V67.4 + V70)
+# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V70 + الملاحة V71.5)
 # ==============================================================================
 with tabs[6]:
-    # اللوحة السيادية V67.4
-    render_sovereign_v67_4_panel()
+    # اللوحة السيادية V67.4 (تم تعطيلها لتجنب التضارب مع الملاحة الجديدة)
+    # render_sovereign_v67_4_panel()
     
     # اللوحة النهائية V70
     render_v70_final_panel()
+    
+    # لوحة الملاحة V71.5 المتوافقة مع V70
+    render_v71_5_v70_compat_navigation()
     
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
