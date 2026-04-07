@@ -1063,212 +1063,106 @@ def reset_nibras_system():
     init_sovereign_v67_4_logic()
 
 # ==============================================================================
-# [10] دوال ألواح التكوين (Manifestation Dashboard)
+# [10.10] V71.5-TRUE-FINAL - الملاحة المدارية المتسلسلة (The Sequential Navigator)
 # ==============================================================================
-def safe_get_latest_analysis_snapshot():
-    snapshot = {
-        "source": "fallback",
-        "root_influence": 1.0,
-        "energy_bias": 1.0,
-        "field_coherence": 1.0,
-        "volatility": 0.0,
-        "law_vector": {},
-        "genes": [],
-        "timestamp": time.time()
-    }
-    try:
-        log = safe_list(st.session_state.get("system_log", []))
-        valid_entries = [e for e in log if isinstance(e, dict) and "new_influence" in e]
-        if valid_entries:
-            latest = valid_entries[-1]
-            snapshot["root_influence"] = safe_float(latest.get("new_influence"), 1.0)
-            snapshot["energy_bias"] = safe_float(latest.get("energy_bias", 1.0), 1.0)
-            snapshot["source"] = "system_log"
-            if len(valid_entries) > 1:
-                influences = [safe_float(e.get("new_influence", 1.0), 1.0) for e in valid_entries[-10:]]
-                if influences:
-                    snapshot["volatility"] = max(influences) - min(influences)
-        if st.session_state.get("orbit_bodies") and not snapshot["genes"]:
-            bodies = safe_list(st.session_state.orbit_bodies)
-            if bodies:
-                genes = [b.get("gene", "N") for b in bodies if isinstance(b, dict)]
-                snapshot["genes"] = list(set(genes))
-        snapshot["field_coherence"] = clamp(1.0 - (snapshot["volatility"] * 2), 0.5, 1.0)
-        law = safe_dict(st.session_state.get("active_meta_law", {}))
-        snapshot["law_vector"] = {
-            "root_influence": safe_float(law.get("root_influence", 1.0), 1.0),
-            "energy_bias": safe_float(law.get("energy_bias", 1.0), 1.0)
-        }
-    except Exception:
-        pass
-    return snapshot
 
-def extract_missing_genes_from_state(snapshot, target_type):
-    missing_genes = []
-    root_inf = safe_float(snapshot.get("root_influence", 1.0), 1.0)
-    energy_bias = safe_float(snapshot.get("energy_bias", 1.0), 1.0)
-    coherence = safe_float(snapshot.get("field_coherence", 1.0), 1.0)
-    volatility = safe_float(snapshot.get("volatility", 0.0), 0.0)
-    if root_inf < 0.95:
-        missing_genes.append("ثبات")
-    if energy_bias < 0.95:
-        missing_genes.append("تفعيل")
-    if energy_bias > 1.60:
-        missing_genes.append("تطهير")
-    if coherence < 0.90:
-        missing_genes.append("ترسيخ")
-    if volatility > 0.10:
-        missing_genes.append("حماية")
-    if volatility < 0.02 and target_type in ["رزق", "فتح", "علم"]:
-        missing_genes.append("اتساع")
-    target_gene_map = {
-        "رزق": "جذب",
-        "فتح": "فتح",
-        "علم": "تجلّي",
-        "شفاء": "تطهير",
-        "هيبة": "حماية",
-        "تمكين": "تفعيل",
-        "صفاء": "تطهير"
-    }
-    if target_type in target_gene_map:
-        required = target_gene_map[target_type]
-        if required not in missing_genes:
-            missing_genes.append(required)
-    seen = set()
-    ordered = []
-    for g in missing_genes:
-        if g not in seen:
-            seen.add(g)
-            ordered.append(g)
-    return ordered
+ORBITAL_STABILIZERS = {
+    1: {"text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "surah": "العلق", "num": 1},
+    2: {"text": "عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ", "surah": "العلق", "num": 5},
+    3: {"text": "قُل رَّبِّ زِدْنِي عِلْمًا", "surah": "طه", "num": 114},
+    4: {"text": "فَسَنُيَسِّرُهُ لِلْيُسْرَىٰ", "surah": "الليل", "num": 7},
+    5: {"text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ", "surah": "التوبة", "num": 105},
+    6: {"text": "عَسَىٰ رَبِّي أَن يَهْدِيَنِي سَوَاءَ السَّبِيلِ", "surah": "القصص", "num": 22},
+    7: {"text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1},
+    8: {"text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3},
+    9: {"text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3},
+}
 
-def build_manifestation_covenant(target_type, snapshot):
-    missing_genes = extract_missing_genes_from_state(snapshot, target_type)
-    root_inf = safe_float(snapshot.get("root_influence", 1.0), 1.0)
-    coherence = safe_float(snapshot.get("field_coherence", 1.0), 1.0)
-    volatility = safe_float(snapshot.get("volatility", 0.0), 0.0)
-    base_score = (root_inf * 40) + (coherence * 30) + (1.0 - min(volatility, 0.5)) * 20
-    signal_score = clamp(base_score, 0, 100)
-    if missing_genes:
-        recommended_focus = missing_genes[0]
-    else:
-        recommended_focus = "استمرار"
-    protocol = []
-    step_num = 1
-    gene_action_map = {
-        "ثبات": {"action": "ترسيخ الروتين اليومي وتكرار العهد", "duration": "7 أيام", "intensity": "متوسطة"},
-        "فتح": {"action": "فتح المجال لاستقبال فرص جديدة", "duration": "5 أيام", "intensity": "عالية"},
-        "اتساع": {"action": "توسيع حدود القدرة والاستيعاب", "duration": "10 أيام", "intensity": "متوسطة"},
-        "تجلّي": {"action": "ممارسة الشهود والتأمل", "duration": "3 أيام", "intensity": "خفيفة"},
-        "حماية": {"action": "تحديد الحدود وحماية الطاقة", "duration": "7 أيام", "intensity": "عالية"},
-        "جذب": {"action": "تنشيط طاقة الجذب والاستحقاق", "duration": "5 أيام", "intensity": "متوسطة"},
-        "تفعيل": {"action": "بدء حركة فعلية نحو الهدف", "duration": "3 أيام", "intensity": "عالية"},
-        "تطهير": {"action": "تفريغ العوائق والسموم", "duration": "7 أيام", "intensity": "خفيفة"},
-        "ترسيخ": {"action": "تثبيت المكتسبات في الوعي", "duration": "10 أيام", "intensity": "متوسطة"},
-        "استمرار": {"action": "مواصلة المسار بثبات", "duration": "7 أيام", "intensity": "خفيفة"}
-    }
-    for gene in missing_genes[:5]:
-        action_info = gene_action_map.get(gene, gene_action_map["استمرار"])
-        protocol.append({
-            "step": step_num,
-            "title": f"تفعيل جين {gene}",
-            "gene": gene,
-            "action": action_info["action"],
-            "duration": action_info["duration"],
-            "intensity": action_info["intensity"]
-        })
-        step_num += 1
-    if not protocol:
-        protocol.append({
-            "step": 1,
-            "title": "تثبيت المسار",
-            "gene": "استمرار",
-            "action": "مواصلة العمل بما هو قائم وتثبيته",
-            "duration": "7 أيام",
-            "intensity": "خفيفة"
-        })
-    return {
-        "target": target_type,
-        "timestamp": time.time(),
-        "signal_score": round(signal_score, 2),
-        "missing_genes": missing_genes,
-        "recommended_focus": recommended_focus,
-        "protocol": protocol,
-        "state_snapshot": snapshot
-    }
+SOVEREIGN_TARGETS = {
+    "رزق": {"keywords": ["رزق", "مال", "عمل", "بركة"], "target_orbit": 8, "text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3},
+    "فتح": {"keywords": ["فتح", "تيسير", "انفراج"], "target_orbit": 7, "text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1},
+    "علم": {"keywords": ["علم", "فهم", "حكمة"], "target_orbit": 3, "text": "قُل رَّبِّ زِدْنِي عِلْمًا", "surah": "طه", "num": 114},
+    "نصر": {"keywords": ["نصر", "قوة", "تمكين"], "target_orbit": 9, "text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3},
+    "سكينة": {"keywords": ["سكينة", "هدوء", "سلام"], "target_orbit": 4, "text": "هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ", "surah": "الفتح", "num": 4}
+}
 
-def save_manifestation_protocol(covenant):
-    if not covenant or not isinstance(covenant, dict):
-        return False
-    try:
-        st.session_state.manifestation_active_covenant = covenant
-        st.session_state.manifestation_protocol = covenant.get("protocol", [])
-        st.session_state.manifestation_missing_genes = covenant.get("missing_genes", [])
-        st.session_state.manifestation_signal_score = covenant.get("signal_score", 0.0)
-        st.session_state.manifestation_recommendation = covenant.get("recommended_focus", "")
-        st.session_state.manifestation_last_build_ts = time.time()
-        history_entry = {
-            "target": covenant.get("target", ""),
-            "signal_score": covenant.get("signal_score", 0.0),
-            "recommended_focus": covenant.get("recommended_focus", ""),
-            "missing_genes_count": len(covenant.get("missing_genes", [])),
-            "timestamp": time.time()
-        }
-        history = safe_list(st.session_state.manifestation_history)
-        history.insert(0, history_entry)
-        st.session_state.manifestation_history = history[:50]
-        return True
-    except Exception:
-        return False
+def resolve_sovereign_target(goal_text):
+    normalized = (goal_text or "").strip().lower()
+    for _, data in SOVEREIGN_TARGETS.items():
+        if any(k in normalized for k in data["keywords"]): 
+            return data
+    return SOVEREIGN_TARGETS["فتح"]
 
-def render_manifestation_dashboard():
-    st.subheader("ألواح التكوين")
-    st.caption("بناء الميثاق السيادي من حالة النظام الحالية")
-    snapshot = safe_get_latest_analysis_snapshot()
-    with st.expander("📊 لقطة الحالة السيادية", expanded=False):
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("تأثير الجذر", f"{snapshot.get('root_influence', 1.0):.3f}")
-        c2.metric("انحياز الطاقة", f"{snapshot.get('energy_bias', 1.0):.3f}")
-        c3.metric("تماسك الحقل", f"{snapshot.get('field_coherence', 1.0):.3f}")
-        c4.metric("التقلب", f"{snapshot.get('volatility', 0.0):.3f}")
-    target_options = ["رزق", "فتح", "علم", "شفاء", "هيبة", "تمكين", "صفاء", "مخصص"]
-    selected_target = st.selectbox("🎯 اختر هدف التكوين", target_options, index=target_options.index(st.session_state.manifestation_target) if st.session_state.manifestation_target in target_options else 0)
-    custom_target = ""
-    if selected_target == "مخصص":
-        custom_target = st.text_input("✍️ اكتب هدفك المخصص", value=st.session_state.manifestation_custom_target)
-        final_target = custom_target if custom_target.strip() else "رزق"
-    else:
-        final_target = selected_target
-    if st.button("🏛️ بناء الميثاق السيادي", use_container_width=True):
-        covenant = build_manifestation_covenant(final_target, snapshot)
-        if save_manifestation_protocol(covenant):
-            st.success("✅ تم بناء الميثاق وحفظه بنجاح")
+def build_true_orbit_path(start, target):
+    start, target = int(start), int(target)
+    if start == target:
+        # حالة الثبات: حركة اهتزازية لكسر النمط
+        next_orbit = (start % 9) + 1
+        return [start, next_orbit, start]
+    step = 1 if target > start else -1
+    path = list(range(start, target + step, step))
+    # ضمان 3 خطوات كحد أدنى للتمكين
+    if len(path) < 3:
+        overshoot = path[-1] + step
+        if overshoot < 1 or overshoot > 9: overshoot = path[0] - step
+        path.insert(1, overshoot)
+    return path
+
+def render_v71_5_true_final_navigation():
+    st.markdown("---")
+    st.header("🛡️ V71.5-TRUE-FINAL | الملاحة السيادية")
+    
+    curr_orbit = 5
+    if "current_sovereign_recommendation" in st.session_state:
+        try:
+            curr_orbit = int(st.session_state.current_sovereign_recommendation.get("orbit_id", 5))
+        except Exception: curr_orbit = 5
+    
+    if "v71_active_path" not in st.session_state: st.session_state.v71_active_path = None
+
+    with st.form("v71_final_form"):
+        goal_in = st.text_input("ما هو هدفك السيادي؟", placeholder="مثال: رزق واسع")
+        if st.form_submit_button("🚀 بناء المسار المعجز"):
+            if goal_in.strip():
+                t_data = resolve_sovereign_target(goal_in)
+                st.session_state.v71_active_path = {
+                    "id": hashlib.md5(f"{goal_in}{time.time()}".encode()).hexdigest()[:8],
+                    "goal": goal_in, "t_data": t_data, "start": curr_orbit, "progress": {}
+                }
+                st.rerun()
+
+    if st.session_state.v71_active_path:
+        p = st.session_state.v71_active_path
+        path = build_true_orbit_path(p["start"], p["t_data"]["target_orbit"])
+        
+        st.info(f"📍 المسار الملاحي: {path}")
+        
+        for i, orb in enumerate(path):
+            s_key = f"v71_{p['id']}_{i}"
+            is_done = p["progress"].get(s_key, False)
+            
+            if i == 0: 
+                title, reps, content = "الكسر والتحويل", 7, ORBITAL_STABILIZERS.get(orb, ORBITAL_STABILIZERS[5])
+            elif i == len(path)-1: 
+                title, reps, content = "الوصول والتمكين", 11, {"text": p["t_data"]["text"], "surah": p["t_data"]["surah"], "num": p["t_data"]["num"]}
+            else: 
+                title, reps, content = f"تثبيت المدار الوسيط {orb}", 3, ORBITAL_STABILIZERS.get(orb, ORBITAL_STABILIZERS[5])
+            
+            with st.expander(f"{'✅' if is_done else '⏳'} {title}", expanded=not is_done):
+                c1, c2 = st.columns([4,1])
+                with c1:
+                    st.success(f"📖 {content['text']}")
+                    st.caption(f"سورة {content['surah']} | آية {content['num']}")
+                with c2:
+                    st.metric("تكرار", f"×{reps}")
+                    if st.button("تفعيل الرنين", key=f"btn_{s_key}"):
+                        p["progress"][s_key] = True
+                        st.rerun()
+        
+        if st.button("🗑️ طي المسار"):
+            st.session_state.v71_active_path = None
             st.rerun()
-        else:
-            st.error("❌ فشل في حفظ الميثاق")
-    if st.session_state.manifestation_active_covenant:
-        covenant = st.session_state.manifestation_active_covenant
-        st.markdown("---")
-        st.markdown("### 📜 الميثاق النشط")
-        col1, col2, col3 = st.columns(3)
-        col1.metric("الهدف", covenant.get("target", "—"))
-        col2.metric("درجة الإشارة", f"{covenant.get('signal_score', 0):.1f}")
-        col3.metric("بؤرة التركيز", covenant.get("recommended_focus", "—"))
-        missing = covenant.get("missing_genes", [])
-        if missing:
-            st.markdown("**🧬 الجينات الغائبة:** " + " ".join([f'<span class="gene-badge">{g}</span>' for g in missing]), unsafe_allow_html=True)
-        protocol = covenant.get("protocol", [])
-        if protocol:
-            st.markdown("#### 🔧 بروتوكول التفعيل")
-            for step in protocol:
-                st.markdown(f"""
-                <div style="background: #0d0d14; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid #FFD700;">
-                    <b>📌 الخطوة {step.get('step', 0)}: {step.get('title', '')}</b><br>
-                    🧬 الجين: {step.get('gene', '')}<br>
-                    📝 الإجراء: {step.get('action', '')}<br>
-                    ⏱️ المدة: {step.get('duration', '')} | 🔥 الشدة: {step.get('intensity', '')}
-                </div>
-                """, unsafe_allow_html=True)
+
 
 # ==============================================================================
 # [11] تهيئة النظام النهائية
