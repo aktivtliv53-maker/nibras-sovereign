@@ -1342,8 +1342,6 @@ with tabs[5]:
 # تبويب 6: اللوحة الوجودية (V71.5-TRUE-FINAL)
 # ==============================================================================
 with tabs[6]:
-    render_sovereign_v67_4_panel()
-    render_v70_final_panel()
     render_v71_5_true_final_navigation()  # <-- V71.5-TRUE-FINAL
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
