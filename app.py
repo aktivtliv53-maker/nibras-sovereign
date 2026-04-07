@@ -1062,9 +1062,9 @@ def reset_nibras_system():
     st.session_state.v71_active_path = None
     init_sovereign_v67_4_logic()
 
-# ==============================================================================
+# ------------------------------------------------------------------------------
 # [10.10] V71.5-TRUE-FINAL - الملاحة المدارية المتسلسلة (The Sequential Navigator)
-# ==============================================================================
+# ------------------------------------------------------------------------------
 
 ORBITAL_STABILIZERS = {
     1: {"text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "surah": "العلق", "num": 1},
@@ -1096,15 +1096,14 @@ def resolve_sovereign_target(goal_text):
 def build_true_orbit_path(start, target):
     start, target = int(start), int(target)
     if start == target:
-        # حالة الثبات: حركة اهتزازية لكسر النمط
         next_orbit = (start % 9) + 1
         return [start, next_orbit, start]
     step = 1 if target > start else -1
     path = list(range(start, target + step, step))
-    # ضمان 3 خطوات كحد أدنى للتمكين
     if len(path) < 3:
-        overshoot = path[-1] + step
-        if overshoot < 1 or overshoot > 9: overshoot = path[0] - step
+        overshoot = path[1] + step if len(path) > 1 else start + step
+        if overshoot < 1: overshoot = 2
+        if overshoot > 9: overshoot = 8
         path.insert(1, overshoot)
     return path
 
@@ -1116,26 +1115,34 @@ def render_v71_5_true_final_navigation():
     if "current_sovereign_recommendation" in st.session_state:
         try:
             curr_orbit = int(st.session_state.current_sovereign_recommendation.get("orbit_id", 5))
-        except Exception: curr_orbit = 5
+        except Exception:
+            curr_orbit = 5
     
-    if "v71_active_path" not in st.session_state: st.session_state.v71_active_path = None
+    if "v71_active_path" not in st.session_state: 
+        st.session_state.v71_active_path = None
 
     with st.form("v71_final_form"):
-        goal_in = st.text_input("ما هو هدفك السيادي؟", placeholder="مثال: رزق واسع")
-        if st.form_submit_button("🚀 بناء المسار المعجز"):
-            if goal_in.strip():
+        goal_in = st.text_input("ما هو هدفك السيادي؟ (رزق، فتح، علم، نصر، سكينة)", placeholder="مثال: أريد رزقاً واسعاً")
+        if st.form_submit_button("🚀 بناء المسار"):
+            if goal_in and goal_in.strip():
                 t_data = resolve_sovereign_target(goal_in)
                 st.session_state.v71_active_path = {
                     "id": hashlib.md5(f"{goal_in}{time.time()}".encode()).hexdigest()[:8],
-                    "goal": goal_in, "t_data": t_data, "start": curr_orbit, "progress": {}
+                    "goal": goal_in, 
+                    "t_data": t_data, 
+                    "start": curr_orbit, 
+                    "progress": {}
                 }
                 st.rerun()
+            else:
+                st.warning("⚠️ يرجى إدخال هدف واضح")
 
     if st.session_state.v71_active_path:
         p = st.session_state.v71_active_path
-        path = build_true_orbit_path(p["start"], p["t_data"]["target_orbit"])
+        target_orbit = p["t_data"]["target_orbit"]
+        path = build_true_orbit_path(p["start"], target_orbit)
         
-        st.info(f"📍 المسار الملاحي: {path}")
+        st.info(f"📍 المسار: المدار {p['start']} ➜ {p['goal']} (مدار {target_orbit})")
         
         for i, orb in enumerate(path):
             s_key = f"v71_{p['id']}_{i}"
@@ -1146,24 +1153,25 @@ def render_v71_5_true_final_navigation():
             elif i == len(path)-1: 
                 title, reps, content = "الوصول والتمكين", 11, {"text": p["t_data"]["text"], "surah": p["t_data"]["surah"], "num": p["t_data"]["num"]}
             else: 
-                title, reps, content = f"تثبيت المدار الوسيط {orb}", 3, ORBITAL_STABILIZERS.get(orb, ORBITAL_STABILIZERS[5])
+                title, reps, content = f"تثبيت المدار {orb}", 3, ORBITAL_STABILIZERS.get(orb, ORBITAL_STABILIZERS[5])
             
             with st.expander(f"{'✅' if is_done else '⏳'} {title}", expanded=not is_done):
-                c1, c2 = st.columns([4,1])
-                with c1:
+                col1, col2 = st.columns([4,1])
+                with col1:
                     st.success(f"📖 {content['text']}")
                     st.caption(f"سورة {content['surah']} | آية {content['num']}")
-                with c2:
+                with col2:
                     st.metric("تكرار", f"×{reps}")
-                    if st.button("تفعيل الرنين", key=f"btn_{s_key}"):
+                    if st.button("تفعيل", key=f"btn_{s_key}"):
                         p["progress"][s_key] = True
                         st.rerun()
         
-        if st.button("🗑️ طي المسار"):
+        if st.button("🗑️ إغلاق المسار"):
             st.session_state.v71_active_path = None
             st.rerun()
 
-
+# سطر الاستدعاء للتبويب السادس:
+# render_v71_5_true_final_navigation()
 # ==============================================================================
 # [11] تهيئة النظام النهائية
 # ==============================================================================
@@ -1342,6 +1350,8 @@ with tabs[5]:
 # تبويب 6: اللوحة الوجودية (V71.5-TRUE-FINAL)
 # ==============================================================================
 with tabs[6]:
+    render_sovereign_v67_4_panel()
+    render_v70_final_panel()
     render_v71_5_true_final_navigation()  # <-- V71.5-TRUE-FINAL
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
