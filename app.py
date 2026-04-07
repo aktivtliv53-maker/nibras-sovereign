@@ -1036,6 +1036,303 @@ def render_v71_5_v70_compat_navigation():
             st.session_state.v71_active_path = None
             st.rerun()
 
+# =========================
+# V71.10 FINAL ROOT ENGINE
+# =========================
+
+@st.cache_data
+def load_quran_roots_v71_10():
+    """تحميل ملف الجذور القرآنية مع كاش آمن"""
+    f_path = os.path.join("data", "quran_roots_complete.json")
+    if os.path.exists(f_path):
+        try:
+            with open(f_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+        except Exception:
+            pass
+    return {"roots": []}
+
+
+ORBIT_HINT_MAP = {
+    "آيات_الكون": 1,
+    "إرادة": 2,
+    "علم": 3,
+    "سكينة": 4,
+    "عمل": 5,
+    "ثبات": 6,
+    "فتح": 7,
+    "رزق": 8,
+    "نور": 9,
+    "تحقق": 10,
+    "إتمام": 11
+}
+
+
+def normalize_v71(text):
+    """تطبيع عربي آمن وبسيط للمطابقة"""
+    if not text:
+        return ""
+    t = str(text).strip()
+    replacements = {
+        "أ": "ا",
+        "إ": "ا",
+        "آ": "ا",
+        "ى": "ي",
+        "ة": "ه",
+        "ؤ": "و",
+        "ئ": "ي",
+        "ـ": ""
+    }
+    for a, b in replacements.items():
+        t = t.replace(a, b)
+
+    tashkeel = "ًٌٍَُِّْ"
+    for ch in tashkeel:
+        t = t.replace(ch, "")
+
+    return t.strip()
+
+
+def resolve_smart_root_v71(token, roots_db):
+    """
+    مطابقة ذكية:
+    1) البحث داخل ملف JSON
+    2) Fallback داخلي للنوايا الشائعة
+    """
+    t_norm = normalize_v71(token)
+
+    # 1) البحث داخل ملف الجذور
+    for entry in roots_db.get("roots", []):
+        if not isinstance(entry, dict):
+            continue
+
+        r_val = entry.get("root", "")
+        r_norm = normalize_v71(r_val)
+
+        if not r_norm:
+            continue
+
+        # مطابقة مرنة
+        if r_norm == t_norm or r_norm in t_norm or t_norm in r_norm:
+            return entry
+
+        # إذا الملف يحتوي aliases أو forms أو variants استخدمها إن وجدت
+        for extra_key in ["aliases", "forms", "variants", "words"]:
+            extra_vals = entry.get(extra_key, [])
+            if isinstance(extra_vals, list):
+                for ex in extra_vals:
+                    ex_norm = normalize_v71(ex)
+                    if ex_norm and (ex_norm == t_norm or ex_norm in t_norm or t_norm in ex_norm):
+                        return entry
+
+    # 2) Fallbacks السيادية
+    FALLBACKS = {
+        "اريد": {
+            "root": "رود",
+            "orbit_hint": "إرادة",
+            "verse": "إِنَّمَا أَمْرُهُ إِذَا أَرَادَ شَيْئًا أَن يَقُولَ لَهُ كُن فَيَكُونُ",
+            "surah": "يس"
+        },
+        "عمل": {
+            "root": "عمل",
+            "orbit_hint": "عمل",
+            "verse": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ",
+            "surah": "التوبة"
+        },
+        "ثابت": {
+            "root": "ثبت",
+            "orbit_hint": "ثبات",
+            "verse": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا بِالْقَوْلِ الثَّابِتِ",
+            "surah": "إبراهيم"
+        },
+        "ثبات": {
+            "root": "ثبت",
+            "orbit_hint": "ثبات",
+            "verse": "يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا بِالْقَوْلِ الثَّابِتِ",
+            "surah": "إبراهيم"
+        },
+        "فتح": {
+            "root": "فتح",
+            "orbit_hint": "فتح",
+            "verse": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا",
+            "surah": "الفتح"
+        },
+        "رزق": {
+            "root": "رزق",
+            "orbit_hint": "رزق",
+            "verse": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ",
+            "surah": "الطلاق"
+        },
+        "نور": {
+            "root": "نور",
+            "orbit_hint": "نور",
+            "verse": "اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ",
+            "surah": "النور"
+        },
+        "علم": {
+            "root": "علم",
+            "orbit_hint": "علم",
+            "verse": "وَقُل رَّبِّ زِدْنِي عِلْمًا",
+            "surah": "طه"
+        },
+        "سكينه": {
+            "root": "سكن",
+            "orbit_hint": "سكينة",
+            "verse": "فَأَنزَلَ اللَّهُ سَكِينَتَهُ عَلَيْهِمْ",
+            "surah": "الفتح"
+        },
+        "شفاء": {
+            "root": "شفي",
+            "orbit_hint": "نور",
+            "verse": "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ",
+            "surah": "الإسراء"
+        },
+        "توفيق": {
+            "root": "وفق",
+            "orbit_hint": "تحقق",
+            "verse": "وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ",
+            "surah": "هود"
+        },
+        "تمام": {
+            "root": "تمم",
+            "orbit_hint": "إتمام",
+            "verse": "الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ",
+            "surah": "المائدة"
+        }
+    }
+
+    return FALLBACKS.get(t_norm)
+
+
+def complete_path_v71(last_orb):
+    """إتمام مداري متسلسل بدون رجوع للخلف"""
+    if last_orb <= 5:
+        return [6, 7, 8]
+    if last_orb == 6:
+        return [7, 8, 9]
+    if last_orb == 7:
+        return [8, 9, 10]
+    if last_orb == 8:
+        return [9, 10, 11]
+    if last_orb == 9:
+        return [10, 11]
+    if last_orb == 10:
+        return [11]
+    return []
+
+
+def get_orbit_stabilizer_text_v71(orb):
+    """
+    حاول أولًا استخدام ORBITAL_STABILIZERS إذا كانت موجودة في الملف الأصلي.
+    إذا لم تكن موجودة، استخدم fallback آمن.
+    """
+    fallback = {
+        6: "✨ آية تثبيت للمدار 6 من مثبتات نِبراس",
+        7: "✨ آية فتح للمدار 7 من مثبتات نِبراس",
+        8: "✨ آية رزق للمدار 8 من مثبتات نِبراس",
+        9: "✨ آية نور للمدار 9 من مثبتات نِبراس",
+        10: "✨ آية تحقق للمدار 10 من مثبتات نِبراس",
+        11: "✨ آية إتمام للمدار 11 من مثبتات نِبراس",
+    }
+
+    try:
+        if "ORBITAL_STABILIZERS" in globals():
+            stab = globals().get("ORBITAL_STABILIZERS", {})
+            if isinstance(stab, dict):
+                v = stab.get(orb)
+                if isinstance(v, str) and v.strip():
+                    return v
+                if isinstance(v, dict):
+                    txt = v.get("verse") or v.get("text") or v.get("ayah")
+                    if isinstance(txt, str) and txt.strip():
+                        return txt
+    except Exception:
+        pass
+
+    return fallback.get(orb, f"✨ آية إتمام للمدار {orb} من مثبتات نِبراس")
+
+
+def render_v71_10_final_navigation():
+    """واجهة V71.10 النهائية"""
+    st.markdown("---")
+    st.subheader("🔮 V71.10 | المترجم الجذري السيادي")
+
+    # Session state آمن
+    if "roqt_active" not in st.session_state:
+        st.session_state.roqt_active = None
+
+    db = load_quran_roots_v71_10()
+
+    with st.form("v71_final_form"):
+        u_in = st.text_input(
+            "أدخل نيتك الآن:",
+            placeholder="مثال: أريد عمل ثابت"
+        )
+
+        submitted = st.form_submit_button("🚀 تشييد المسار")
+
+        if submitted:
+            if u_in and u_in.strip():
+                tokens = [tok for tok in u_in.split() if tok.strip()]
+                steps = []
+
+                for tok in tokens:
+                    res = resolve_smart_root_v71(tok, db)
+                    if res:
+                        orb = ORBIT_HINT_MAP.get(res.get("orbit_hint"), 5)
+                        steps.append({
+                            "token": tok,
+                            "root": res.get("root", tok),
+                            "orbit": orb,
+                            "data": res
+                        })
+
+                if steps:
+                    st.session_state.roqt_active = {
+                        "steps": steps,
+                        "full_path": [s["orbit"] for s in steps] + complete_path_v71(steps[-1]["orbit"]),
+                        "progress": {}
+                    }
+                    st.rerun()
+                else:
+                    st.warning("لم يتم العثور على جذور مطابقة لهذه العبارة بعد.")
+
+    if st.session_state.roqt_active:
+        ra = st.session_state.roqt_active
+
+        st.write(
+            "🔗 **سلسلة المدارات:** " +
+            " ➜ ".join([f"[{o}]" for o in ra["full_path"]])
+        )
+
+        for i, orb in enumerate(ra["full_path"]):
+            is_original = i < len(ra["steps"])
+
+            with st.expander(
+                f"{'💠' if is_original else '✨'} المرحلة {i+1}: المدار {orb}",
+                expanded=is_original
+            ):
+                if is_original:
+                    d = ra["steps"][i]
+                    verse_text = d["data"].get("verse", "📖 آية الجذر")
+                    surah_name = d["data"].get("surah", "القرآن")
+
+                    st.success(f"📖 {verse_text}")
+                    st.caption(
+                        f"سورة {surah_name} | الكلمة: {d['token']} | الجذر: {d['root']}"
+                    )
+                else:
+                    st.info(get_orbit_stabilizer_text_v71(orb))
+
+                if st.button("تفعيل", key=f"v71_btn_{i}"):
+                    st.balloons()
+
+        if st.button("🗑️ إغلاق المسار", key="v71_close_path"):
+            st.session_state.roqt_active = None
+            st.rerun()
+
 # ==============================================================================
 # [20] دوال المحرك المداري
 # ==============================================================================
@@ -2005,7 +2302,7 @@ with tabs[5]:
             """, unsafe_allow_html=True)
 
 # ==============================================================================
-# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V70 + الملاحة V71.5)
+# تبويب 6: اللوحة الوجودية (مع ألواح التكوين + اللوحة السيادية V70 + الملاحة V71.10)
 # ==============================================================================
 with tabs[6]:
     # اللوحة السيادية V67.4 (تم تعطيلها لتجنب التضارب مع الملاحة الجديدة)
@@ -2014,8 +2311,8 @@ with tabs[6]:
     # اللوحة النهائية V70
     render_v70_final_panel()
     
-    # لوحة الملاحة V71.5 المتوافقة مع V70
-    render_v71_5_v70_compat_navigation()
+    # لوحة الملاحة V71.10 النهائية
+    render_v71_10_final_navigation()
     
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
@@ -2058,5 +2355,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار V70 النهائي مع Omni Sovereign Layer
+# نهاية الكود - الإصدار V70 النهائي مع Omni Sovereign Layer + V71.10 FINAL
 # ==============================================================================
