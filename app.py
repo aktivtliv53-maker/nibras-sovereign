@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# نظام نِبْرَاس السيادي (Nibras Sovereign System) - الإصدار V71.5-TRUE-FINAL
+# نظام نِبْرَاس السيادي (Nibras Sovereign System)
+# الإصدار V71.5-TRUE-FINAL - المحرك الملاحي السيادي الحقيقي
 # True Sovereign Navigator - Complete Orbital Engine
 # ==============================================================================
 
@@ -20,318 +21,9 @@ from itertools import combinations
 from datetime import datetime
 
 # ==============================================================================
-# [1] دوال المسار السيادية
+# [1] إعدادات الصفحة وCSS
 # ==============================================================================
-def get_absolute_path(filename):
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    paths_to_check = [
-        os.path.join(base_path, "data", filename),
-        os.path.join(base_path, filename),
-        os.path.join(os.getcwd(), "data", filename)
-    ]
-    for p in paths_to_check:
-        if os.path.exists(p):
-            return p
-    return None
-
-# ==============================================================================
-# [2] دوال التطهير الأساسية
-# ==============================================================================
-ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]')
-
-def normalize_lexicon_root(root_name: str):
-    if not root_name:
-        return ""
-    return root_name.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ة", "ه").replace("ى", "ي").strip()
-
-def normalize_sovereign(text: str):
-    if not text: 
-        return ""
-    text = ARABIC_DIACRITICS_PATTERN.sub('', text)
-    text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ى", "ي").replace("ة", "ه")
-    return re.sub(r'[^\u0621-\u063A\u0641-\u064A\s]', ' ', text).strip()
-
-def ensure_dot(text):
-    if not text:
-        return ""
-    s = str(text).strip()
-    if not s.endswith('.'):
-        s = s + '.'
-    return s
-
-# ==============================================================================
-# [3] دوال مساعدة آمنة
-# ==============================================================================
-def safe_float(value, default=0.0):
-    try:
-        if isinstance(value, (int, float)):
-            return float(value)
-        if isinstance(value, str):
-            return float(value)
-        return default
-    except (ValueError, TypeError):
-        return default
-
-def safe_dict(value):
-    if isinstance(value, dict):
-        return value
-    return {}
-
-def safe_list(value):
-    if isinstance(value, list):
-        return value
-    return []
-
-def clamp(value, min_v, max_v):
-    return max(min_v, min(value, max_v))
-
-def human_ts(ts):
-    try:
-        return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
-    except Exception:
-        return "غير معروف"
-
-# ==============================================================================
-# [4] تهيئة الذاكرة المركزية وحماية الفساد
-# ==============================================================================
-def sanitize_session_state():
-    if "active_meta_law" not in st.session_state or not isinstance(st.session_state.active_meta_law, dict):
-        st.session_state.active_meta_law = {"root_influence": 1.0, "energy_bias": 1.0, "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}}
-    else:
-        law = st.session_state.active_meta_law
-        if not isinstance(law.get("root_influence"), (int, float)) or math.isnan(law.get("root_influence", 0)):
-            law["root_influence"] = 1.0
-        if not isinstance(law.get("energy_bias"), (int, float)) or math.isnan(law.get("energy_bias", 0)):
-            law["energy_bias"] = 1.0
-        law["root_influence"] = min(max(law["root_influence"], 0.85), 1.80)
-        law["energy_bias"] = min(max(law["energy_bias"], 0.80), 2.50)
-    
-    if "system_log" not in st.session_state or not isinstance(st.session_state.system_log, list):
-        st.session_state.system_log = []
-    
-    if "orbit_active" not in st.session_state:
-        st.session_state.orbit_active = False
-    if "orbit_bodies" not in st.session_state:
-        st.session_state.orbit_bodies = []
-    if "input_area" not in st.session_state:
-        st.session_state.input_area = ""
-    if "current_text" not in st.session_state:
-        st.session_state.current_text = ""
-    if "trigger_analysis" not in st.session_state:
-        st.session_state.trigger_analysis = False
-    if "last_processed_text" not in st.session_state:
-        st.session_state.last_processed_text = ""
-    if "widget_key" not in st.session_state:
-        st.session_state.widget_key = "orbital_init_v1"
-    
-    if "current_strategy" not in st.session_state:
-        st.session_state.current_strategy = "STANDARD"
-    if "last_correction_cycle" not in st.session_state:
-        st.session_state.last_correction_cycle = -9999
-    if "last_correction_snapshot" not in st.session_state:
-        st.session_state.last_correction_snapshot = {"root_influence": None, "energy_bias": None, "strategy": None}
-    if "correction_cooldown" not in st.session_state:
-        st.session_state.correction_cooldown = 2
-    
-    if "r_index" not in st.session_state:
-        st.session_state.r_index = {}
-    if "all_roots" not in st.session_state:
-        st.session_state.all_roots = []
-    if "quran_data" not in st.session_state:
-        st.session_state.quran_data = []
-    if "orbit_counter" not in st.session_state:
-        st.session_state.orbit_counter = Counter()
-    if "cosmic_radar_data" not in st.session_state:
-        st.session_state.cosmic_radar_data = pd.DataFrame()
-    if "root_frequency_data" not in st.session_state:
-        st.session_state.root_frequency_data = Counter()
-    if "initialized" not in st.session_state:
-        st.session_state.initialized = False
-
-# ==============================================================================
-# [5] تهيئة ألواح التكوين (Manifestation State)
-# ==============================================================================
-def init_manifestation_state():
-    if "manifestation_target" not in st.session_state or not isinstance(st.session_state.manifestation_target, str):
-        st.session_state.manifestation_target = "رزق"
-    if "manifestation_custom_target" not in st.session_state or not isinstance(st.session_state.manifestation_custom_target, str):
-        st.session_state.manifestation_custom_target = ""
-    if "manifestation_protocol" not in st.session_state or not isinstance(st.session_state.manifestation_protocol, list):
-        st.session_state.manifestation_protocol = []
-    if "manifestation_missing_genes" not in st.session_state or not isinstance(st.session_state.manifestation_missing_genes, list):
-        st.session_state.manifestation_missing_genes = []
-    if "manifestation_active_covenant" not in st.session_state or not isinstance(st.session_state.manifestation_active_covenant, dict):
-        st.session_state.manifestation_active_covenant = {}
-    if "manifestation_history" not in st.session_state or not isinstance(st.session_state.manifestation_history, list):
-        st.session_state.manifestation_history = []
-    if "manifestation_enabled" not in st.session_state or not isinstance(st.session_state.manifestation_enabled, bool):
-        st.session_state.manifestation_enabled = True
-    if "manifestation_last_build_ts" not in st.session_state:
-        st.session_state.manifestation_last_build_ts = 0.0
-    if "manifestation_signal_score" not in st.session_state:
-        st.session_state.manifestation_signal_score = 0.0
-    if "manifestation_recommendation" not in st.session_state or not isinstance(st.session_state.manifestation_recommendation, str):
-        st.session_state.manifestation_recommendation = ""
-
-# ==============================================================================
-# [6] تهيئة الوعي المركب V67.4
-# ==============================================================================
-def init_sovereign_v67_4_logic():
-    keys = {
-        "sovereign_recommendations": [],
-        "current_sovereign_recommendation": {},
-        "recommendation_history": [],
-        "prediction_history": [],
-        "current_prediction": {},
-        "prediction_feedback": {},
-        "gene_dashboard": {},
-        "recommendation_engine_enabled": True
-    }
-    for k, v in keys.items():
-        if k not in st.session_state:
-            st.session_state[k] = v
-
-SYMBOLIC_MODIFIERS = {'ا': 1.15, 'ل': 1.05, 'ر': 1.02, 'ق': 1.20, 'ن': 1.10, 'و': 1.05, 'ب': 1.00}
-
-GENE_TO_ACTION = {
-    "Expansion": "اتساع",
-    "Stabilization": "تثبيت",
-    "Serenity": "سكينة",
-    "Power": "قوة",
-    "Illumination": "إشراق"
-}
-PROTECTION_OVERRIDE = "حماية"
-
-# ==============================================================================
-# [6.5] V70 – Neuro-Resonance Layer
-# ==============================================================================
-RESONANCE_MAP = {
-    "UP": "الطك",
-    "FLAT": "بتثسشصض",
-    "DEEP": "نقيمجحخ"
-}
-
-def calculate_resonance(text: str) -> float:
-    if not text:
-        return 1.0
-    score = 0.0
-    length = len(text)
-    for c in text:
-        if c in RESONANCE_MAP["UP"]:
-            score += 1.1
-        elif c in RESONANCE_MAP["DEEP"]:
-            score += 0.9
-        else:
-            score += 1.0
-    raw = score / max(1, length)
-    return max(0.9, min(1.1, raw))
-
-# ==============================================================================
-# [7] تحليل الجينات
-# ==============================================================================
-def analyze_genes_for_text(text):
-    if not text:
-        return "Stabilization"
-    
-    gene_weights = {
-        "Expansion": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "اوي"),
-        "Stabilization": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "لر"),
-        "Serenity": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ن"),
-        "Power": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ق"),
-        "Illumination": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ب")
-    }
-    
-    total = sum(gene_weights.values())
-    if total > 0:
-        for k in gene_weights:
-            gene_weights[k] = gene_weights[k] / total
-    
-    key = hash(text) % 1000000
-    st.session_state.gene_dashboard[str(key)] = {"text": text[:100], "genes": gene_weights, "timestamp": time.time()}
-    
-    dominant_gene = max(gene_weights, key=gene_weights.get)
-    return dominant_gene
-
-# ==============================================================================
-# [8] محرك الطاقة النيوروني
-# ==============================================================================
-def get_neuro_boost(word):
-    if not word: 
-        return 1.0
-    score = sum(SYMBOLIC_MODIFIERS.get(c, 1.0) for c in str(word))
-    avg = score / max(1, len(str(word)))
-    return min(1.3, max(0.9, avg))
-
-def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
-    base_energy = base_w * 100 if base_w < 10 else base_w
-    repetition_boost = 1.0 + math.log1p(max(0, count - 1)) * 0.35
-    mode_factor = {"direct": 1.00, "stripped": 0.92, "resonance": 0.85, "unresolved": 0.60}.get(mode, 0.85)
-    morph_factor = 1.0 + (max(1, morph_rank) - 1) * 0.025
-    orbit_factor = 1.0 + max(0, int(orbit_id or 0) - 4) * 0.03
-    sig_energy_bias = root_sig.get('eb', 0.0)
-    energy = (base_energy * repetition_boost * mode_factor * morph_factor * orbit_factor) + sig_energy_bias
-    return round(max(1.0, energy), 2)
-
-def compute_omni_energy(word: str, orbit_id: int, base_w: float = 1.0) -> float:
-    try:
-        base = compute_dynamic_energy(base_w, 1, "NORMAL", 1, orbit_id, {"eb": 0.0, "n_factor": 50})
-    except Exception:
-        base = 1.0
-    neuro = get_neuro_boost(word)
-    resonance = calculate_resonance(word)
-    throne = 1.15 if int(orbit_id or 0) >= 7 else 1.0
-    omni = base * neuro * throne * (1 + (resonance - 1) * 0.5)
-    return round(omni, 3)
-
-def generate_sovereign_v67_4_output(text, orbit_id=0):
-    if not text:
-        return None, None
-    
-    dominant_gene = analyze_genes_for_text(text)
-    
-    rec_energy = compute_dynamic_energy(1.0, 1, "NORMAL", 1, orbit_id, {"eb": 0.0, "n_factor": 50})
-    
-    action_type = GENE_TO_ACTION.get(dominant_gene, PROTECTION_OVERRIDE)
-    if rec_energy < 0.8:
-        action_type = PROTECTION_OVERRIDE
-    
-    rec = {
-        "text": text[:200],
-        "dominant_gene": dominant_gene,
-        "action_type": action_type,
-        "energy": rec_energy,
-        "orbit_id": orbit_id,
-        "timestamp": time.time(),
-        "user_response": "PENDING"
-    }
-    st.session_state.current_sovereign_recommendation = rec
-    if "sovereign_recommendations" in st.session_state:
-        st.session_state.sovereign_recommendations.append(rec)
-    
-    pred_action = action_type
-    if len(st.session_state.get("recommendation_history", [])) > 0:
-        last_rec = st.session_state.recommendation_history[-1]
-        if last_rec.get("action_type") == "اتساع" and action_type == "اتساع":
-            pred_action = "حماية"
-        elif last_rec.get("action_type") == "حماية" and action_type == "حماية":
-            pred_action = "تفعيل"
-    
-    st.session_state.current_prediction = {
-        "text": text[:200], 
-        "pred_action": pred_action,
-        "confidence": round(0.75 + (rec_energy * 0.1), 2),
-        "timestamp": time.time()
-    }
-    
-    return rec, st.session_state.current_prediction
-
-# ==============================================================================
-# [9] إعدادات الهوية السيادية
-# ==============================================================================
-sanitize_session_state()
-init_manifestation_state()
-init_sovereign_v67_4_logic()
-st.set_page_config(page_title="Nibras V71.5-TRUE-FINAL - السيادة المطلقة", layout="wide")
+st.set_page_config(page_title="نبراس V71.5-TRUE-FINAL", layout="wide")
 
 st.markdown("""
 <style>
@@ -375,8 +67,174 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [10] مصفوفة الجينات
+# [2] دوال التطهير الأساسية
 # ==============================================================================
+def get_absolute_path(filename):
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    paths_to_check = [
+        os.path.join(base_path, "data", filename),
+        os.path.join(base_path, filename),
+        os.path.join(os.getcwd(), "data", filename)
+    ]
+    for p in paths_to_check:
+        if os.path.exists(p):
+            return p
+    return None
+
+ARABIC_DIACRITICS_PATTERN = re.compile(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED]')
+
+def normalize_lexicon_root(root_name: str):
+    if not root_name:
+        return ""
+    return root_name.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ة", "ه").replace("ى", "ي").strip()
+
+def normalize_sovereign(text: str):
+    if not text: 
+        return ""
+    text = ARABIC_DIACRITICS_PATTERN.sub('', text)
+    text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ى", "ي").replace("ة", "ه")
+    return re.sub(r'[^\u0621-\u063A\u0641-\u064A\s]', ' ', text).strip()
+
+def ensure_dot(text):
+    if not text:
+        return ""
+    s = str(text).strip()
+    if not s.endswith('.'):
+        s = s + '.'
+    return s
+
+def safe_float(value, default=0.0):
+    try:
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            return float(value)
+        return default
+    except (ValueError, TypeError):
+        return default
+
+def safe_dict(value):
+    return value if isinstance(value, dict) else {}
+
+def safe_list(value):
+    return value if isinstance(value, list) else []
+
+def clamp(value, min_v, max_v):
+    return max(min_v, min(value, max_v))
+
+def human_ts(ts):
+    try:
+        return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return "غير معروف"
+
+# ==============================================================================
+# [3] تهيئة الذاكرة المركزية
+# ==============================================================================
+def sanitize_session_state():
+    if "active_meta_law" not in st.session_state or not isinstance(st.session_state.active_meta_law, dict):
+        st.session_state.active_meta_law = {"root_influence": 1.0, "energy_bias": 1.0, "gene_weight": {"N": 1.0, "S": 1.0, "G": 1.0, "B": 1.0, "C": 1.0}}
+    else:
+        law = st.session_state.active_meta_law
+        if not isinstance(law.get("root_influence"), (int, float)) or math.isnan(law.get("root_influence", 0)):
+            law["root_influence"] = 1.0
+        if not isinstance(law.get("energy_bias"), (int, float)) or math.isnan(law.get("energy_bias", 0)):
+            law["energy_bias"] = 1.0
+        law["root_influence"] = min(max(law["root_influence"], 0.85), 1.80)
+        law["energy_bias"] = min(max(law["energy_bias"], 0.80), 2.50)
+    
+    if "system_log" not in st.session_state or not isinstance(st.session_state.system_log, list):
+        st.session_state.system_log = []
+    if "orbit_active" not in st.session_state:
+        st.session_state.orbit_active = False
+    if "orbit_bodies" not in st.session_state:
+        st.session_state.orbit_bodies = []
+    if "input_area" not in st.session_state:
+        st.session_state.input_area = ""
+    if "current_text" not in st.session_state:
+        st.session_state.current_text = ""
+    if "trigger_analysis" not in st.session_state:
+        st.session_state.trigger_analysis = False
+    if "last_processed_text" not in st.session_state:
+        st.session_state.last_processed_text = ""
+    if "widget_key" not in st.session_state:
+        st.session_state.widget_key = "orbital_init_v1"
+    if "current_strategy" not in st.session_state:
+        st.session_state.current_strategy = "STANDARD"
+    if "last_correction_cycle" not in st.session_state:
+        st.session_state.last_correction_cycle = -9999
+    if "last_correction_snapshot" not in st.session_state:
+        st.session_state.last_correction_snapshot = {"root_influence": None, "energy_bias": None, "strategy": None}
+    if "correction_cooldown" not in st.session_state:
+        st.session_state.correction_cooldown = 2
+    if "r_index" not in st.session_state:
+        st.session_state.r_index = {}
+    if "all_roots" not in st.session_state:
+        st.session_state.all_roots = []
+    if "quran_data" not in st.session_state:
+        st.session_state.quran_data = []
+    if "orbit_counter" not in st.session_state:
+        st.session_state.orbit_counter = Counter()
+    if "cosmic_radar_data" not in st.session_state:
+        st.session_state.cosmic_radar_data = pd.DataFrame()
+    if "root_frequency_data" not in st.session_state:
+        st.session_state.root_frequency_data = Counter()
+    if "initialized" not in st.session_state:
+        st.session_state.initialized = False
+
+def init_manifestation_state():
+    if "manifestation_target" not in st.session_state or not isinstance(st.session_state.manifestation_target, str):
+        st.session_state.manifestation_target = "رزق"
+    if "manifestation_custom_target" not in st.session_state or not isinstance(st.session_state.manifestation_custom_target, str):
+        st.session_state.manifestation_custom_target = ""
+    if "manifestation_protocol" not in st.session_state or not isinstance(st.session_state.manifestation_protocol, list):
+        st.session_state.manifestation_protocol = []
+    if "manifestation_missing_genes" not in st.session_state or not isinstance(st.session_state.manifestation_missing_genes, list):
+        st.session_state.manifestation_missing_genes = []
+    if "manifestation_active_covenant" not in st.session_state or not isinstance(st.session_state.manifestation_active_covenant, dict):
+        st.session_state.manifestation_active_covenant = {}
+    if "manifestation_history" not in st.session_state or not isinstance(st.session_state.manifestation_history, list):
+        st.session_state.manifestation_history = []
+    if "manifestation_enabled" not in st.session_state or not isinstance(st.session_state.manifestation_enabled, bool):
+        st.session_state.manifestation_enabled = True
+    if "manifestation_last_build_ts" not in st.session_state:
+        st.session_state.manifestation_last_build_ts = 0.0
+    if "manifestation_signal_score" not in st.session_state:
+        st.session_state.manifestation_signal_score = 0.0
+    if "manifestation_recommendation" not in st.session_state or not isinstance(st.session_state.manifestation_recommendation, str):
+        st.session_state.manifestation_recommendation = ""
+
+def init_sovereign_v67_4_logic():
+    keys = {
+        "sovereign_recommendations": [],
+        "current_sovereign_recommendation": {},
+        "recommendation_history": [],
+        "prediction_history": [],
+        "current_prediction": {},
+        "prediction_feedback": {},
+        "gene_dashboard": {},
+        "recommendation_engine_enabled": True
+    }
+    for k, v in keys.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
+
+# ==============================================================================
+# [4] الثوابت والمصفوفات
+# ==============================================================================
+SYMBOLIC_MODIFIERS = {'ا': 1.15, 'ل': 1.05, 'ر': 1.02, 'ق': 1.20, 'ن': 1.10, 'و': 1.05, 'ب': 1.00}
+
+GENE_TO_ACTION = {
+    "Expansion": "اتساع",
+    "Stabilization": "تثبيت",
+    "Serenity": "سكينة",
+    "Power": "قوة",
+    "Illumination": "إشراق"
+}
+PROTECTION_OVERRIDE = "حماية"
+
+RESONANCE_MAP = {"UP": "الطك", "FLAT": "بتثسشصض", "DEEP": "نقيمجحخ"}
+
 GENE_STYLE = {
     'C': {'name': 'الإبل', 'color': '#4fc3f7', 'icon': '🐪', 'meaning': 'طاقة المسير والتمكين البعيد'},
     'B': {'name': 'البقر', 'color': '#FFD700', 'icon': '🐄', 'meaning': 'طاقة التثبيت والوفرة المادية'},
@@ -386,12 +244,9 @@ GENE_STYLE = {
 }
 
 # ==============================================================================
-# [10.10] V71.5-TRUE-FINAL - المحرك الملاحي السيادي الحقيقي (TRUE FINAL)
+# [5] V71.5-TRUE-FINAL - المحرك الملاحي السيادي الحقيقي
 # ==============================================================================
 
-# ------------------------------------------------------------------------------
-# [10.10.1] مصفوفة تثبيت المدارات (Self-contained)
-# ------------------------------------------------------------------------------
 ORBITAL_STABILIZERS = {
     1: {"text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "surah": "العلق", "num": 1},
     2: {"text": "عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ", "surah": "العلق", "num": 5},
@@ -404,9 +259,6 @@ ORBITAL_STABILIZERS = {
     9: {"text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3},
 }
 
-# ------------------------------------------------------------------------------
-# [10.10.2] أهداف سيادية دلالية (Self-contained)
-# ------------------------------------------------------------------------------
 SOVEREIGN_TARGETS = {
     "رزق": {
         "keywords": ["رزق", "الرزق", "مال", "عمل", "وظيفة", "وظيفه", "بركة", "وفرة"],
@@ -450,49 +302,17 @@ SOVEREIGN_TARGETS = {
     },
 }
 
-# ------------------------------------------------------------------------------
-# [10.10.3] محلل دلالي
-# ------------------------------------------------------------------------------
 def resolve_sovereign_target(goal_text):
-    """
-    يحلل النص المدخل ويطابقه مع الهدف السيادي المناسب.
-    إذا لم يجد تطابقاً، يعود افتراضياً إلى 'فتح'.
-    """
     normalized = (goal_text or "").strip().lower()
-
     for _, data in SOVEREIGN_TARGETS.items():
         if any(keyword in normalized for keyword in data["keywords"]):
             return data
-
     return SOVEREIGN_TARGETS["فتح"]
 
-
-# ------------------------------------------------------------------------------
-# [10.10.4] بناء المسار الحقيقي بين المدار الحالي والمدار الهدف
-# ------------------------------------------------------------------------------
 def build_true_orbit_path(start_orbit, target_orbit):
-    """
-    يبني المسار الحقيقي الكامل بين المدار الحالي والمدار الهدف.
-    
-    قواعد البناء:
-    1) إذا كان start == target:
-       - نبني مسار كسر نمط من 3 خطوات على الأقل: [start, next, target]
-       - وإذا next == target (حالة غير متوقعة) نضيف مداراً آخر احتياطياً.
-    
-    2) إذا كان الفرق = 1 أو -1:
-       - نبني 3 خطوات للتمكين: [start, overshoot, target]
-       - overshoot يكون مداراً إضافياً ذكيًا ضمن النطاق 1..9 لتجنب التكرار.
-    
-    3) إذا كان الفرق أكبر:
-       - نبني كل المدارات الوسيطة بالتسلسل الحقيقي.
-       - مثال: 2 -> 8 = [2,3,4,5,6,7,8]
-       - مثال: 8 -> 3 = [8,7,6,5,4,3]
-    """
-    # حماية
     start = max(1, min(9, int(start_orbit)))
     target = max(1, min(9, int(target_orbit)))
 
-    # حالة التطابق: gap = 0
     if start == target:
         next_orbit = (start % 9) + 1
         if next_orbit == target:
@@ -502,38 +322,38 @@ def build_true_orbit_path(start_orbit, target_orbit):
     gap = target - start
     direction = 1 if gap > 0 else -1
 
-    # حالة الفرق خطوة واحدة فقط: gap = ±1
     if abs(gap) == 1:
         overshoot = target + direction
         if overshoot < 1 or overshoot > 9:
             overshoot = target - direction
-
         if overshoot == target or overshoot == start:
             fallback = target - direction
             if 1 <= fallback <= 9 and fallback != start and fallback != target:
                 overshoot = fallback
             else:
                 overshoot = 5 if 5 not in (start, target) else 6
-
         return [start, overshoot, target]
 
-    # المسار الحقيقي الكامل
     path = [start]
     current = start
-
     while current != target:
         current += direction
         current = max(1, min(9, current))
         if path and current == path[-1]:
             break
         path.append(current)
-
     return path
 
+def compute_omni_energy(word, orbit_id, base_w=1.0):
+    try:
+        base = 50.0
+    except Exception:
+        base = 1.0
+    neuro = 1.0
+    resonance = 1.0
+    throne = 1.15 if int(orbit_id or 0) >= 7 else 1.0
+    return round(base * neuro * throne * resonance, 2)
 
-# ------------------------------------------------------------------------------
-# [10.10.5] دالة عرض الملاحة النهائية
-# ------------------------------------------------------------------------------
 def render_v71_5_true_final_navigation():
     st.markdown("---")
     st.header("🛡️ V71.5-TRUE-FINAL | الملاحة السيادية الحقيقية")
@@ -541,9 +361,7 @@ def render_v71_5_true_final_navigation():
     current_user_orbit = 5
     if "current_sovereign_recommendation" in st.session_state:
         try:
-            current_user_orbit = int(
-                st.session_state.current_sovereign_recommendation.get("orbit_id", 5)
-            )
+            current_user_orbit = int(st.session_state.current_sovereign_recommendation.get("orbit_id", 5))
         except Exception:
             current_user_orbit = 5
 
@@ -551,20 +369,13 @@ def render_v71_5_true_final_navigation():
         st.session_state.v71_active_path = None
 
     with st.form("v71_true_final_form"):
-        goal_input = st.text_input(
-            "ما هو هدفك السيادي؟ (رزق، فتح، علم، نصر، سكينة...)",
-            value="",
-            placeholder="مثال: أريد رزقًا واسعًا وفتحًا قريبًا",
-        )
+        goal_input = st.text_input("ما هو هدفك السيادي؟ (رزق، فتح، علم، نصر، سكينة...)", placeholder="مثال: أريد رزقًا واسعًا وفتحًا قريبًا")
         submit = st.form_submit_button("🚀 بناء المسار الحقيقي")
 
         if submit:
             if goal_input and goal_input.strip():
                 target_data = resolve_sovereign_target(goal_input)
-                path_id = hashlib.md5(
-                    f"{goal_input}_{current_user_orbit}_{time.time()}".encode("utf-8")
-                ).hexdigest()[:10]
-
+                path_id = hashlib.md5(f"{goal_input}_{current_user_orbit}_{time.time()}".encode("utf-8")).hexdigest()[:10]
                 st.session_state.v71_active_path = {
                     "id": path_id,
                     "goal_text": goal_input,
@@ -579,21 +390,15 @@ def render_v71_5_true_final_navigation():
 
     if st.session_state.v71_active_path:
         p = st.session_state.v71_active_path
-
         start_orbit = p["start_orbit"]
         target_orbit = p["target_orbit"]
         target_data = p["target_data"]
-
         path_orbits = build_true_orbit_path(start_orbit, target_orbit)
         total_steps = len(path_orbits)
-
         done_count = sum(1 for v in p["progress"].values() if v is True)
         progress_ratio = done_count / total_steps if total_steps > 0 else 0.0
 
-        st.info(
-            f"📍 المسار السيادي: من المدار **{start_orbit}** ➜ "
-            f"الهدف **{p['goal_text']}** (المدار {target_orbit})"
-        )
+        st.info(f"📍 المسار السيادي: من المدار **{start_orbit}** ➜ الهدف **{p['goal_text']}** (المدار {target_orbit})")
         st.progress(progress_ratio)
 
         for i, orbit in enumerate(path_orbits):
@@ -604,26 +409,14 @@ def render_v71_5_true_final_navigation():
                 stage_name = "الكسر والتحويل (Pattern Break)"
                 reps = 7
                 content = ORBITAL_STABILIZERS.get(orbit, ORBITAL_STABILIZERS[5])
-
             elif i == total_steps - 1:
                 stage_name = f"الوصول والتمكين (مدار {target_orbit})"
                 reps = 11
-                content = {
-                    "text": target_data["text"],
-                    "surah": target_data["surah"],
-                    "num": target_data["num"],
-                }
-
-                prev_orbit = path_orbits[i - 1] if i - 1 >= 0 else None
-                prev_content = ORBITAL_STABILIZERS.get(prev_orbit, ORBITAL_STABILIZERS[5]) if prev_orbit else None
-                if prev_content and prev_content["text"] == content["text"]:
-                    stage_name = f"الوصول والتمكين الخاص (مدار {target_orbit})"
-
+                content = {"text": target_data["text"], "surah": target_data["surah"], "num": target_data["num"]}
             else:
                 stage_name = f"تثبيت المدار الوسيط {orbit}"
                 reps = 3
                 content = ORBITAL_STABILIZERS.get(orbit, ORBITAL_STABILIZERS[5])
-
                 if i == total_steps - 2:
                     upcoming_final_text = target_data["text"]
                     if content["text"] == upcoming_final_text:
@@ -633,25 +426,16 @@ def render_v71_5_true_final_navigation():
                             content = alt_content
                             stage_name = f"تثبيت التمكين قبل الوصول (مدار {orbit})"
 
-            with st.expander(
-                f"{'✅' if is_done else '⏳'} الخطوة {i+1}: {stage_name}",
-                expanded=not is_done,
-            ):
+            with st.expander(f"{'✅' if is_done else '⏳'} الخطوة {i+1}: {stage_name}", expanded=not is_done):
                 col1, col2 = st.columns([4, 1])
-
                 with col1:
                     st.success(f"📖 {content['text']}")
                     st.caption(f"سورة {content['surah']} | آية {content['num']}")
-
                     try:
-                        energy_value = compute_omni_energy(
-                            f"{p['goal_text']}_{orbit}_{i}",
-                            orbit
-                        )
+                        energy_value = compute_omni_energy(f"{p['goal_text']}_{orbit}_{i}", orbit)
                         st.write(f"**طاقة الخطوة:** {energy_value}")
                     except Exception:
                         pass
-
                 with col2:
                     st.metric("تكرار", f"×{reps}")
                     if st.button("تفعيل", key=f"btn_{step_key}"):
@@ -659,14 +443,10 @@ def render_v71_5_true_final_navigation():
                         st.rerun()
 
         c_reset, c_close = st.columns(2)
-
         with c_reset:
             if st.button("🔄 إعادة بناء نفس المسار", key="v71_rebuild_same_path"):
                 target_data = resolve_sovereign_target(p["goal_text"])
-                new_path_id = hashlib.md5(
-                    f"{p['goal_text']}_{p['start_orbit']}_{time.time()}".encode("utf-8")
-                ).hexdigest()[:10]
-
+                new_path_id = hashlib.md5(f"{p['goal_text']}_{p['start_orbit']}_{time.time()}".encode("utf-8")).hexdigest()[:10]
                 st.session_state.v71_active_path = {
                     "id": new_path_id,
                     "goal_text": p["goal_text"],
@@ -676,14 +456,98 @@ def render_v71_5_true_final_navigation():
                     "progress": {},
                 }
                 st.rerun()
-
         with c_close:
             if st.button("🗑️ إغلاق المسار الحالي", key="v71_close_path"):
                 st.session_state.v71_active_path = None
                 st.rerun()
 
 # ==============================================================================
-# [11] المستخرج الاحتمالي v31
+# [6] دوال تحليل الجينات والطاقة
+# ==============================================================================
+def calculate_resonance(text: str) -> float:
+    if not text:
+        return 1.0
+    score = 0.0
+    for c in text:
+        if c in RESONANCE_MAP["UP"]:
+            score += 1.1
+        elif c in RESONANCE_MAP["DEEP"]:
+            score += 0.9
+        else:
+            score += 1.0
+    raw = score / max(1, len(text))
+    return max(0.9, min(1.1, raw))
+
+def analyze_genes_for_text(text):
+    if not text:
+        return "Stabilization"
+    gene_weights = {
+        "Expansion": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "اوي"),
+        "Stabilization": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "لر"),
+        "Serenity": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ن"),
+        "Power": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ق"),
+        "Illumination": sum(text.count(c) * SYMBOLIC_MODIFIERS.get(c, 1.0) for c in "ب")
+    }
+    total = sum(gene_weights.values())
+    if total > 0:
+        for k in gene_weights:
+            gene_weights[k] = gene_weights[k] / total
+    return max(gene_weights, key=gene_weights.get)
+
+def get_neuro_boost(word):
+    if not word:
+        return 1.0
+    score = sum(SYMBOLIC_MODIFIERS.get(c, 1.0) for c in str(word))
+    avg = score / max(1, len(str(word)))
+    return min(1.3, max(0.9, avg))
+
+def compute_dynamic_energy(base_w, count, mode, morph_rank, orbit_id, root_sig):
+    base_energy = base_w * 100 if base_w < 10 else base_w
+    repetition_boost = 1.0 + math.log1p(max(0, count - 1)) * 0.35
+    mode_factor = {"direct": 1.00, "stripped": 0.92, "resonance": 0.85, "unresolved": 0.60}.get(mode, 0.85)
+    morph_factor = 1.0 + (max(1, morph_rank) - 1) * 0.025
+    orbit_factor = 1.0 + max(0, int(orbit_id or 0) - 4) * 0.03
+    sig_energy_bias = root_sig.get('eb', 0.0)
+    energy = (base_energy * repetition_boost * mode_factor * morph_factor * orbit_factor) + sig_energy_bias
+    return round(max(1.0, energy), 2)
+
+def generate_sovereign_v67_4_output(text, orbit_id=0):
+    if not text:
+        return None, None
+    dominant_gene = analyze_genes_for_text(text)
+    rec_energy = compute_dynamic_energy(1.0, 1, "NORMAL", 1, orbit_id, {"eb": 0.0, "n_factor": 50})
+    action_type = GENE_TO_ACTION.get(dominant_gene, PROTECTION_OVERRIDE)
+    if rec_energy < 0.8:
+        action_type = PROTECTION_OVERRIDE
+    rec = {
+        "text": text[:200],
+        "dominant_gene": dominant_gene,
+        "action_type": action_type,
+        "energy": rec_energy,
+        "orbit_id": orbit_id,
+        "timestamp": time.time(),
+        "user_response": "PENDING"
+    }
+    st.session_state.current_sovereign_recommendation = rec
+    if "sovereign_recommendations" in st.session_state:
+        st.session_state.sovereign_recommendations.append(rec)
+    pred_action = action_type
+    if len(st.session_state.get("recommendation_history", [])) > 0:
+        last_rec = st.session_state.recommendation_history[-1]
+        if last_rec.get("action_type") == "اتساع" and action_type == "اتساع":
+            pred_action = "حماية"
+        elif last_rec.get("action_type") == "حماية" and action_type == "حماية":
+            pred_action = "تفعيل"
+    st.session_state.current_prediction = {
+        "text": text[:200],
+        "pred_action": pred_action,
+        "confidence": round(0.75 + (rec_energy * 0.1), 2),
+        "timestamp": time.time()
+    }
+    return rec, st.session_state.current_prediction
+
+# ==============================================================================
+# [7] دوال استخراج الجذور والتحليل المداري
 # ==============================================================================
 COMMON_PREFIXES = ["وال", "بال", "كال", "فال", "لل", "ال", "و", "ف", "ب", "ك", "ل", "س"]
 COMMON_SUFFIXES = ["يات", "ات", "ون", "ين", "ان", "وا", "نا", "ها", "هم", "هن", "كم", "ني", "ة", "ه", "ي"]
@@ -733,9 +597,6 @@ def extract_candidate_root_v31(word, index_keys):
                 return root, "resonance", "فعل ثلاثي (رنين)", 2
     return None, "unresolved", pattern_name, morph_rank
 
-# ==============================================================================
-# [12] التوقيع الجذري
-# ==============================================================================
 def signature_from_root(root: str):
     if not root:
         return {'x': 0.0, 'y': 0.0, 'n_factor': 0, 'eb': 0.0, 'rb': 1.0}
@@ -748,9 +609,6 @@ def signature_from_root(root: str):
         'rb': round(0.90 + (((h >> 32) % 21) / 100.0), 3)
     }
 
-# ==============================================================================
-# [13] الاستحقاق الجيني
-# ==============================================================================
 def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
     orbit = int(orbit_id or 0)
     if orbit in [1, 2]:
@@ -779,9 +637,6 @@ def resolve_sovereign_gene(orbit_id, morph_rank, root_sig, base_energy):
         return "B"
     return base_gene
 
-# ==============================================================================
-# [14] المحرك المداري
-# ==============================================================================
 def process_text_and_generate_bodies(input_text, r_index):
     clean_text = normalize_sovereign(input_text)
     words = clean_text.split()
@@ -913,7 +768,7 @@ def display_orbital_results(key_suffix="orbital"):
     return False
 
 # ==============================================================================
-# [15] دوال تحميل قواعد البيانات
+# [8] دوال تحميل قواعد البيانات
 # ==============================================================================
 @st.cache_data(ttl=3600)
 def load_lexicon_db(path):
@@ -1081,7 +936,7 @@ def initialize_sovereign_memory():
     st.session_state.initialized = True
 
 # ==============================================================================
-# [16] دوال اللوحات الإضافية
+# [9] دوال اللوحات الإضافية
 # ==============================================================================
 def render_sovereign_v67_4_panel():
     rec = st.session_state.get("current_sovereign_recommendation", {})
@@ -1208,7 +1063,7 @@ def reset_nibras_system():
     init_sovereign_v67_4_logic()
 
 # ==============================================================================
-# [17] دوال ألواح التكوين (Manifestation Dashboard)
+# [10] دوال ألواح التكوين (Manifestation Dashboard)
 # ==============================================================================
 def safe_get_latest_analysis_snapshot():
     snapshot = {
@@ -1416,12 +1271,18 @@ def render_manifestation_dashboard():
                 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# [18] تهيئة النظام النهائية
+# [11] تهيئة النظام النهائية
 # ==============================================================================
+sanitize_session_state()
+init_manifestation_state()
+init_sovereign_v67_4_logic()
+
 if not st.session_state.initialized or not st.session_state.all_roots:
     initialize_sovereign_memory()
 
-# الشريط الجانبي
+# ==============================================================================
+# [12] الشريط الجانبي
+# ==============================================================================
 with st.sidebar:
     st.markdown("""
     <div style="width: 100%; text-align: center;">
@@ -1439,7 +1300,7 @@ with st.sidebar:
     st.sidebar.markdown("<p>خِت فِت.</p>", unsafe_allow_html=True)
 
 # ==============================================================================
-# [19] التبويبات الرئيسية (9 تبويبات)
+# [13] التبويبات الرئيسية (9 تبويبات)
 # ==============================================================================
 tab_titles = [
     "📖 النسخة القرآنية", "🔍 الاستنطاق المداري", "🛰️ الرادار السيادي",
@@ -1589,7 +1450,7 @@ with tabs[5]:
 with tabs[6]:
     render_sovereign_v67_4_panel()
     render_v70_final_panel()
-    render_v71_5_true_final_navigation()
+    render_v71_5_true_final_navigation()  # <-- V71.5-TRUE-FINAL
     st.markdown("---")
     st.markdown("### 📈 التحليل الكمي للمدار")
     if st.session_state.orbit_active and st.session_state.orbit_bodies:
@@ -1623,5 +1484,5 @@ with tabs[8]:
         st.info("⚙️ انتظر تفعيل المفاعل.")
 
 # ==============================================================================
-# نهاية الكود - الإصدار V71.5-TRUE-FINAL النهائي
+# نهاية الكود - الإصدار V71.5-TRUE-FINAL
 # ==============================================================================
