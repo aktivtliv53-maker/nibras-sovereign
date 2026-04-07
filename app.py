@@ -850,6 +850,45 @@ def render_v70_final_panel():
 # [10.15] V71.5-V70-COMPAT FINAL - المحرك الملاحي السيادي المدمج
 # ==============================================================================
 
+SAFE_ORBITAL_STABILIZERS = {
+    1: {"text": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "surah": "العلق", "num": 1},
+    2: {"text": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا", "surah": "الشرح", "num": 5},
+    3: {"text": "وَقُل رَّبِّ زِدْنِي عِلْمًا", "surah": "طه", "num": 114},
+    4: {"text": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", "surah": "الرعد", "num": 28},
+    5: {"text": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ", "surah": "التوبة", "num": 105},
+    6: {"text": "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ", "surah": "النحل", "num": 127},
+    7: {"text": "إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا", "surah": "الفتح", "num": 1},
+    8: {"text": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ", "surah": "الطلاق", "num": 3},
+    9: {"text": "وَيَنصُرَكَ اللَّهُ نَصْرًا عَزِيزًا", "surah": "الفتح", "num": 3}
+}
+
+def get_orbital_stabilizer_content(orb):
+    """
+    جلب مثبت المدار الحقيقي بأمان:
+    1) من ORBITAL_STABILIZERS إذا كانت dict صحيحة
+    2) من SAFE_ORBITAL_STABILIZERS كنسخة احتياطية مضمونة
+    """
+    try:
+        orb = int(orb)
+    except:
+        orb = 5
+
+    try:
+        if isinstance(ORBITAL_STABILIZERS, dict):
+            data = ORBITAL_STABILIZERS.get(orb)
+            if isinstance(data, dict):
+                if all(k in data for k in ["text", "surah", "num"]):
+                    return data
+
+            fallback5 = ORBITAL_STABILIZERS.get(5)
+            if isinstance(fallback5, dict):
+                if all(k in fallback5 for k in ["text", "surah", "num"]):
+                    return fallback5
+    except:
+        pass
+
+    return SAFE_ORBITAL_STABILIZERS.get(orb, SAFE_ORBITAL_STABILIZERS[5])
+
 def get_live_current_orbit():
     """ استخراج المدار الحالي الحقيقي من تحليل V70 القائم لضمان دقة الانطلاق """
     try:
@@ -970,10 +1009,7 @@ def render_v71_5_v70_compat_navigation():
             s_key = f"v71_{p['path_id']}_{i}"
             is_done = p["progress"].get(s_key, False)
 
-            try:
-                content = ORBITAL_STABILIZERS.get(orb, ORBITAL_STABILIZERS[5])
-            except:
-                content = {"text": "آية التثبيت", "surah": "القرآن", "num": "0"}
+            content = get_orbital_stabilizer_content(orb)
 
             if i == len(path) - 1:
                 content = {
