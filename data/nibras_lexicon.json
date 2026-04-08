@@ -5,7 +5,52 @@
     "energy_type": "ذكر",
     "carrier_type": "إبل",
     "bio_link": "Father-Origin",
-    "structural_analysis": "ألف: وعي. باء: وعاء.",
-    "insight_radar": "أصل الوعي في وعاء التمكين."
+    "structural_analysis": "ألف: وعي صاعد. باء: وعاء احتواء.",
+    "insight_radar": "أصل الوعي الوجودي في وعاء اليسر والخير."
+  },
+  {
+    "root": "أجر",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Reward-Wages",
+    "structural_analysis": "ألف: وعي. جيم: جمال/جمع. راء: تكرار الأثر.",
+    "insight_radar": "تدفق طاقة الخير نتيجة العمل في المدار الصحيح."
+  },
+  {
+    "root": "قدر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Measure-Ability",
+    "structural_analysis": "قاف: قوة. دال: دفع. راء: تكرار الاستقرار.",
+    "insight_radar": "هندسة الاستطاعة وتجلي القوة في دفع الوعي نحو استقرار التمكين."
+  },
+  {
+    "root": "قدس",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Holy-Pure",
+    "structural_analysis": "قاف: قوة. دال: دفع. سين: سكون التنزيه.",
+    "insight_radar": "تطهير المدار من المعيقات لتدفق طاقة التمكين بنقاء."
+  },
+  {
+    "root": "قدم",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Forward-Movement",
+    "structural_analysis": "قاف: قوة. دال: دفع. ميم: إحاطة الأثر.",
+    "insight_radar": "حركة الدفع الوجودي للأمام لبناء أثر راسخ في مدارات الخير."
+  },
+  {
+    "root": "قرر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Settle-Decide",
+    "structural_analysis": "قاف: قوة. راء: تدفق. راء: استقرار الثبات.",
+    "insight_radar": "منتهى ثبات القوة في الوعاء حيث يهدأ المدار لاستقبال فيض اليسر."
   }
 ]
