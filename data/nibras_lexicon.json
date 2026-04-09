@@ -417,5 +417,665 @@
     "structural_analysis": "ياء: قدرة. سين: سريان. راء: تدفق.",
     "insight_radar": "سريان القدرة في تدفق مستمر يجعل كل عسير سهلاً ممتنعاً.",
     "status": "V12-Confirmed"
+  },
+  {
+    "root": "قدر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Power-Measure",
+    "structural_analysis": "قاف: قيام. دال: دفع. راء: تكرار الأثر.",
+    "insight_radar": "قيام الحق بدفع الأثر المتكرر في مدارات الخير الموزونة بدقة.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "قدس",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Purity-Holiness",
+    "structural_analysis": "قاف: قيام. دال: دفع. سين: سريان.",
+    "insight_radar": "القيام الذي يدفع بسريان الطهارة والنقاء في مسارات التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "قدم",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Progress-Precedence",
+    "structural_analysis": "قاف: قيام. دال: دفع. ميم: إحاطة.",
+    "insight_radar": "قيام يدفع بالإحاطة الكلية ليسبق المدار إلى غايات الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "قضي",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Judgment-Completion",
+    "structural_analysis": "قاف: قيام. ضاد: ضبط. ياء: تجلي/قدرة.",
+    "insight_radar": "القيام المنضبط الذي يتجلى كحقيقة نهائية في مدار اليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "قرر",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Stability-Decision",
+    "structural_analysis": "قاف: قيام. راء: تدفق. راء: تكرار التدفق.",
+    "insight_radar": "استقرار القيام عبر تدفق متكرر يحقق مقام الثبات واليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "صبر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Patience-Containment",
+    "structural_analysis": "صاد: صمود. باء: وعاء. راء: تدفق.",
+    "insight_radar": "صمود الوعاء لاستيعاب تدفق الخير والتمكين دون تشتت.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "عزز",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Reinforce-Power",
+    "structural_analysis": "عين: إدراك. زاي: زاد/ازدواج. زاي: تكرار الزاد.",
+    "insight_radar": "إدراك يضاعف طاقة الزاد الوجودي لتقوية مدارات التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "علا",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "High-Exaltation",
+    "structural_analysis": "عين: إدراك عياني. لام: اتصال صاعد. ألف: وعي مطلق.",
+    "insight_radar": "إدراك متصل بالوعي المطلق يرفع الكيان لمقامات الخير العليا.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "فكر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Think-Reflect",
+    "structural_analysis": "فاء: فيض. كاف: كيان. راء: تكرار الأثر.",
+    "insight_radar": "فيض من الوعي داخل الكيان يكرر رصد آيات اليسر لتثبيتها.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "نفع",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Benefit-Utility",
+    "structural_analysis": "نون: نور/تأصيل. فاء: فيض. عين: إدراك/عيان.",
+    "insight_radar": "نور يفيض ليدرك الوجود أثر الخير واليسر في الواقع.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "متن",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Firm-Strong",
+    "structural_analysis": "ميم: إحاطة. تاء: توازن/استقرار. نون: نور/تأصيل.",
+    "insight_radar": "إحاطة مستقرة بنور التأصيل تمنح المدار قوة وثباتاً في الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "محي",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Life-Giving",
+    "structural_analysis": "ميم: إحاطة. حاء: حماية/حياة. ياء: يد/قدرة تجلي.",
+    "insight_radar": "إحاطة حية بقدرة متجلية تمنح الوجود استمرارية في مدارات اليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "ملك",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "King-Possession",
+    "structural_analysis": "ميم: إحاطة. لام: اتصال/لين. كاف: كيان/ضبط.",
+    "insight_radar": "إحاطة متصلة بضبط الكيان تمنح السيادة والتمكين على المدار الوجودي.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "لين",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Softness-Ease",
+    "structural_analysis": "لام: اتصال. ياء: قدرة. نون: نور.",
+    "insight_radar": "اتصال نابع من قدرة نورانية تجعل مسارات التمكين تنساب بيسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "لطف",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Subtle-Kindness",
+    "structural_analysis": "لام: اتصال. طاء: طاقة/طي. فاء: فيض.",
+    "insight_radar": "اتصال طاقي يفيض بخفاء ليدبر شؤون المدار في أعلى درجات اليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "لقي",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Meet-Receive",
+    "structural_analysis": "لام: اتصال. قاف: قيام. ياء: تجلي.",
+    "insight_radar": "اتصال يؤدي لقيام الحقيقة وتجليها أمام الوعي في مقام الحضور.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "وسع",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Expand-Capacity",
+    "structural_analysis": "واو: وصل. سين: سريان. عين: إدراك/عيان.",
+    "insight_radar": "وصل مستمر لسريان الخير يدركه الوجود كزيادة في مساحة التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "وضع",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Place-Establish",
+    "structural_analysis": "واو: وصل. ضاد: ضبط. عين: إدراك.",
+    "insight_radar": "إرساء منضبط لمدارات الخير يجعلها واقعاً ملموساً ومدركاً.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "وعد",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Promise-Commitment",
+    "structural_analysis": "واو: وصل. عين: إدراك. دال: دفع.",
+    "insight_radar": "وصل يدركه الوعي فيدفع به نحو التحقق الحتمي للخير والتمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "نشر",
+    "orbit_id": 5,
+    "energy_type": "أنثى",
+    "carrier_type": "معز",
+    "bio_link": "Spread-Publish",
+    "structural_analysis": "نون: نور/تأصيل. شين: انتشار. راء: تدفق.",
+    "insight_radar": "انتشار نوراني متدفق يغطي مدارات الوجود بآثار اليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "نصر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Victory-Support",
+    "structural_analysis": "نون: نور. صاد: صمود. راء: تدفق.",
+    "insight_radar": "نور يصمد في وجه التحديات فيتدفق التمكين واليسر كأثر نهائي.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "نفع",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Benefit",
+    "structural_analysis": "نون: نور. فاء: فيض. عين: إدراك عياني.",
+    "insight_radar": "فيض نوراني يدركه الوجود كقيمة مضافة تزيد من جودة مدار الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "سبح",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Glorify-Swim-Flow",
+    "structural_analysis": "سين: سريان. باء: وعاء. حاء: حماية/حياة.",
+    "insight_radar": "سريان طاقة الوعي داخل وعاء الحياة المحمي، مما يحقق التناغم المطلق مع مدارات الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "سخر",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Subjugate-Ease",
+    "structural_analysis": "سين: سريان. خاء: خفاء. راء: تدفق.",
+    "insight_radar": "سريان القوى الخفية في تدفق واحد ميسر لخدمة أهداف التمكين والسيادة.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "سقي",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Watering-Nurture",
+    "structural_analysis": "سين: سريان. قاف: قيام. ياء: تجلي/قدرة.",
+    "insight_radar": "سريان المادة الحيوية التي تضمن قيام الكائن وتجلي قوته في مدار اليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "شكر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Gratitude-Increase",
+    "structural_analysis": "شين: انتشار. كاف: كيان. راء: تدفق.",
+    "insight_radar": "انتشار طاقة الاعتراف بالفضل داخل الكيان، مما يؤدي لتدفق المزيد من نعم التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "شفي",
+    "orbit_id": 1,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Healing-Restoration",
+    "structural_analysis": "شين: انتشار. فاء: فيض. ياء: تجلي/قدرة.",
+    "insight_radar": "انتشار فيض النور الذي يعيد المدار الوجودي إلى حالته الأولى من الصحة واليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "صعد",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Ascend-Rise",
+    "structural_analysis": "صاد: صمود. عين: إدراك/عيان. دال: دفع.",
+    "insight_radar": "صمود يدفع بالإدراك نحو المقامات العليا، محققاً ارتقاءً في مدارات الوعي والتمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "صلح",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Reform-Goodness",
+    "structural_analysis": "صاد: صمود/ضبط. لام: اتصال. حاء: حماية/حياة.",
+    "insight_radar": "ضبط الاتصال بمدارات الحياة لضمان خلوها من العسر واستقرارها في مقام الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "صبر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Patience-Containment",
+    "structural_analysis": "صاد: صمود. باء: وعاء. راء: تدفق.",
+    "insight_radar": "صمود الوعاء لاستيعاب تدفق الخير المستمر دون استعجال يفسد المدار.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "ربح",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Profit-Gain",
+    "structural_analysis": "راء: تدفق. باء: وعاء. حاء: حماية/حياة.",
+    "insight_radar": "تدفق القيمة المضافة داخل الوعاء المحمي، مما يزيد من رصيد التمكين واليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "رفع",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Raise-Elevate",
+    "structural_analysis": "راء: تدفق. فاء: فيض. عين: إدراك.",
+    "insight_radar": "تدفق من الفيض الإدراكي يرفع شأن الكائن في مدارات التمكين والسيادة.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "رأي",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Vision-Opinion",
+    "structural_analysis": "راء: تدفق. ألف: وعي صاعد. ياء: تجلي.",
+    "insight_radar": "تدفق الوعي الصاعد الذي يجعل الحقائق تتجلى بوضوح أمام بصيرة الرائي.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "رجي",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Hope-Expectancy",
+    "structural_analysis": "راء: تدفق. جيم: جمال/جمع. ياء: قدرة تجلي.",
+    "insight_radar": "تدفق القوى المجتمعة بجمال نحو تجلي احتمالات الخير واليسر في المستقبل.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "حيي",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Life-Vibrancy",
+    "structural_analysis": "حاء: حماية. ياء: قدرة. ياء: تجلي مستمر.",
+    "insight_radar": "استمرار تجلي القدرة المحمية بسديم الوجود، وهي أصل كل خير ويسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "حفظ",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Preserve-Protect",
+    "structural_analysis": "حاء: حماية. فاء: فيض. ظاء: ظهور منضبط.",
+    "insight_radar": "توجيه الفيض الوجودي لضمان ظهور آيات التمكين وصونها من التشتت.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "حق",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Truth-Certainty",
+    "structural_analysis": "حاء: حماية. قاف: قيام. قاف: تأكيد القيام.",
+    "insight_radar": "القيام الراسخ المحمي الذي لا يتزلزل، وهو جوهر مدارات الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "حمل",
+    "orbit_id": 4,
+    "energy_type": "أنثى",
+    "carrier_type": "ضأن",
+    "bio_link": "Carry-Burden-Ease",
+    "structural_analysis": "حاء: احتواء. ميم: إحاطة. لام: لين/اتصال.",
+    "insight_radar": "احتواء المدار ونقله بلين واتصال نحو تمام التشكيل واليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "خرج",
+    "orbit_id": 5,
+    "energy_type": "ذكر",
+    "carrier_type": "معز",
+    "bio_link": "Exit-Emerge",
+    "structural_analysis": "خاء: خفاء. راء: تدفق. جيم: جمال/جمع.",
+    "insight_radar": "انتقال الطاقة من مكان الخفاء إلى تدفق الجمال الظاهر في عالم التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "خلص",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Purity-Sincerity",
+    "structural_analysis": "خاء: خفاء/انتقاء. لام: اتصال. صاد: صمود.",
+    "insight_radar": "نقاء المدار عبر اتصال صامد يزيل كل شوائب العسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "جدد",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "New-Renew",
+    "structural_analysis": "جيم: جمال/جمع. دال: دفع. دال: استمرار الدفع.",
+    "insight_radar": "تحديث طاقة المدار عبر دفع مستمر للجمال يمنع الركود والنكس.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "جود",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Generosity-Quality",
+    "structural_analysis": "جيم: جمع. واو: وصل. دال: دفع.",
+    "insight_radar": "حشد قوى الخير وإيصالها ببعضها لتدفع الكيان نحو ذروة التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "دبر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Plan-Direct",
+    "structural_analysis": "دال: دفع. باء: وعاء. راء: تكرار الأثر.",
+    "insight_radar": "توجيه دفعات الوعي داخل الوعاء لضمان عواقب مليئة بالخير واليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "دعا",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Call-Pray",
+    "structural_analysis": "دال: دفع. عين: إدراك. ألف: وعي صاعد.",
+    "insight_radar": "دفع الإدراك نحو الوعي المطلق لاستدعاء فيوضات التمكين والخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "درا",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Warding off-Knowing",
+    "structural_analysis": "دال: دفع. راء: تدفق. ألف: وعي.",
+    "insight_radar": "دفع التدفقات المعاكسة بالوعي لحماية مدار اليسر من الاختلال.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "دفع",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Push-Repel",
+    "structural_analysis": "دال: دفع. فاء: فيض. عين: إدراك.",
+    "insight_radar": "قوة الحركة التي تفتح مسارات الفيض لتتجلى أمام الإدراك الواعي.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "فقه",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Understand-Deep-Insight",
+    "structural_analysis": "فاء: فيض. قاف: قيام. هاء: هدوء/تنبيه.",
+    "insight_radar": "فيض من الإدراك يؤدي لقيام الحقيقة بهدوء وثبات في وعي المستخدم.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "فرح",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Joy-Expanding",
+    "structural_analysis": "فاء: فيض. راء: تدفق. حاء: حياة/حماية.",
+    "insight_radar": "فيض متدفق من طاقة الحياة يشرح الصدر ويطرد العسر من المدار.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "فطر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Origin-Creation",
+    "structural_analysis": "فاء: فيض. طاء: طاقة/طي. راء: تكرار الأثر.",
+    "insight_radar": "انبثاق الفيض الأول الذي يطوي العدم لينشر أثر الوجود والخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "قرب",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Nearness-Proximity",
+    "structural_analysis": "قاف: قيام. راء: تدفق. باء: وعاء.",
+    "insight_radar": "قيام تدفق الطاقة داخل الوعاء لتقليص المسافات بين الوعي ومبتغاه من الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "قوي",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Strength-Power",
+    "structural_analysis": "قاف: قيام. واو: وصل. ياء: تجلي/قدرة.",
+    "insight_radar": "قيام متصل بتجلي القدرة المطلقة، مما يمنح المدار صلابة وتمكيناً.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "قول",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Say-Word-Manifest",
+    "structural_analysis": "قاف: قيام. واو: وصل. لام: اتصال/لين.",
+    "insight_radar": "قيام الوعي بإيصال المعنى للوجود، ليكون كلمة حق تفتح مسارات اليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "كفي",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Sufficiency",
+    "structural_analysis": "كاف: كيان/احتواء. فاء: فيض. ياء: تجلي.",
+    "insight_radar": "احتواء الفيض الإلهي داخل الكيان بما يغني عن كل وسيلة خارجية، وهو قمة اليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "كنز",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Treasure-Hidden",
+    "structural_analysis": "كاف: احتواء. نون: نور. زاي: زاد/ازدواج.",
+    "insight_radar": "احتواء النور المتضاعف كزاد وجودي مخبوء ينتظر الاستخراج بالعمل الصالح.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "كمل",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Complete-Perfect",
+    "structural_analysis": "كاف: كيان. ميم: إحاطة. لام: اتصال.",
+    "insight_radar": "إحاطة الكيان بالاتصال التام حتى يبلغ غاية الخير والنضج.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "نعم",
+    "orbit_id": 3,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Blessing-Ease",
+    "structural_analysis": "نون: نور. عين: إدراك. ميم: إحاطة.",
+    "insight_radar": "نور مدرك يحيط بالكيان، فيحوله إلى حالة من اليسر والرضا الدائم.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "نفس",
+    "orbit_id": 2,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Self-Soul-Breath",
+    "structural_analysis": "نون: نور/تأصيل. فاء: فيض. سين: سريان.",
+    "insight_radar": "سريان الفيض النوراني في الكيان ليعطيه هويته الوجودية المتصلة بالخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "نطق",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Speak-Articulate",
+    "structural_analysis": "نون: نور. طاء: طاقة/طي. قاف: قيام.",
+    "insight_radar": "قيام الطاقة النورانية بالخروج في صورة منظمة تبين آيات التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "طيب",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Pure-Good",
+    "structural_analysis": "طاء: طاقة. ياء: تجلي. باء: وعاء.",
+    "insight_radar": "تجلي الطاقة النورانية داخل الوعاء لتنقيته من شوائب العسر وإحلال الخير.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "طهر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Purify-Cleanse",
+    "structural_analysis": "طاء: طاقة. هاء: هدوء. راء: تدفق.",
+    "insight_radar": "تدفق طاقي هادئ يزيل كل كدر وجودي ليعيد المدار لصفائه الأول.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "ضبط",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Control-Precision",
+    "structural_analysis": "ضاد: ضبط. باء: وعاء. طاء: طاقة.",
+    "insight_radar": "إحكام طاقة الوعاء لضمان سريان التمكين في المسار الصحيح دون هدر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "ظفر",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Victory-Success",
+    "structural_analysis": "ظاء: ظهور منضبط. فاء: فيض. راء: تدفق.",
+    "insight_radar": "ظهور الفيض المتدفق كواقع ملموس يعلن سيادة مسار الخير واليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "عزم",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Determination",
+    "structural_analysis": "عين: إدراك. زاي: زاد. ميم: إحاطة.",
+    "insight_radar": "حشد الزاد الوجودي بإدراك محيط للمضي قدماً في إنجاز التمكين.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "غني",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Richness-Sufficiency",
+    "structural_analysis": "غين: غياب/خفاء. نون: نور. ياء: تجلي.",
+    "insight_radar": "تجلي النور المخبوء الذي يمنح الكيان اكتفاءً ذاتياً يحرره من الحاجة.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "يقن",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Certainty-Conviction",
+    "structural_analysis": "ياء: قدرة. قاف: قيام. نون: نور.",
+    "insight_radar": "قيام القدرة على نور ثابت لا يتزعزع، وهو ذروة الاتصال بالحق واليسر.",
+    "status": "V12-Confirmed"
+  },
+  {
+    "root": "يمن",
+    "orbit_id": 1,
+    "energy_type": "ذكر",
+    "carrier_type": "إبل",
+    "bio_link": "Blessing-Right",
+    "structural_analysis": "ياء: قدرة. ميم: إحاطة. نون: نور.",
+    "insight_radar": "قدرة محاطة بالنور تمنح المدار طاقة البركة والاتجاه الصحيح نحو الخير.",
+    "status": "V12-Confirmed"
   }
 ]
